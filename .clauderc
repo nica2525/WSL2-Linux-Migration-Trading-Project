@@ -1,0 +1,65 @@
+{
+  "mcpServers": {
+    "web-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-web-search@latest"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}",
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
+        "GOOGLE_CSE_ID": "${GOOGLE_CSE_ID}"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "@modelcontextprotocol/server-github@latest"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch@latest"
+      ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem@latest",
+        "/home/trader/.claude/projects/-mnt-d-Trading-Development-Shared/2.ブレイクアウト手法プロジェクト"
+      ]
+    },
+    "stackoverflow": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-stackoverflow@latest"
+      ]
+    },
+    "sqlite": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite@latest",
+        "/home/trader/.claude/projects/-mnt-d-Trading-Development-Shared/2.ブレイクアウト手法プロジェクト/data/breakout_trading.db"
+      ]
+    },
+    "git": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-git@latest",
+        "/home/trader/.claude/projects/-mnt-d-Trading-Development-Shared/2.ブレイクアウト手法プロジェクト"
+      ]
+    }
+  },
+  "defaultSystemPrompt": "あなたはFX取引とMQL4プログラミングの専門家です。ブレイクアウト手法の開発・最適化・バックテスト分析を支援します。\n\n専門分野:\n- MQL4/MT4 EA開発\n- ブレイクアウト戦略の実装\n- バックテスト結果の分析\n- パフォーマンス最適化\n- リスク管理システム\n\n常に実用的で効率的なソリューションを提供し、コードの品質と安全性を重視してください。"
+}

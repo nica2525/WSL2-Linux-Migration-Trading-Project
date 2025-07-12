@@ -1,0 +1,261 @@
+# 開発技術標準
+
+## 🏗️ 開発環境・システム
+
+### 基本環境
+- **OS**: WSL Ubuntu 22.04
+- **プロジェクトパス**: `/home/trader/.claude/projects/-mnt-d-Trading-Development-Shared/2.ブレイクアウト手法プロジェクト`
+- **Git管理**: 有効（自動保存システム稼働中）
+
+### 必須システム
+
+#### Git自動保存システム
+- **コマンド**: `Scripts/start_auto_git.sh`
+- **動作**: 3分毎の自動チェック・コミット
+- **対象**: `*.py`, `*.md`, `*.json`, `*.mq4` 等
+- **ログ**: `.auto_git.log`
+- **復旧**: PC再起動後も自動開始（WSL設定完了）
+
+**セッション開始時の必須確認**:
+```bash
+Scripts/start_auto_git.sh status
+# 停止時は即座に: Scripts/start_auto_git.sh start
+```
+
+#### データキャッシュシステム
+- **初回**: 400,000バー（5年データ）生成
+- **2回目以降**: 0.2秒高速読み込み
+- **品質**: 統計的検証に必要な期間・品質確保
+
+### 検証環境
+- **にっか**: OANDA証券 MT4
+- **実環境**: 実際の市場データでの検証
+
+---
+
+## 📝 ファイル命名規則
+
+### 基本原則
+- **英数字**: 半角英数字、アンダースコア、ハイフン使用
+- **小文字**: 基本的に小文字（固有名詞除く）
+- **意味明確**: ファイル内容が即座に理解できる名前
+
+### 戦略関連ファイル
+```
+{strategy_name}_{component}_{version}.py
+例: multi_timeframe_breakout_strategy.py
+    enhanced_breakout_strategy.py
+    risk_management_system.py
+```
+
+### 検証・テスト関連
+```
+{test_type}_{target}_{date}.py
+例: test_enhanced_risk_management.py
+    minimal_wfa_execution.py
+    quick_volatility_test.py
+```
+
+### 結果ファイル
+```
+{analysis_type}_{timestamp}.json
+例: minimal_wfa_results.json
+    extended_period_wfa_results.json
+    market_environment_validation_results.json
+```
+
+### ドキュメント
+```
+{PURPOSE}_{DESCRIPTION}.md
+例: SESSION_MEMORY_PROTOCOL.md
+    3AI_DEVELOPMENT_CHARTER.md
+    DEVELOPMENT_STANDARDS.md
+```
+
+### 汚染・非推奨ファイル
+```
+{original_name}.CONTAMINATED
+{original_name}.DEPRECATED
+例: minimal_wfa_results.json.CONTAMINATED
+```
+
+---
+
+## 🎨 ファイル形式統一
+
+### Pythonコード
+- **エンコーディング**: UTF-8
+- **インデント**: 4スペース
+- **行末**: Unix形式（LF）
+- **docstring**: 日本語コメント推奨
+
+#### ファイルヘッダー
+```python
+#!/usr/bin/env python3
+"""
+ファイルの説明
+主要機能の概要
+"""
+```
+
+#### クラス構造
+```python
+class ClassName:
+    """クラスの説明"""
+    
+    def __init__(self):
+        # 初期化処理
+        pass
+    
+    def method_name(self):
+        """メソッドの説明"""
+        pass
+```
+
+### JSONファイル
+- **インデント**: 2スペース
+- **日本語**: UTF-8エンコーディング
+- **タイムスタンプ**: ISO 8601形式
+
+#### 結果ファイル構造
+```json
+{
+  "execution_type": "analysis_type",
+  "timestamp": "2025-07-10T19:23:02.323513",
+  "results": [...],
+  "statistical_analysis": {...},
+  "final_judgment": {...}
+}
+```
+
+### マークダウン
+- **エンコーディング**: UTF-8
+- **見出し**: `#` 形式使用
+- **リスト**: `-` 使用
+- **コードブロック**: ```言語名 形式
+
+---
+
+## 🔧 コーディング規約
+
+### 禁止事項
+- **データ間引き**: `raw_data[::10]` 等の統計的信頼性を破綻させる操作
+- **Cドライブ書き込み**: Windows環境への直接書き込み禁止
+- **マジックナンバー**: 意味不明な定数の直接使用
+
+### 推奨事項
+- **アサーション**: データ整合性チェックの積極的使用
+- **コメント**: 重要な処理の日本語説明
+- **エラーハンドリング**: 例外処理の適切な実装
+
+### データ処理
+```python
+# 良い例
+def process_data(raw_data, sampling_rate=1.0):
+    """データ処理（サンプリング率指定可能）"""
+    assert 0 < sampling_rate <= 1.0, "サンプリング率は0-1の範囲"
+    
+    if sampling_rate < 1.0:
+        # テスト用の軽量化であることを明示
+        processed_data = raw_data[::int(1/sampling_rate)]
+        print(f"⚠️ 軽量化: {len(processed_data)}/{len(raw_data)} データ使用")
+    else:
+        processed_data = raw_data
+    
+    return processed_data
+
+# 悪い例
+ultra_light_data = raw_data[::10]  # 🚨 統計的信頼性破綻
+```
+
+---
+
+## 🎯 品質管理ルール
+
+### 統計的厳密性
+- **p値**: 0.05未満必須
+- **取引数**: 統計的十分性の確保
+- **データ品質**: 完全データでの検証必須
+
+### コード品質
+- **動作確認**: 実行前の動作テスト必須
+- **エラーハンドリング**: 例外処理の適切な実装
+- **ログ出力**: 重要な処理の記録
+
+### 検証プロセス
+1. **自己検証**: 実装者による基本チェック
+2. **客観的評価**: Geminiによる第三者検証
+3. **統合確認**: Claude Codeによる全体整合性チェック
+
+---
+
+## 🤖 AI間連携規約
+
+### Claude Code
+- **ファイル操作**: 直接アクセス可能
+- **実行制御**: Bash、Python実行を担当
+- **情報共有**: 他AIへの情報転送を担当
+
+### Gemini (MCP)
+- **アクセス**: Claude Code経由 `mcp__gemini-cli__chat`
+- **役割**: 客観的評価、統計的分析
+- **出力**: 構造化された評価結果
+
+### ChatGPT (Plus)
+- **アクセス**: にっか経由でのファイル受け渡し
+- **役割**: 戦略立案、高度な実装支援
+- **出力**: 詳細なコード、戦略提案
+
+---
+
+## 🛡️ 安全性・セキュリティ
+
+### ファイルアクセス
+- **読み込み**: プロジェクトディレクトリ内のみ
+- **書き込み**: 同上、Cドライブ書き込み禁止
+- **実行**: 承認されたスクリプトのみ
+
+### データ保護
+- **バックアップ**: Git自動保存による履歴保持
+- **整合性**: アサーションによるデータ検証
+- **アクセス制御**: 適切な権限管理
+
+### 緊急時対応
+- **停止**: 任意のAIが安全性を理由に作業停止可能
+- **復旧**: Git履歴による状態復元
+- **報告**: 問題発生時の即座報告義務
+
+---
+
+## 📊 監視・ログ
+
+### 自動監視
+- **Git自動保存**: 3分毎の変更追跡
+- **実行ログ**: 重要な処理の記録保持
+- **エラーログ**: 例外発生時の詳細記録
+
+### 手動確認
+- **セッション開始**: Git status確認必須
+- **定期チェック**: 品質基準の定期確認
+- **結果検証**: 統計的結果の信頼性確認
+
+---
+
+## 🔄 継続的改善
+
+### 学習システム
+- **SESSION_MEMORY_PROTOCOL.md**: 失敗からの学習記録
+- **品質改善**: 継続的なプロセス改善
+- **知識蓄積**: 成功事例の体系化
+
+### 更新プロセス
+1. **問題発見**: 任意のAIまたはにっかからの指摘
+2. **影響分析**: 変更による影響範囲の確認
+3. **修正実装**: 適切な修正の実装
+4. **検証**: 修正効果の確認
+5. **文書更新**: 標準文書の更新
+
+---
+
+**この標準は、3AI協働開発の技術的基盤を定めるものです。**
+**基本方針は `3AI_DEVELOPMENT_CHARTER.md` を参照してください。**

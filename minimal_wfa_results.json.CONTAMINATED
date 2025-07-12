@@ -1,0 +1,81 @@
+{
+  "execution_type": "minimal_wfa",
+  "timestamp": "2025-07-10T19:23:02.323513",
+  "wfa_results": [
+    {
+      "fold_id": 1,
+      "is_pf": 0.9660676664891539,
+      "is_trades": 182,
+      "is_return": -0.011028194198837049,
+      "oos_pf": 1.189848529197451,
+      "oos_trades": 63,
+      "oos_return": 0.02342263276730283,
+      "oos_sharpe": 0.08240916290601265,
+      "oos_win_rate": 0.38095238095238093
+    },
+    {
+      "fold_id": 2,
+      "is_pf": 1.061205151129874,
+      "is_trades": 302,
+      "is_return": 0.03439533062815492,
+      "oos_pf": 1.577105148859458,
+      "oos_trades": 128,
+      "oos_return": 0.07639745916644947,
+      "oos_sharpe": 0.1968584883216567,
+      "oos_win_rate": 0.453125
+    },
+    {
+      "fold_id": 3,
+      "is_pf": 1.6206117460168272,
+      "is_trades": 430,
+      "is_return": 0.37485625306298254,
+      "oos_pf": 1.7545402977223632,
+      "oos_trades": 121,
+      "oos_return": 0.07094623440441317,
+      "oos_sharpe": 0.2700662761844621,
+      "oos_win_rate": 0.4793388429752066
+    },
+    {
+      "fold_id": 4,
+      "is_pf": 1.471085025780259,
+      "is_trades": 600,
+      "is_return": 0.36649982253954716,
+      "oos_pf": 1.3339636441654683,
+      "oos_trades": 169,
+      "oos_return": 0.05182594573799271,
+      "oos_sharpe": 0.13630498397491286,
+      "oos_win_rate": 0.41420118343195267
+    },
+    {
+      "fold_id": 5,
+      "is_pf": 1.1652416990925636,
+      "is_trades": 769,
+      "is_return": 0.16833163875505375,
+      "oos_pf": 1.7081528619953439,
+      "oos_trades": 64,
+      "oos_return": 0.07629696618132287,
+      "oos_sharpe": 0.2556989024009171,
+      "oos_win_rate": 0.46875
+    }
+  ],
+  "statistical_results": {
+    "total_folds": 5,
+    "positive_folds": 5,
+    "consistency_ratio": 1.0,
+    "avg_oos_pf": 1.5127220963880168,
+    "avg_oos_trades": 109.0,
+    "wfa_efficiency": 0.3203340489633699,
+    "t_statistic": 5.891859864356905,
+    "p_value": 0.01,
+    "statistical_significance": true,
+    "mean_oos_return": 0.059777847651496206
+  },
+  "final_judgment": {
+    "reform_success": true,
+    "criteria_passed": 4,
+    "criteria_total": 4,
+    "success_rate": 1.0,
+    "statistical_significance": true,
+    "p_value": 0.01
+  }
+}

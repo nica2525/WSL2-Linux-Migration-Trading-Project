@@ -1,0 +1,9 @@
+# 自動Git保存システム - セッション開始時自動起動
+# このファイルが存在する場合、プロジェクト開始時に自動的にGit保存を開始
+
+ENABLED=true
+INTERVAL_MINUTES=3
+LOG_RETENTION_DAYS=7
+
+# 起動コマンド
+# Scripts/start_auto_git.sh start

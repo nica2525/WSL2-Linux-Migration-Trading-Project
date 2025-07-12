@@ -1,0 +1,39 @@
+# MCP設定ファイル（APIキー含む）
+.env.mcp
+.env
+
+# Claude設定
+.claude/
+.clauderc.local
+
+# バックテスト結果
+*.csv
+*.json
+*.htm
+*.gif
+
+# ログファイル
+*.log
+logs/
+
+# 一時ファイル
+temp/
+tmp/
+*.tmp
+
+# OS固有
+.DS_Store
+Thumbs.db
+
+# IDE設定
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Windows
+*.exe
+*.dll
