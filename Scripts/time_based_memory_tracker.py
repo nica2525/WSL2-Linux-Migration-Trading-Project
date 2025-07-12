@@ -16,20 +16,76 @@ class TimeBasedMemoryTracker:
         self.history_file = os.path.join(project_dir, "docs", "MEMORY_EXECUTION_HISTORY.md")
         self.pid_file = os.path.join(project_dir, ".memory_tracker.pid")
         
+    def get_current_git_commit_id(self):
+        """現在のGitコミットIDを取得"""
+        try:
+            os.chdir(self.project_dir)
+            result = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], 
+                                  capture_output=True, text=True, check=True)
+            return result.stdout.strip()
+        except subprocess.CalledProcessError:
+            return "unknown"
+    
+    def get_memory_update_count(self):
+        """時間ベース記憶更新の回数を取得"""
+        try:
+            if not os.path.exists(self.history_file):
+                return 0
+                
+            with open(self.history_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # 時間ベース記憶追跡実行の回数をカウント
+            count = content.count("時間ベース記憶追跡実行")
+            return count
+        except Exception:
+            return 0
+    
     def log_memory_update(self, reason="定期実行"):
-        """記憶更新をログ記録"""
+        """記憶更新をログ記録（回数・GitID・PID付き）"""
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S JST')
-        log_entry = f"{current_time} - 時間ベース記憶追跡実行 ({reason})\n"
+        
+        # 更新回数取得（現在の回数 + 1）
+        update_count = self.get_memory_update_count() + 1
+        
+        # GitコミットID取得
+        git_commit_id = self.get_current_git_commit_id()
+        
+        # 記憶追跡PID取得
+        memory_pid = os.getpid()
+        
+        # Git自動保存PID取得
+        git_pid = self.get_git_auto_save_pid()
+        
+        # ログエントリ作成
+        log_entry = f"{current_time} - 第{update_count}回目時間ベース記憶追跡実行 ({reason}) [Git:{git_commit_id}] [記憶PID:{memory_pid}] [GitPID:{git_pid}]\n"
         
         try:
             with open(self.history_file, 'a', encoding='utf-8') as f:
                 f.write(log_entry)
-            print(f"🧠 [記憶追跡] {current_time} - {reason}")
-            print("📋 必須確認: CLAUDE_UNIFIED_SYSTEM.md → 統合情報読み込み")
+            print(f"🧠 [記憶追跡#{update_count}] {current_time} - {reason}")
+            print(f"📋 Git状況: {git_commit_id} | 記憶PID: {memory_pid} | GitPID: {git_pid}")
+            print("📖 必須確認: CLAUDE_UNIFIED_SYSTEM.md → 統合情報読み込み")
+            
+            # 3分と30分の同時保存タイミング判定
+            if update_count % 10 == 0:  # 30分×10回 = 5時間毎
+                print("⚡ 注意: Git自動保存(3分)と記憶追跡(30分)の同時保存タイミング可能性あり")
+            
             return True
         except Exception as e:
             print(f"❌ ログ記録エラー: {e}")
             return False
+    
+    def get_git_auto_save_pid(self):
+        """Git自動保存のPIDを取得"""
+        try:
+            git_pid_file = os.path.join(self.project_dir, ".auto_git.pid")
+            if os.path.exists(git_pid_file):
+                with open(git_pid_file, 'r') as f:
+                    return f.read().strip()
+            return "停止中"
+        except Exception:
+            return "不明"
     
     def should_trigger_memory_update(self):
         """記憶更新が必要かチェック"""
