@@ -1,0 +1,13 @@
+[Unit]
+Description=Git Auto Save Service
+After=network.target
+
+[Service]
+Type=oneshot
+User=trader
+WorkingDirectory=/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト
+ExecStart=/usr/bin/python3 /mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/git_simple_commit.py
+Environment=INVOCATION_ID=systemd-git-auto-save
+
+[Install]
+WantedBy=multi-user.target

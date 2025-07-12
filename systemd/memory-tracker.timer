@@ -1,0 +1,11 @@
+[Unit]
+Description=Memory Tracker Timer (30 minutes)
+Requires=memory-tracker.service
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
