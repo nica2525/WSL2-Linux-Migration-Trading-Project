@@ -4,16 +4,23 @@
 
 ## 🚨 最重要 - セッション開始時必須実行事項
 
-### STEP 1: 基本ファイル必須確認（毎回）
+### STEP 1: 参照マップ読み込み（効率化済み）
 ```bash
-# セッション開始時に必ず実行
-cat CLAUDE.md
-cat 3AI_DEVELOPMENT_CHARTER.md  
-cat DEVELOPMENT_STANDARDS.md
-cat MANDATORY_VERIFICATION_PROTOCOL.md
-cat docs/MANAGER_LEARNING_LOG.md
-cat CLAUDE_MEMORY_SYSTEM.md  # このファイル
+# セッション開始時に必ず実行（マップ方式）
+cat ESSENTIAL_REFERENCES.md              # 参照マップ（最重要）
+# ↑ このファイルから必要な参照先を確認して個別読み込み
 ```
+
+**参照マップ方式の利点:**
+- **効率性**: 1ファイル読み込みで全体把握
+- **選択性**: 必要な情報のみ確認可能
+- **更新性**: マップ更新で全体最適化
+- **記憶負荷軽減**: 複数ファイル暗記不要
+
+### STEP 1.5: リアルタイム記憶追跡開始
+- **30分間隔**: 22:15 → 22:45 → 23:15...
+- **30アクション毎**: ツール使用回数カウント  
+- **重要作業前**: ChatGPT依頼・Gemini査読・実行前
 
 ### STEP 2: プロジェクト状況把握
 ```bash
