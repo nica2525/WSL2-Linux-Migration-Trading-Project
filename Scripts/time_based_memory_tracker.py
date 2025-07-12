@@ -7,6 +7,7 @@
 import os
 import time
 import subprocess
+import logging
 from datetime import datetime, timedelta
 
 class TimeBasedMemoryTracker:
@@ -15,15 +16,22 @@ class TimeBasedMemoryTracker:
         self.interval_seconds = interval_minutes * 60
         self.history_file = os.path.join(project_dir, "docs", "MEMORY_EXECUTION_HISTORY.md")
         self.pid_file = os.path.join(project_dir, ".memory_tracker.pid")
+        # ロギング設定
+        log_file = os.path.join(project_dir, '.memory_tracker_debug.log')
+        logging.basicConfig(
+            filename=log_file,
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s'
+        )
         
     def get_current_git_commit_id(self):
         """現在のGitコミットIDを取得"""
         try:
-            os.chdir(self.project_dir)
             result = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], 
-                                  capture_output=True, text=True, check=True)
+                                  capture_output=True, text=True, check=True,
+                                  cwd=self.project_dir, timeout=30)
             return result.stdout.strip()
-        except subprocess.CalledProcessError:
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return "unknown"
     
     def get_memory_update_count(self):
