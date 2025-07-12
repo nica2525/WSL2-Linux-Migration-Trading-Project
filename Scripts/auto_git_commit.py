@@ -8,6 +8,7 @@ import os
 import time
 import subprocess
 import argparse
+import logging
 from datetime import datetime
 
 class AutoGitCommit:
@@ -18,34 +19,46 @@ class AutoGitCommit:
             '.py', '.mq4', '.mq5', '.md', '.json', '.txt', '.csv',
             '.yaml', '.yml', '.sh', '.bat', '.sql', '.xml'
         ]
+        # ロギング設定
+        log_file = os.path.join(project_dir, '.auto_git_debug.log')
+        logging.basicConfig(
+            filename=log_file,
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s'
+        )
     
     def has_changes(self):
         """変更の有無確認"""
         try:
-            os.chdir(self.project_dir)
             result = subprocess.run(['git', 'status', '--porcelain'], 
-                                  capture_output=True, text=True, check=True)
+                                  capture_output=True, text=True, check=True, 
+                                  cwd=self.project_dir, timeout=30)
             return len(result.stdout.strip()) > 0
-        except subprocess.CalledProcessError:
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+            logging.error(f"git status エラー: {e}")
             return False
     
     def commit_changes(self):
         """変更をコミット"""
         try:
-            os.chdir(self.project_dir)
-            
             # ステージング
-            subprocess.run(['git', 'add', '.'], check=True)
+            subprocess.run(['git', 'add', '.'], check=True, 
+                          cwd=self.project_dir, timeout=60)
             
             # コミット（日本時間明記）
             commit_msg = f"自動保存 - {datetime.now().strftime('%Y-%m-%d %H:%M JST')}"
-            subprocess.run(['git', 'commit', '-m', commit_msg], check=True)
+            subprocess.run(['git', 'commit', '-m', commit_msg], check=True,
+                          cwd=self.project_dir, timeout=60)
             
-            print(f"[{datetime.now()}] 自動保存完了: {commit_msg}")
+            log_msg = f"自動保存完了: {commit_msg}"
+            print(f"[{datetime.now()}] {log_msg}")
+            logging.info(log_msg)
             return True
             
-        except subprocess.CalledProcessError as e:
-            print(f"[{datetime.now()}] 自動保存エラー: {e}")
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+            error_msg = f"自動保存エラー: {e}"
+            print(f"[{datetime.now()}] {error_msg}")
+            logging.error(error_msg)
             return False
     
     def run_daemon(self):
