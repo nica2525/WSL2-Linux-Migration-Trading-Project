@@ -82,32 +82,37 @@ class MinimalViableStrategy:
             if prev_high is None or prev_low is None:
                 continue
             
-            # ブレイクアウト判定
+            # ブレイクアウト判定（Look-ahead bias修正）
             break_pips = self.params['break_pips'] * 0.0001
-            current_price = current_bar['close']
+            current_high = current_bar['high']
+            current_low = current_bar['low']
             
             signal = None
             
-            # ロングシグナル
-            if current_price > prev_high + break_pips:
+            # ロングシグナル（高値がブレイクアウトレベルを超えた場合）
+            if current_high > prev_high + break_pips:
+                # エントリー価格はブレイクアウトレベル（実現可能な価格）
+                entry_price = prev_high + break_pips
                 signal = {
                     'type': 'long',
                     'datetime': current_bar['datetime'],
-                    'entry_price': current_price,
-                    'profit_target': current_price + self.params['profit_pips'] * 0.0001,
-                    'stop_loss': current_price - self.params['stop_pips'] * 0.0001,
+                    'entry_price': entry_price,
+                    'profit_target': entry_price + self.params['profit_pips'] * 0.0001,
+                    'stop_loss': entry_price - self.params['stop_pips'] * 0.0001,
                     'prev_high': prev_high,
                     'prev_low': prev_low
                 }
             
-            # ショートシグナル
-            elif current_price < prev_low - break_pips:
+            # ショートシグナル（安値がブレイクアウトレベルを下回った場合）
+            elif current_low < prev_low - break_pips:
+                # エントリー価格はブレイクアウトレベル（実現可能な価格）
+                entry_price = prev_low - break_pips
                 signal = {
                     'type': 'short',
                     'datetime': current_bar['datetime'],
-                    'entry_price': current_price,
-                    'profit_target': current_price - self.params['profit_pips'] * 0.0001,
-                    'stop_loss': current_price + self.params['stop_pips'] * 0.0001,
+                    'entry_price': entry_price,
+                    'profit_target': entry_price - self.params['profit_pips'] * 0.0001,
+                    'stop_loss': entry_price + self.params['stop_pips'] * 0.0001,
                     'prev_high': prev_high,
                     'prev_low': prev_low
                 }
