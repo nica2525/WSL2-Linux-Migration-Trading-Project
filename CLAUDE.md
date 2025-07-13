@@ -79,6 +79,7 @@ cat docs/MANAGER_LEARNING_LOG.md
 cat 3AI_DEVELOPMENT_CHARTER.md
 cat DEVELOPMENT_STANDARDS.md
 cat MANDATORY_VERIFICATION_PROTOCOL.md
+cat GPT_REQUEST_PROTOCOL.md
 ```
 
 **🎯 品質管理チェックリスト:**
@@ -106,7 +107,8 @@ cat MANDATORY_VERIFICATION_PROTOCOL.md
 1. **cron自動化確認が最優先** (Git自動保存・システム監視)
 2. セッション開始時のGitログ確認（過去作業把握）
 3. **セッション開始時のマネージャー学習ログ確認**
-4. 重要な設計変更時の即時記録
-5. ⚡ Hooks自動化により作業記録は自動実行
-6. **🚨 cron重要ファイル保護の絶対遵守**
-7. **systemd・旧デーモン方式は完全廃止 - cronのみ使用**
+4. **GPT依頼文作成時のプロトコル遵守** (GPT_REQUEST_PROTOCOL.md)
+5. 重要な設計変更時の即時記録
+6. ⚡ Hooks自動化により作業記録は自動実行
+7. **🚨 cron重要ファイル保護の絶対遵守**
+8. **systemd・旧デーモン方式は完全廃止 - cronのみ使用**
