@@ -25,7 +25,14 @@ class QualityChecker:
             "lookahead_bias": {
                 "pattern": r"current_bar\[.close.\]",
                 "severity": "HIGH",
-                "description": "Look-ahead bias（未来データ参照）"
+                "description": "Look-ahead bias（未来データ参照）",
+                "false_positive_contexts": [
+                    r"exit_price\s*=\s*bar_close",  # 時間切れ決済
+                    r"TIME_EXIT",  # 時間切れ決済コンテキスト
+                    r"max_holding_hours",  # 最大保有時間関連
+                    r"final_price\s*=.*\[.close.\]",  # 最終決済
+                    r"FORCED_EXIT"  # 強制決済
+                ]
             },
             "random_uniform_suspicious": {
                 "pattern": r"random\.uniform\(.*return",
@@ -36,6 +43,16 @@ class QualityChecker:
                 "pattern": r"random\.random\(\)\s*<\s*0\.[34]\d+.*win",
                 "severity": "HIGH", 
                 "description": "固定勝率によるバックテスト偽装"
+            },
+            "future_price_access": {
+                "pattern": r"current_price\s*=\s*current_bar\[.close.\]",
+                "severity": "HIGH",
+                "description": "シグナル生成時の未来価格参照"
+            },
+            "simulation_bias": {
+                "pattern": r"if\s+random\.random\(\)\s*<\s*0\.[5-9]",
+                "severity": "MEDIUM",
+                "description": "シミュレーション結果の人工的操作"
             }
         }
 
@@ -61,6 +78,13 @@ class QualityChecker:
                     for match in matches:
                         line_num = content[:match.start()].count('\n') + 1
                         
+                        # False positive チェック
+                        if self._is_false_positive(match, content, config, line_num):
+                            continue
+                            
+                        # コンテキスト情報取得
+                        context_info = self._get_context_info(content, match.start(), line_num)
+                        
                         issue = {
                             "timestamp": datetime.now().isoformat(),
                             "file": str(py_file.relative_to(self.project_dir)),
@@ -68,7 +92,9 @@ class QualityChecker:
                             "type": issue_type,
                             "severity": config["severity"],
                             "description": config["description"],
-                            "code_snippet": match.group(0)[:100]
+                            "code_snippet": match.group(0)[:100],
+                            "context": context_info,
+                            "confidence": self._calculate_confidence(match, content, config)
                         }
                         issues.append(issue)
                         
