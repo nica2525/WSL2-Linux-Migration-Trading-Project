@@ -91,23 +91,22 @@ cat MANDATORY_VERIFICATION_PROTOCOL.md
 
 ## 🚨 絶対に削除・変更禁止ファイル - 重要システム保護
 **以下ファイルを削除・移動した場合、即座にプロジェクトから退場:**
-- `Scripts/git_simple_commit.py` - Git自動保存の中核システム
-- `Scripts/memory_simple_update.py` - 記憶追跡の中核システム
-- `systemd/git-auto-save.timer` - Git自動保存タイマー設定
-- `systemd/memory-tracker.timer` - 記憶追跡タイマー設定
-- `systemd/*.service` - systemdサービス定義
+- `Scripts/cron_git_auto_save.py` - Git自動保存の中核システム
+- `Scripts/cron_system_monitor.py` - システム監視の中核システム
+- `Scripts/git_simple_commit.py` - Git自動保存の中核システム（旧版・予備）
+- `Scripts/memory_simple_update.py` - 記憶追跡の中核システム（旧版・予備）
 
 **ファイル整理・大規模変更時の必須手順:**
-1. 必ず事前に `systemctl --user list-timers` で動作確認
-2. 変更後に即座に `systemctl --user daemon-reload` 実行
-3. systemdタイマー停止は絶対に許可されない
-4. 旧デーモン方式（.DISABLED）の復活は厳禁
+1. 必ず事前に `crontab -l` でcron動作確認
+2. 変更後に即座に `crontab -l` で設定確認
+3. cron自動化停止は絶対に許可されない
+4. systemd方式・旧デーモン方式の復活は厳禁
 
 ## 絶対に忘れてはいけないこと
-1. **systemdタイマー確認が最優先** (Git自動保存・記憶追跡)
+1. **cron自動化確認が最優先** (Git自動保存・システム監視)
 2. セッション開始時のGitログ確認（過去作業把握）
 3. **セッション開始時のマネージャー学習ログ確認**
 4. 重要な設計変更時の即時記録
 5. ⚡ Hooks自動化により作業記録は自動実行
-6. **🚨 systemd重要ファイル保護の絶対遵守**
-7. **旧デーモン方式は完全廃止 - systemdタイマーのみ使用**
+6. **🚨 cron重要ファイル保護の絶対遵守**
+7. **systemd・旧デーモン方式は完全廃止 - cronのみ使用**
