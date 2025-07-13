@@ -262,6 +262,106 @@ class PurgedEmbargoedWFA:
             'is_bars': len(is_data),
             'oos_bars': len(oos_data)
         }
+    
+    def _run_strategy_on_data(self, data, period_type):
+        """
+        指定データで戦略を実行
+        
+        Args:
+            data: 価格データ
+            period_type: 'IS' または 'OOS'
+            
+        Returns:
+            dict: 戦略実行結果
+        """
+        if not data or len(data) < 50:
+            return {
+                'total_return': 0.0,
+                'profit_factor': 1.0,
+                'sharpe_ratio': 0.0,
+                'total_trades': 0,
+                'win_rate': 0.0
+            }
+        
+        # 簡易ブレイクアウト戦略実装
+        trades = []
+        lookback_period = 20  # ブレイクアウト判定期間
+        
+        for i in range(lookback_period, len(data)):
+            current_bar = data[i]
+            
+            # 過去期間の高値・安値
+            lookback_data = data[i-lookback_period:i]
+            high_level = max(bar['high'] for bar in lookback_data)
+            low_level = min(bar['low'] for bar in lookback_data)
+            
+            current_price = current_bar['close']
+            
+            # ブレイクアウト判定
+            signal = None
+            if current_price > high_level:
+                signal = 'long'
+            elif current_price < low_level:
+                signal = 'short'
+            
+            if signal:
+                # 簡易取引実行
+                entry_price = current_price
+                
+                # 10バー後の価格で決済（簡易実装）
+                exit_index = min(i + 10, len(data) - 1)
+                exit_price = data[exit_index]['close']
+                
+                if signal == 'long':
+                    pnl = exit_price - entry_price
+                else:  # short
+                    pnl = entry_price - exit_price
+                
+                trades.append({
+                    'signal': signal,
+                    'entry_price': entry_price,
+                    'exit_price': exit_price,
+                    'pnl': pnl,
+                    'result': 'win' if pnl > 0 else 'loss'
+                })
+        
+        # パフォーマンス計算
+        if not trades:
+            return {
+                'total_return': 0.0,
+                'profit_factor': 1.0,
+                'sharpe_ratio': 0.0,
+                'total_trades': 0,
+                'win_rate': 0.0
+            }
+        
+        total_pnl = sum(trade['pnl'] for trade in trades)
+        wins = [t['pnl'] for t in trades if t['pnl'] > 0]
+        losses = [abs(t['pnl']) for t in trades if t['pnl'] < 0]
+        
+        gross_profit = sum(wins) if wins else 0.001
+        gross_loss = sum(losses) if losses else 0.001
+        
+        profit_factor = gross_profit / gross_loss
+        win_rate = len(wins) / len(trades)
+        
+        # シャープレシオ計算
+        if len(trades) > 1:
+            returns = [t['pnl'] for t in trades]
+            mean_return = sum(returns) / len(returns)
+            variance = sum((r - mean_return) ** 2 for r in returns) / len(returns)
+            std_return = math.sqrt(variance) if variance > 0 else 0.001
+            sharpe_ratio = mean_return / std_return
+        else:
+            sharpe_ratio = 0.0
+        
+        return {
+            'total_return': total_pnl,
+            'profit_factor': profit_factor,
+            'sharpe_ratio': sharpe_ratio,
+            'total_trades': len(trades),
+            'win_rate': win_rate
+        }
 
 class StatisticalValidator:
     """統計的検証クラス"""
@@ -432,24 +532,37 @@ def main():
         print(f"     Purge日数: {fold['purge_days']}日")
         print(f"     Embargo日数: {fold['embargo_days']}日")
     
-    # 疑似結果での統計検証デモ
-    print(f"\n📈 統計検証デモ（疑似結果）:")
+    # 実際のWFA実行
+    print(f"\n📈 実WFA実行開始:")
     
-    # 疑似的なWFA結果生成
-    import random
-    dummy_results = []
-    for i in range(len(folds)):
-        dummy_results.append({
-            'fold_id': i + 1,
-            'is_return': random.uniform(0.05, 0.15),   # 5-15%のIS利益
-            'oos_return': random.uniform(-0.02, 0.08), # -2%から8%のOOS結果
-            'oos_sharpe': random.uniform(-0.5, 1.2),   # -0.5から1.2のシャープレシオ
-            'oos_pf': random.uniform(0.8, 1.3),        # 0.8から1.3のPF
-            'trades': random.randint(50, 200)          # 50-200取引
+    # 実際のWFA結果生成
+    real_results = []
+    for i, fold in enumerate(folds, 1):
+        print(f"   Fold {i}/{len(folds)} 処理中...")
+        
+        fold_data = wfa.get_fold_data(i)
+        is_data = fold_data['is_data']
+        oos_data = fold_data['oos_data']
+        
+        # IS期間での戦略実行（簡易実装）
+        is_result = wfa._run_strategy_on_data(is_data, 'IS')
+        
+        # OOS期間での戦略実行（実データ）
+        oos_result = wfa._run_strategy_on_data(oos_data, 'OOS')
+        
+        real_results.append({
+            'fold_id': i,
+            'is_return': is_result['total_return'],
+            'oos_return': oos_result['total_return'],
+            'oos_sharpe': oos_result['sharpe_ratio'],
+            'oos_pf': oos_result['profit_factor'],
+            'trades': oos_result['total_trades'],
+            'is_trades': is_result['total_trades'],
+            'fold_info': fold
         })
     
     # 統計的検証
-    validator = StatisticalValidator(dummy_results)
+    validator = StatisticalValidator(real_results)
     consistency = validator.calculate_oos_consistency()
     wfa_efficiency = validator.calculate_wfa_efficiency()
     
@@ -462,7 +575,7 @@ def main():
     print(f"\n✅ プロトタイプ実行完了！")
     print(f"   このシステムは47EA失敗の根本原因（情報リーク）を解決します。")
     
-    return wfa, dummy_results
+    return wfa, real_results
 
 if __name__ == "__main__":
     wfa, results = main()
