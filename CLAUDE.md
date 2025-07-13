@@ -6,31 +6,33 @@
 - **作業記録**: セッション終了時に自動保存
 - **設定場所**: ~/.claude/settings.json
 
-## 🚨 最重要 - systemd自動化システム確認プロトコル
+## 🚨 最重要 - cron自動化システム確認プロトコル
 **セッション開始時に必ず実行:**
 ```bash
-systemctl --user list-timers
-systemctl --user status git-auto-save.timer memory-tracker.timer
+crontab -l
+ps aux | grep cron
 ```
 
-**停止していたら即座に:**
+**cron自動化システム確認:**
 ```bash
-systemctl --user start git-auto-save.timer memory-tracker.timer
+tail -10 .cron_git_auto_save.log
+tail -10 .cron_monitor.log
 ```
 
-**⚡ 重要: 旧デーモン方式は完全廃止済み**
+**⚡ 重要: systemd方式は完全廃止済み**
+- `systemd/*.timer` → 使用禁止（cron移行済み）
 - `start_auto_git.sh` → 使用禁止（.DISABLED化済み）
 - `start_memory_tracker.sh` → 使用禁止（.DISABLED化済み）
-- **systemdタイマーが唯一の正式な自動実行方法**
+- **cronが唯一の正式な自動実行方法**
 
-## systemd自動化システム仕様
-- 📁 **Git自動保存**: 3分間隔、flock排他制御付き
-- 🧠 **記憶追跡**: 30分間隔、systemd標準管理
-- ⏰ **管理方式**: systemdタイマー（OS級の安定性）
+## cron自動化システム仕様
+- 📁 **Git自動保存**: 3分間隔、flock排他制御付き（cron_git_auto_save.py）
+- 🧠 **システム監視**: 5分間隔、cron標準管理（cron_system_monitor.py）
+- ⏰ **管理方式**: cron（WSL最適化・自己修復機能付き）
 - 💰 **料金**: 0円 (100%ローカル処理)
-- 🔄 **復旧**: systemd自動復旧、WSL systemd対応
-- 🛑 **制御方法**: systemctl --user コマンド
-- 📋 **ログ確認**: journalctl -u サービス名
+- 🔄 **復旧**: 自己修復機能内蔵、WSL完全対応
+- 🛑 **制御方法**: crontab コマンド
+- 📋 **ログ確認**: .cron_*.log ファイル
 
 ## 🔍 Gitログ参照プロトコル
 **セッション開始時必須確認:**
