@@ -48,6 +48,17 @@ git log --graph --pretty=format:'%h - %an, %ar : %s' -10
 git log --grep="MCP\|Gemini\|Phase" --oneline -20
 ```
 
+## 🛡️ 品質状況確認プロトコル
+**セッション開始時必須確認:**
+```bash
+cat CURRENT_QUALITY_STATUS.md
+```
+
+**品質チェック手動実行:**
+```bash
+python3 Scripts/quality_checker.py
+```
+
 ## 🤖 MCP-Gemini vs 自己実装ツール使い分け戦略
 **セッション開始時必須参照:**
 ```
