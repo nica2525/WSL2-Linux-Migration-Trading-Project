@@ -116,16 +116,14 @@ class SecureFoldOptimizer:
 
     def _run_backtest(self, detector_params: List[float]) -> Dict:
         """
-        detector.detect_regime は self.series（学習 or テストのみ）のみで実行。
-        for i in range(len(self.series)):
-            - history = self.series.iloc[:i]             ← 現在バー含まず
-            - next_open = self.series.iloc[i]['open']    ← 次バー始値
-            - entry/exit はすべて next_open を用いる
+        完全な先読みバイアス排除版:
+        - レジーム検出は各時点で過去データのみ使用
+        - エグジット判定はnext_bar['open']価格のみで実行
+        - 現在バーの高値/安値は一切使用しない
         """
-        # レジーム検出
+        # レジーム検出器初期化
         detector = MarketRegimeDetector()
         # ... detector_params をセット ...
-        regimes = detector.detect_regime(self.series)
 
         trades = []
         position = None
@@ -135,7 +133,10 @@ class SecureFoldOptimizer:
             bar      = self.series.iloc[i]
             next_bar = self.series.iloc[i+1]
             history  = self.series.iloc[:i]                # ≤ i-1
-            regime   = regimes.iloc[i]
+            
+            # 因果的レジーム検出（現在時点までのデータのみ使用）
+            history_for_regime = self.series.iloc[:i+1]    # 現在バーまで
+            regime = detector.get_regime_for_current_bar(history_for_regime)
 
             params   = detector.get_strategy_parameters(regime)
             # 1) レジーム停止決済
@@ -165,13 +166,33 @@ class SecureFoldOptimizer:
                     'size': params['position_size']
                 }
                 continue
-            # 5) エグジット判定
+            # 5) エグジット判定（先読みバイアス完全排除版）
             if position:
-                exit_sig, reason = strat._check_exit_from_bar(position, bar, history)
-                if exit_sig:
-                    exit_price = next_bar['open']
+                exit_price = next_bar['open']
+                exit_reason = None
+                
+                # ストップロス/テイクプロフィット判定（next_bar価格のみ使用）
+                if position['direction'] == 'BUY':
+                    if exit_price <= position['stop_loss']:
+                        exit_reason = 'STOP_LOSS'
+                    elif exit_price >= position['take_profit']:
+                        exit_reason = 'TAKE_PROFIT'
+                else:  # SELL
+                    if exit_price >= position['stop_loss']:
+                        exit_reason = 'STOP_LOSS'
+                    elif exit_price <= position['take_profit']:
+                        exit_reason = 'TAKE_PROFIT'
+                
+                # その他のエグジット条件（historyのみで判定）
+                if not exit_reason:
+                    other_exit_sig, reason = strat.check_other_exit_conditions(position, history)
+                    if other_exit_sig:
+                        exit_reason = reason
+                
+                # 決済実行
+                if exit_reason:
                     pnl = self._calc_pnl(position, exit_price) * position['size']
-                    trades.append({'pnl': pnl, 'reason': reason})
+                    trades.append({'pnl': pnl, 'reason': exit_reason})
                     balance += pnl
                     position = None
 
