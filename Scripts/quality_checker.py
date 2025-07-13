@@ -27,11 +27,14 @@ class QualityChecker:
                 "severity": "HIGH",
                 "description": "Look-ahead bias（未来データ参照）",
                 "false_positive_contexts": [
+                    r"bar_close\s*=\s*current_bar\[.close.\]",  # バー終値取得
                     r"exit_price\s*=\s*bar_close",  # 時間切れ決済
                     r"TIME_EXIT",  # 時間切れ決済コンテキスト
                     r"max_holding_hours",  # 最大保有時間関連
                     r"final_price\s*=.*\[.close.\]",  # 最終決済
-                    r"FORCED_EXIT"  # 強制決済
+                    r"FORCED_EXIT",  # 強制決済
+                    r"check_exit.*def",  # 決済判定関数
+                    r"hours_held.*>=.*max_holding"  # 時間制限チェック
                 ]
             },
             "random_uniform_suspicious": {
@@ -102,6 +105,70 @@ class QualityChecker:
                 print(f"Error scanning {py_file}: {e}")
                 
         return issues
+    
+    def _is_false_positive(self, match, content, config, line_num):
+        """False positive 判定"""
+        if "false_positive_contexts" not in config:
+            return False
+            
+        # マッチ周辺のコンテキスト取得（前後5行）
+        lines = content.split('\n')
+        start_line = max(0, line_num - 6)
+        end_line = min(len(lines), line_num + 5)
+        context = '\n'.join(lines[start_line:end_line])
+        
+        # False positive パターンチェック
+        for fp_pattern in config["false_positive_contexts"]:
+            if re.search(fp_pattern, context, re.IGNORECASE):
+                return True
+                
+        return False
+    
+    def _get_context_info(self, content, match_start, line_num):
+        """コンテキスト情報取得"""
+        lines = content.split('\n')
+        current_line = lines[line_num - 1] if line_num > 0 else ""
+        
+        # 関数名検索
+        function_name = "unknown"
+        for i in range(line_num - 1, max(0, line_num - 20), -1):
+            if i < len(lines):
+                line = lines[i]
+                func_match = re.search(r'def\s+(\w+)', line)
+                if func_match:
+                    function_name = func_match.group(1)
+                    break
+        
+        # クラス名検索
+        class_name = "unknown"
+        for i in range(line_num - 1, max(0, line_num - 50), -1):
+            if i < len(lines):
+                line = lines[i]
+                class_match = re.search(r'class\s+(\w+)', line)
+                if class_match:
+                    class_name = class_match.group(1)
+                    break
+        
+        return {
+            "function": function_name,
+            "class": class_name,
+            "line_content": current_line.strip()
+        }
+    
+    def _calculate_confidence(self, match, content, config):
+        """信頼度計算"""
+        # 基本信頼度
+        confidence = 0.8
+        
+        # シグナル生成関数内なら信頼度向上
+        if "generate_signal" in content or "signal" in match.group(0).lower():
+            confidence += 0.1
+            
+        # バックテスト関数内なら信頼度向上
+        if "backtest" in content or "test_" in content:
+            confidence += 0.1
+            
+        return min(1.0, confidence)
 
     def load_previous_issues(self):
         """前回の品質問題記録を読み込み"""
@@ -170,7 +237,10 @@ class QualityChecker:
             briefing.append("\n🚨 緊急修正要件:")
             for issue in report['all_issues']:
                 if issue['severity'] == 'HIGH':
-                    briefing.append(f"   {issue['file']}:{issue['line']} - {issue['description']}")
+                    confidence_badge = "🔴" if issue.get('confidence', 0.8) > 0.9 else "🟡"
+                    context = issue.get('context', {})
+                    func_info = f" [{context.get('function', 'unknown')}]" if context.get('function') != 'unknown' else ""
+                    briefing.append(f"   {confidence_badge} {issue['file']}:{issue['line']} - {issue['description']}{func_info}")
         
         if report['summary']['new_issues'] > 0:
             briefing.append("\n🆕 新規発見問題:")
@@ -181,6 +251,91 @@ class QualityChecker:
             briefing.append("\n✅ 品質問題なし - 良好な状態を維持")
             
         return "\n".join(briefing)
+    
+    def generate_detailed_analysis(self):
+        """詳細品質分析レポート生成"""
+        report = self.generate_quality_report()
+        
+        analysis = {
+            "timestamp": datetime.now().isoformat(),
+            "summary": report['summary'],
+            "file_statistics": {},
+            "severity_breakdown": {},
+            "confidence_analysis": {},
+            "pattern_frequency": {},
+            "false_positive_rate": 0.0
+        }
+        
+        # ファイル別統計
+        file_issues = {}
+        for issue in report['all_issues']:
+            file_name = issue['file']
+            if file_name not in file_issues:
+                file_issues[file_name] = []
+            file_issues[file_name].append(issue)
+        
+        analysis['file_statistics'] = {
+            file: {
+                "issue_count": len(issues),
+                "high_severity": len([i for i in issues if i['severity'] == 'HIGH']),
+                "avg_confidence": sum(i.get('confidence', 0.8) for i in issues) / len(issues) if issues else 0
+            } for file, issues in file_issues.items()
+        }
+        
+        # パターン頻度分析
+        pattern_count = {}
+        for issue in report['all_issues']:
+            pattern = issue['type']
+            pattern_count[pattern] = pattern_count.get(pattern, 0) + 1
+        analysis['pattern_frequency'] = pattern_count
+        
+        # 信頼度分析
+        confidences = [issue.get('confidence', 0.8) for issue in report['all_issues']]
+        if confidences:
+            analysis['confidence_analysis'] = {
+                "avg_confidence": sum(confidences) / len(confidences),
+                "high_confidence_issues": len([c for c in confidences if c > 0.9]),
+                "low_confidence_issues": len([c for c in confidences if c < 0.7])
+            }
+        
+        return analysis
+    
+    def create_improvement_suggestions(self):
+        """改善提案生成"""
+        analysis = self.generate_detailed_analysis()
+        suggestions = []
+        
+        # 高重要度問題の提案
+        if analysis['summary']['high_severity'] > 0:
+            suggestions.append("🚨 高重要度問題の即座修正を推奨")
+            suggestions.append("   - Look-ahead bias: ブレイクアウト判定をhigh/lowベースに変更")
+            suggestions.append("   - Random generation: 実際の価格追跡ロジックに置換")
+        
+        # ファイル別提案
+        worst_files = sorted(
+            analysis['file_statistics'].items(),
+            key=lambda x: x[1]['issue_count'],
+            reverse=True
+        )[:3]
+        
+        if worst_files:
+            suggestions.append(f"\n📁 最優先修正ファイル:")
+            for file, stats in worst_files:
+                suggestions.append(f"   - {file}: {stats['issue_count']}件の問題")
+        
+        # パターン別提案
+        frequent_patterns = sorted(
+            analysis['pattern_frequency'].items(),
+            key=lambda x: x[1],
+            reverse=True
+        )[:2]
+        
+        if frequent_patterns:
+            suggestions.append(f"\n🔍 最頻出パターン:")
+            for pattern, count in frequent_patterns:
+                suggestions.append(f"   - {pattern}: {count}件")
+        
+        return "\n".join(suggestions)
 
 
 def main():
@@ -201,9 +356,32 @@ def main():
     briefing = checker.create_session_quality_briefing()
     briefing_file = Path(project_dir) / "CURRENT_QUALITY_STATUS.md"
     
+    # 改善提案生成
+    suggestions = checker.create_improvement_suggestions()
+    
+    # 詳細分析生成
+    analysis = checker.generate_detailed_analysis()
+    
     with open(briefing_file, 'w', encoding='utf-8') as f:
         f.write(f"# 現在の品質状況\n\n{briefing}\n\n")
+        
+        if suggestions:
+            f.write(f"## 🎯 改善提案\n{suggestions}\n\n")
+        
+        # 信頼度統計
+        if 'confidence_analysis' in analysis and analysis['confidence_analysis']:
+            conf = analysis['confidence_analysis']
+            f.write(f"## 📊 検出精度\n")
+            f.write(f"- 平均信頼度: {conf['avg_confidence']:.1%}\n")
+            f.write(f"- 高信頼度問題: {conf['high_confidence_issues']}件\n")
+            f.write(f"- 要確認問題: {conf['low_confidence_issues']}件\n\n")
+        
         f.write(f"最終更新: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    
+    # 詳細分析をJSONで保存
+    analysis_file = Path(project_dir) / ".quality_analysis.json"
+    with open(analysis_file, 'w', encoding='utf-8') as f:
+        json.dump(analysis, f, indent=2, ensure_ascii=False)
     
     return report
 
