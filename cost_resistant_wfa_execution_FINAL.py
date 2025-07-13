@@ -332,7 +332,7 @@ def _generate_signal_unified(historical_data: List, current_time: datetime, stra
         
         return {
             'action': base_signal['action'],
-            'entry_price': current_price,
+            'entry_price': base_signal['price'],  # ブレイクアウトレベルでエントリー
             'stop_loss': stop_loss,
             'take_profit': take_profit,
             'timestamp': current_time,
