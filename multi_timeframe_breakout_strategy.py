@@ -496,7 +496,11 @@ class MultiTimeframeBreakoutStrategy:
             return entry_price, 'timeout'
 
 def create_enhanced_sample_data():
-    """強化されたサンプルデータ生成（5年間・40万バー）"""
+    """
+    改善されたサンプルデータ生成（5年間・40万バー）
+    市場パターンに基づく疑似データ生成
+    """
+    import math
     import random
     
     base_date = datetime(2019, 1, 1)  # 5年間データ
@@ -505,46 +509,67 @@ def create_enhanced_sample_data():
     current_date = base_date
     price = 1.1000
     
-    # より現実的な価格変動パターン
-    trend_direction = 1
-    trend_strength = 0.0001
-    volatility = 0.0001
+    # 市場サイクルパラメータ
+    cycle_length = 5000  # 約2週間のサイクル
+    volatility_base = 0.0001
     
-    for i in range(400000):  # 約5年分のM5バー（品質優先）
-        # トレンドとボラティリティの変化
-        if i % 5000 == 0:  # 約2週間ごとにトレンド変更
-            trend_direction = random.choice([-1, 0, 1])
-            trend_strength = random.uniform(0.00005, 0.0002)
-            volatility = random.uniform(0.00005, 0.0003)
+    for i in range(400000):  # 約5年分のM5バー
+        # サイクル位置（0-1）
+        cycle_position = (i % cycle_length) / cycle_length
         
-        # 価格変動
-        trend_component = trend_direction * trend_strength
-        random_component = random.gauss(0, volatility)
-        price_change = trend_component + random_component
+        # サイクルベースのトレンド（正弦波）
+        trend_component = math.sin(2 * math.pi * cycle_position) * 0.00005
         
+        # 時間帯ベースのボラティリティ調整
+        hour = current_date.hour
+        if 7 <= hour <= 16:  # ロンドンセッション
+            volatility_multiplier = 1.2
+        elif 12 <= hour <= 21:  # NYセッション（重複含む）
+            volatility_multiplier = 1.5
+        elif hour >= 23 or hour <= 8:  # 東京セッション
+            volatility_multiplier = 0.8
+        else:
+            volatility_multiplier = 0.6
+        
+        volatility = volatility_base * volatility_multiplier
+        
+        # ノイズ成分（正規分布）
+        noise_component = random.gauss(0, volatility)
+        
+        # 価格更新
+        price_change = trend_component + noise_component
         price += price_change
         price = max(0.9000, min(1.3000, price))  # 価格範囲制限
         
-        # OHLC生成
-        base_price = price
-        high = base_price + random.uniform(0, volatility * 2)
-        low = base_price - random.uniform(0, volatility * 2)
-        close = base_price + random.gauss(0, volatility * 0.5)
+        # 現実的なOHLC生成
+        # 足内変動を現実的な範囲に制限
+        intrabar_range = volatility * 1.5
+        
+        open_price = price
+        high = open_price + abs(random.gauss(0, intrabar_range/3))
+        low = open_price - abs(random.gauss(0, intrabar_range/3))
+        close = open_price + random.gauss(0, intrabar_range/4)
+        
+        # 整合性確保
+        high = max(open_price, high, close)
+        low = min(open_price, low, close)
         
         data.append({
             'datetime': current_date,
-            'open': base_price,
-            'high': max(base_price, high, close),
-            'low': min(base_price, low, close),
+            'open': open_price,
+            'high': high,
+            'low': low,
             'close': close,
-            'volume': random.randint(50, 200)
+            'volume': int(100 + abs(random.gauss(0, 50)))  # 現実的な出来高
         })
         
         current_date += timedelta(minutes=5)
         
-        # 週末はスキップ
+        # 週末スキップ処理
         if current_date.weekday() >= 5:
-            current_date += timedelta(days=2)
+            # 土曜日なら月曜日の朝まで飛ばす
+            days_to_monday = 7 - current_date.weekday()
+            current_date += timedelta(days=days_to_monday)
             current_date = current_date.replace(hour=0, minute=0)
     
     return data
