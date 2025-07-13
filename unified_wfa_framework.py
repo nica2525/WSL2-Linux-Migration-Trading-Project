@@ -8,7 +8,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -101,7 +101,7 @@ class WFAStrategy:
 
     def __init__(self, strategy_params: Dict):
         self.strategy_params = strategy_params
-        self.strategy = None
+        self.strategy: Optional[MultiTimeframeBreakoutStrategy] = None
 
     def initialize_strategy(self) -> bool:
         """戦略初期化"""
@@ -321,7 +321,7 @@ class UnifiedWFAFramework:
         if not self.config.validate():
             raise ValueError("WFA設定が無効です")
 
-    def prepare_data(self) -> List[Dict]:
+    def prepare_data(self) -> List[Dict[str, Any]]:
         """データ準備"""
         logger.info("データ準備開始")
 
