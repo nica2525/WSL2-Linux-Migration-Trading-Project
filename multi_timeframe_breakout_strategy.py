@@ -344,27 +344,16 @@ class MultiTimeframeBreakoutStrategy:
             
             current_dt += timedelta(hours=1)  # 1時間ステップ
         
-        # トレード結果計算（簡易実装）
+        # トレード結果計算（実際の価格追跡による）
         for signal in signals:
-            # 簡易的な取引結果計算
-            if random.random() < 0.42:  # 42%の勝率を想定（フェーズ2より改善）
-                # 勝ちトレード
-                if signal['type'] == 'long':
-                    exit_price = signal['profit_target']
-                    pnl = exit_price - signal['entry_price']
-                else:
-                    exit_price = signal['profit_target']
-                    pnl = signal['entry_price'] - exit_price
-                result = 'win'
-            else:
-                # 負けトレード
-                if signal['type'] == 'long':
-                    exit_price = signal['stop_loss']
-                    pnl = exit_price - signal['entry_price']
-                else:
-                    exit_price = signal['stop_loss']
-                    pnl = signal['entry_price'] - exit_price
-                result = 'loss'
+            # 実際の価格データを使用した取引結果計算
+            exit_price, result = self._track_trade_outcome(signal, mtf_data)
+            
+            # PnL計算
+            if signal['type'] == 'long':
+                pnl = exit_price - signal['entry_price']
+            else:  # short
+                pnl = signal['entry_price'] - exit_price
             
             trade = {
                 'datetime': signal['datetime'],
@@ -443,6 +432,68 @@ class MultiTimeframeBreakoutStrategy:
             'gross_loss': gross_loss,
             'trades': trades
         }
+    
+    def _track_trade_outcome(self, signal, mtf_data):
+        """
+        実際の価格追跡による取引結果計算
+        
+        Args:
+            signal: 取引シグナル
+            mtf_data: マルチタイムフレームデータ
+            
+        Returns:
+            tuple: (exit_price, result)
+        """
+        signal_time = signal['datetime']
+        signal_type = signal['type']
+        entry_price = signal['entry_price']
+        profit_target = signal['profit_target']
+        stop_loss = signal['stop_loss']
+        
+        # シグナル発生後の価格を追跡（最大48時間または100バー）
+        max_tracking_hours = 48
+        end_time = signal_time + timedelta(hours=max_tracking_hours)
+        
+        current_time = signal_time + timedelta(hours=1)  # 1時間後から開始
+        
+        while current_time <= end_time:
+            # 現在時刻での価格データ取得
+            aligned_data = mtf_data.get_aligned_data(current_time)
+            
+            if aligned_data['M5'] is None:
+                current_time += timedelta(hours=1)
+                continue
+                
+            current_high = aligned_data['M5']['high']
+            current_low = aligned_data['M5']['low']
+            
+            if signal_type == 'long':
+                # ロングポジション
+                if current_high >= profit_target:
+                    # 利確達成
+                    return profit_target, 'win'
+                elif current_low <= stop_loss:
+                    # ストップロス到達
+                    return stop_loss, 'loss'
+            else:
+                # ショートポジション
+                if current_low <= profit_target:
+                    # 利確達成
+                    return profit_target, 'win'
+                elif current_high >= stop_loss:
+                    # ストップロス到達
+                    return stop_loss, 'loss'
+            
+            current_time += timedelta(hours=1)
+        
+        # 追跡期間内に決着がつかない場合は最終価格で決済
+        final_aligned_data = mtf_data.get_aligned_data(end_time)
+        if final_aligned_data['M5']:
+            final_price = final_aligned_data['M5']['close']
+            return final_price, 'timeout'
+        else:
+            # データなしの場合はエントリー価格で決済
+            return entry_price, 'timeout'
 
 def create_enhanced_sample_data():
     """強化されたサンプルデータ生成（5年間・40万バー）"""
