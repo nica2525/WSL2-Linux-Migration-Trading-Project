@@ -16,15 +16,15 @@ start_daemon() {
             rm -f "$PID_FILE"
         fi
     fi
-    
+
     echo "🧠 時間ベース記憶追跡システム開始..."
     echo "📁 監視対象: $PROJECT_DIR"
     echo "⏰ 実行間隔: 30分"
-    
+
     # バックグラウンドでデーモン起動
     nohup python3 "$SCRIPT_PATH" --daemon --interval 30 > "$LOG_FILE" 2>&1 &
     echo $! > "$PID_FILE"
-    
+
     echo "✅ 記憶追跡開始完了 (PID: $!)"
     echo "📋 ログファイル: $LOG_FILE"
     echo "🛑 停止コマンド: $0 stop"

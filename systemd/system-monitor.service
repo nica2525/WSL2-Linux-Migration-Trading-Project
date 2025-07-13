@@ -1,12 +1,13 @@
 [Unit]
-Description=Git Auto Save Service
+Description=System Monitor Service
 After=network.target
 
 [Service]
 Type=oneshot
 WorkingDirectory=/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト
-ExecStart=/bin/bash -c 'export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus" && /usr/bin/python3 /mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/git_simple_commit.py'
-Environment=INVOCATION_ID=systemd-git-auto-save
+ExecStart=/bin/bash -c 'export DBUS_SESSION_BUS_ADDRESS="unix:path/$XDG_RUNTIME_DIR/bus" && /usr/bin/python3 /mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/system_monitor.py'
+StandardOutput=journal
+StandardError=journal
 Environment=PYTHONPATH=/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト
 Environment=XDG_RUNTIME_DIR=/run/user/1000
 

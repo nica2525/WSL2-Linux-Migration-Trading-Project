@@ -4,10 +4,11 @@ After=network.target
 
 [Service]
 Type=oneshot
-User=trader
 WorkingDirectory=/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト
-ExecStart=/usr/bin/python3 /mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/memory_simple_update.py
+ExecStart=/bin/bash -c 'export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus" && /usr/bin/python3 /mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/memory_simple_update.py'
 Environment=INVOCATION_ID=systemd-memory-tracker
+Environment=PYTHONPATH=/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト
+Environment=XDG_RUNTIME_DIR=/run/user/1000
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

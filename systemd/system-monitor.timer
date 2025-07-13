@@ -1,0 +1,11 @@
+[Unit]
+Description=System Monitor Timer (5 minutes)
+Requires=system-monitor.service
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

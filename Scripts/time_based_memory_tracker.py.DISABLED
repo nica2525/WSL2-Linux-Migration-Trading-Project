@@ -4,144 +4,157 @@
 30分間隔で自動実行・Git自動保存と並行稼働
 """
 
-import os
-import time
-import subprocess
 import logging
+import os
+import subprocess
+import time
 from datetime import datetime, timedelta
+
 
 class TimeBasedMemoryTracker:
     def __init__(self, project_dir, interval_minutes=30):
         self.project_dir = project_dir
         self.interval_seconds = interval_minutes * 60
-        self.history_file = os.path.join(project_dir, "docs", "MEMORY_EXECUTION_HISTORY.md")
+        self.history_file = os.path.join(
+            project_dir, "docs", "MEMORY_EXECUTION_HISTORY.md"
+        )
         self.pid_file = os.path.join(project_dir, ".memory_tracker.pid")
         # ロギング設定
-        log_file = os.path.join(project_dir, '.memory_tracker_debug.log')
+        log_file = os.path.join(project_dir, ".memory_tracker_debug.log")
         logging.basicConfig(
             filename=log_file,
             level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s'
+            format="%(asctime)s - %(levelname)s - %(message)s",
         )
-        
+
     def get_current_git_commit_id(self):
         """現在のGitコミットIDを取得"""
         try:
-            result = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], 
-                                  capture_output=True, text=True, check=True,
-                                  cwd=self.project_dir, timeout=30)
+            result = subprocess.run(
+                ["git", "rev-parse", "--short", "HEAD"],
+                capture_output=True,
+                text=True,
+                check=True,
+                cwd=self.project_dir,
+                timeout=30,
+            )
             return result.stdout.strip()
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return "unknown"
-    
+
     def get_memory_update_count(self):
         """時間ベース記憶更新の回数を取得"""
         try:
             if not os.path.exists(self.history_file):
                 return 0
-                
-            with open(self.history_file, 'r', encoding='utf-8') as f:
+
+            with open(self.history_file, encoding="utf-8") as f:
                 content = f.read()
-            
+
             # 時間ベース記憶追跡実行の回数をカウント
             count = content.count("時間ベース記憶追跡実行")
             return count
         except Exception:
             return 0
-    
+
     def log_memory_update(self, reason="定期実行"):
         """記憶更新をログ記録（回数・GitID・PID付き）"""
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S JST')
-        
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S JST")
+
         # 更新回数取得（現在の回数 + 1）
         update_count = self.get_memory_update_count() + 1
-        
+
         # GitコミットID取得
         git_commit_id = self.get_current_git_commit_id()
-        
+
         # 記憶追跡PID取得
         memory_pid = os.getpid()
-        
+
         # Git自動保存PID取得
         git_pid = self.get_git_auto_save_pid()
-        
+
         # ログエントリ作成
         log_entry = f"{current_time} - 第{update_count}回目時間ベース記憶追跡実行 ({reason}) [Git:{git_commit_id}] [記憶PID:{memory_pid}] [GitPID:{git_pid}]\n"
-        
+
         try:
-            with open(self.history_file, 'a', encoding='utf-8') as f:
+            with open(self.history_file, "a", encoding="utf-8") as f:
                 f.write(log_entry)
             print(f"🧠 [記憶追跡#{update_count}] {current_time} - {reason}")
             print(f"📋 Git状況: {git_commit_id} | 記憶PID: {memory_pid} | GitPID: {git_pid}")
             print("📖 必須確認: CLAUDE_UNIFIED_SYSTEM.md → 統合情報読み込み")
-            
+
             # 3分と30分の同時保存タイミング判定
             if update_count % 10 == 0:  # 30分×10回 = 5時間毎
                 print("⚡ 注意: Git自動保存(3分)と記憶追跡(30分)の同時保存タイミング可能性あり")
-            
+
             return True
         except Exception as e:
             print(f"❌ ログ記録エラー: {e}")
             return False
-    
+
     def get_git_auto_save_pid(self):
         """Git自動保存のPIDを取得"""
         try:
             git_pid_file = os.path.join(self.project_dir, ".auto_git.pid")
             if os.path.exists(git_pid_file):
-                with open(git_pid_file, 'r') as f:
+                with open(git_pid_file) as f:
                     return f.read().strip()
             return "停止中"
         except Exception:
             return "不明"
-    
+
     def should_trigger_memory_update(self):
         """記憶更新が必要かチェック"""
         try:
             # 最後の更新時刻を取得
             if not os.path.exists(self.history_file):
                 return True, "初回実行"
-                
-            with open(self.history_file, 'r', encoding='utf-8') as f:
+
+            with open(self.history_file, encoding="utf-8") as f:
                 lines = f.readlines()
-            
+
             # 最新の時間ベース記録を探す
             last_time_based = None
             for line in reversed(lines):
                 if "時間ベース記憶追跡実行" in line:
                     # 2025-07-13 07:45:30 JST 形式から時刻抽出
-                    time_str = line.split(' - ')[0]
-                    last_time_based = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S JST')
+                    time_str = line.split(" - ")[0]
+                    last_time_based = datetime.strptime(
+                        time_str, "%Y-%m-%d %H:%M:%S JST"
+                    )
                     break
-            
+
             if last_time_based is None:
                 return True, "時間ベース初回実行"
-            
+
             # 30分経過チェック
             now = datetime.now()
             elapsed = now - last_time_based
             if elapsed.total_seconds() >= self.interval_seconds:
                 return True, f"30分経過 (前回: {last_time_based.strftime('%H:%M')})"
-            
-            return False, f"待機中 (次回: {(last_time_based + timedelta(seconds=self.interval_seconds)).strftime('%H:%M')})"
-            
+
+            return (
+                False,
+                f"待機中 (次回: {(last_time_based + timedelta(seconds=self.interval_seconds)).strftime('%H:%M')})",
+            )
+
         except Exception as e:
             print(f"⚠️ 時刻チェックエラー: {e}")
             return True, "エラー回復実行"
-    
+
     def run_daemon(self):
         """デーモンモード実行"""
         print(f"[{datetime.now()}] 時間ベース記憶追跡デーモン開始")
         print(f"監視対象: {self.project_dir}")
         print(f"実行間隔: {self.interval_seconds // 60}分")
-        
+
         # 起動時に即座にチェック
         should_trigger, reason = self.should_trigger_memory_update()
         if should_trigger:
             self.log_memory_update(reason)
         else:
             print(f"📊 {reason}")
-        
+
         while True:
             try:
                 should_trigger, reason = self.should_trigger_memory_update()
@@ -149,10 +162,10 @@ class TimeBasedMemoryTracker:
                     self.log_memory_update(reason)
                 else:
                     print(f"📊 [{datetime.now().strftime('%H:%M:%S')}] {reason}")
-                
+
                 # 5分毎にチェック（30分間隔での実行判定）
                 time.sleep(300)  # 5分
-                
+
             except KeyboardInterrupt:
                 print(f"[{datetime.now()}] 時間ベース記憶追跡停止")
                 break
@@ -160,24 +173,26 @@ class TimeBasedMemoryTracker:
                 print(f"[{datetime.now()}] 予期しないエラー: {e}")
                 time.sleep(300)
 
+
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description='時間ベース記憶追跡システム')
-    parser.add_argument('--daemon', action='store_true', help='デーモンモードで実行')
-    parser.add_argument('--interval', type=int, default=30, help='実行間隔（分）')
-    parser.add_argument('--project-dir', default=None, help='プロジェクトディレクトリ')
-    
+
+    parser = argparse.ArgumentParser(description="時間ベース記憶追跡システム")
+    parser.add_argument("--daemon", action="store_true", help="デーモンモードで実行")
+    parser.add_argument("--interval", type=int, default=30, help="実行間隔（分）")
+    parser.add_argument("--project-dir", default=None, help="プロジェクトディレクトリ")
+
     args = parser.parse_args()
-    
+
     # プロジェクトディレクトリ決定
     if args.project_dir:
         project_dir = args.project_dir
     else:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         project_dir = os.path.dirname(script_dir)
-    
+
     tracker = TimeBasedMemoryTracker(project_dir, args.interval)
-    
+
     if args.daemon:
         tracker.run_daemon()
     else:
@@ -187,6 +202,7 @@ def main():
             tracker.log_memory_update(reason)
         else:
             print(f"📊 {reason}")
+
 
 if __name__ == "__main__":
     main()

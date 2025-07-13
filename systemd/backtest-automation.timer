@@ -1,0 +1,11 @@
+[Unit]
+Description=Backtest Automation Timer (15 minutes)
+Requires=backtest-automation.service
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
