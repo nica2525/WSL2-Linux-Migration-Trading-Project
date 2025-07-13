@@ -245,12 +245,14 @@ def _generate_signal_unified(historical_data: List, current_time: datetime, stra
         if len(historical_data) < 50:
             return None
         
-        # 現在価格（履歴データの最新）
+        # 現在バー（履歴データの最新）- Look-ahead bias修正
         current_bar = historical_data[-1]
         if isinstance(current_bar, dict):
-            current_price = current_bar['close']
+            current_high = current_bar['high']
+            current_low = current_bar['low']
         else:
-            current_price = current_bar.close
+            current_high = current_bar.high
+            current_low = current_bar.low
         
         # ブレイクアウト判定
         lookback = 24
@@ -277,16 +279,17 @@ def _generate_signal_unified(historical_data: List, current_time: datetime, stra
         
         base_signal = None
         
-        if current_price > resistance:
+        # ブレイクアウト判定（Look-ahead bias修正）
+        if current_high > resistance:
             base_signal = {
                 'action': 'BUY',
-                'price': current_price,
+                'price': resistance,  # ブレイクアウトレベルでエントリー
                 'timestamp': current_time
             }
-        elif current_price < support:
+        elif current_low < support:
             base_signal = {
                 'action': 'SELL',
-                'price': current_price,
+                'price': support,   # ブレイクアウトレベルでエントリー
                 'timestamp': current_time
             }
         
@@ -920,12 +923,14 @@ class CostResistantWFAExecutionFinal:
             if len(historical_data) < 50:
                 return None
             
-            # 現在価格（履歴データの最新）
+            # 現在バー（履歴データの最新）- Look-ahead bias修正
             current_bar = historical_data[-1]
             if isinstance(current_bar, dict):
-                current_price = current_bar['close']
+                current_high = current_bar['high']
+                current_low = current_bar['low']
             else:
-                current_price = current_bar.close
+                current_high = current_bar.high
+                current_low = current_bar.low
             
             # ブレイクアウト判定
             lookback = 24
