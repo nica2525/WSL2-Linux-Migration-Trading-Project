@@ -206,6 +206,68 @@ class MinimalViableStrategy:
             'gross_loss': gross_loss,
             'trades': trades
         }
+    
+    def _track_trade_outcome(self, signal, data, start_idx, end_idx):
+        """
+        実際の価格追跡による取引結果計算
+        
+        Args:
+            signal: 取引シグナル
+            data: OHLC時系列データ
+            start_idx: 開始インデックス
+            end_idx: 終了インデックス
+            
+        Returns:
+            tuple: (exit_price, result)
+        """
+        if end_idx is None:
+            end_idx = len(data)
+            
+        signal_time = signal['datetime']
+        signal_type = signal['type']
+        entry_price = signal['entry_price']
+        profit_target = signal['profit_target']
+        stop_loss = signal['stop_loss']
+        
+        # シグナル発生時のインデックスを検索
+        signal_idx = None
+        for i in range(start_idx, end_idx):
+            if i < len(data) and data[i]['datetime'] >= signal_time:
+                signal_idx = i
+                break
+        
+        if signal_idx is None:
+            # シグナルが見つからない場合は小さな損失で終了
+            return entry_price - 0.0001, 'loss'
+        
+        # シグナル後の価格を追跡
+        for i in range(signal_idx + 1, min(signal_idx + 100, end_idx)):
+            if i >= len(data):
+                break
+                
+            current_bar = data[i]
+            high = current_bar['high']
+            low = current_bar['low']
+            
+            if signal_type == 'long':
+                # ロングポジション
+                if high >= profit_target:
+                    # 利確達成
+                    return profit_target, 'win'
+                elif low <= stop_loss:
+                    # ストップロス到達
+                    return stop_loss, 'loss'
+            else:
+                # ショートポジション
+                if low <= profit_target:
+                    # 利確達成
+                    return profit_target, 'win'
+                elif high >= stop_loss:
+                    # ストップロス到達
+                    return stop_loss, 'loss'
+        
+        # 追跡期間内に決着がつかない場合はエントリー価格で決済
+        return entry_price, 'timeout'
 
 class IntegratedWFASystem:
     """統合WFAシステム"""
