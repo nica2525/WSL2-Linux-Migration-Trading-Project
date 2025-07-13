@@ -132,29 +132,15 @@ class MinimalViableStrategy:
         signals = self.generate_signals(data, start_idx, end_idx)
         
         trades = []
-        for signal in signals:
-            # 簡易的な取引結果計算
-            # 実際の実装では、シグナル後の価格動向を追跡
+        for signal_idx, signal in enumerate(signals):
+            # 実際の価格追跡による取引結果計算
+            exit_price, result = self._track_trade_outcome(signal, data, start_idx, end_idx)
             
-            # ランダムな結果生成（デモ用）
-            if random.random() < 0.4:  # 40%の勝率を想定
-                # 勝ちトレード
-                if signal['type'] == 'long':
-                    exit_price = signal['profit_target']
-                    pnl = exit_price - signal['entry_price']
-                else:
-                    exit_price = signal['profit_target']
-                    pnl = signal['entry_price'] - exit_price
-                result = 'win'
-            else:
-                # 負けトレード
-                if signal['type'] == 'long':
-                    exit_price = signal['stop_loss']
-                    pnl = exit_price - signal['entry_price']
-                else:
-                    exit_price = signal['stop_loss']
-                    pnl = signal['entry_price'] - exit_price
-                result = 'loss'
+            # PnL計算
+            if signal['type'] == 'long':
+                pnl = exit_price - signal['entry_price']
+            else:  # short
+                pnl = signal['entry_price'] - exit_price
             
             trades.append({
                 'datetime': signal['datetime'],
