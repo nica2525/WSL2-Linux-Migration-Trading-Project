@@ -6,23 +6,32 @@
 
 import json
 import logging
+import random
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
+# ログ設定（scipyインポート前に設定）
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# scipy.statsを安全にインポート（フォールバック処理付き）
+try:
+    from scipy.stats import t as t_dist
+    SCIPY_AVAILABLE = True
+except ImportError:
+    SCIPY_AVAILABLE = False
+    logger.warning("scipy.stats not available. Using fallback p-value calculation.")
+
 from data_cache_system import DataCacheManager
 from multi_timeframe_breakout_strategy import (
     MultiTimeframeBreakoutStrategy,
     MultiTimeframeData,
 )
-
-# ログ設定
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
 
 
 class WFAConfiguration:
@@ -236,9 +245,10 @@ class WFAStrategy:
                 entry_price = entry_bar["open"]
                 exit_price = exit_bar["close"]
 
-                # ランダムな方向（実際の価格変動に基づく）
-                action = "BUY" if exit_price > entry_price else "SELL"
+                # ランダムな売買方向決定（Look-ahead bias完全除去）
+                action = random.choice(["BUY", "SELL"])
 
+                # 実際の価格変動に基づくリターン計算（方向は事前決定済み）
                 if action == "BUY":
                     return_pct = (exit_price - entry_price) / entry_price
                 else:
@@ -469,14 +479,23 @@ class UnifiedWFAFramework:
         # t検定（H0: PF = 1.0 vs H1: PF > 1.0）
         if len(oos_pfs) > 1 and std_pf > 0:
             t_stat = (mean_pf - 1.0) / (std_pf / np.sqrt(len(oos_pfs)))
-            # 簡易p値計算（自由度 n-1）
             df = len(oos_pfs) - 1
-            if df >= 4:
-                critical_values = {4: 2.132, 5: 2.015, 10: 1.812, 20: 1.725}
-                critical = critical_values.get(df, 1.645)  # デフォルト: 5%片側
-                p_value = 0.025 if abs(t_stat) > critical else 0.1
+            
+            # 正確なp値計算（scipy使用、フォールバック付き）
+            if SCIPY_AVAILABLE:
+                # 片側検定のp値（scipy.stats使用）
+                p_value = t_dist.sf(t_stat, df)
+                logger.info(f"正確なp値計算: t={t_stat:.4f}, df={df}, p={p_value:.6f}")
             else:
-                p_value = 1.0
+                # フォールバック: 簡易p値計算
+                logger.warning("scipyが利用できません。簡易p値計算を使用します。")
+                if df >= 4:
+                    critical_values = {4: 2.132, 5: 2.015, 10: 1.812, 20: 1.725}
+                    critical = critical_values.get(df, 1.645)  # デフォルト: 5%片側
+                    p_value = 0.025 if abs(t_stat) > critical else 0.1
+                else:
+                    p_value = 1.0
+                logger.warning(f"簡易p値計算: t={t_stat:.4f}, df={df}, p={p_value:.4f}")
         else:
             t_stat = 0
             p_value = 1.0
