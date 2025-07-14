@@ -1,0 +1,2 @@
+*/3 * * * * /usr/bin/python3 /mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/cron_git_auto_save.py >> /mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト/.cron_git_auto_save.log 2>&1
+*/5 * * * * /usr/bin/python3 /mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/cron_system_monitor.py >> /mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト/.cron_monitor.log 2>&1
