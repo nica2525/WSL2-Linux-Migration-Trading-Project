@@ -205,13 +205,21 @@ cat DEVELOPMENT_STANDARDS.md
 - **安定性**: マウント問題回避
 - **設定**: パス管理簡素化
 
-### 🎯 次回作業内容
-1. WSLエクスポート完了確認
-2. Eドライブ新WSL環境構築
-3. cron・MCP設定移行
-4. プロジェクト移行・テスト
+### 🎯 移行準備完了（22:40）
+1. ✅ **WSL_MIGRATION_GUIDE.md** - 詳細移行手順書作成
+2. ✅ **Scripts/wsl_migration_setup.sh** - 移行後自動設定スクリプト作成
+3. ✅ トラブルシューティング・復旧手順完備
+4. ✅ 初心者向け詳細説明付き
+
+### 📋 移行実行手順
+1. **Phase 1**: WSL内で準備作業
+2. **Phase 2**: Windows PowerShellでWSL移行実行
+3. **Phase 3**: 新WSL環境で `bash Scripts/wsl_migration_setup.sh` 実行
+4. **Phase 4**: 動作確認・テスト
+5. **Phase 5**: 最終確認
 
 **⚠️ 重要**: WSLエクスポート中はClaude Code接続不可（正常動作）
+**🎯 次回**: 新WSL環境での再会 - 移行完了確認・性能テスト
 
 ---
 
