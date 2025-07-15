@@ -2,7 +2,7 @@
 # セッション開始時記憶システム強制実行
 # 作成日時: 2025-07-12 22:20 JST
 
-PROJECT_DIR="/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト"
+PROJECT_DIR="/home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト"
 CURRENT_TIME=$(date '+%Y-%m-%d %H:%M:%S JST')
 
 echo "🧠 =================================="

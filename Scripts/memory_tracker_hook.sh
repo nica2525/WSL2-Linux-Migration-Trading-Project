@@ -2,7 +2,7 @@
 # Claude記憶追跡システム - Hooks強制実行スクリプト
 # 作成日時: 2025-07-12 22:20 JST
 
-PROJECT_DIR="/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト"
+PROJECT_DIR="/home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト"
 TRACKER_FILE="$PROJECT_DIR/CLAUDE_REALTIME_MEMORY_TRACKER.md"
 ACTION_COUNT_FILE="$PROJECT_DIR/.action_count"
 
