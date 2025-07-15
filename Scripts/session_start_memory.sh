@@ -10,6 +10,11 @@ echo "📅 Claude記憶システム強制実行開始"
 echo "⏰ 実行時刻: $CURRENT_TIME"
 echo "🧠 =================================="
 
+# 日本語化ルール確認
+echo "📝 日本語化ルール遵守確認:"
+bash "$PROJECT_DIR/Scripts/japanese_naming_checker.sh"
+echo ""
+
 # セッション開始記録（Git管理対象）
 echo "$CURRENT_TIME - セッション開始記憶確認実行" >> "$PROJECT_DIR/docs/MEMORY_EXECUTION_HISTORY.md"
 

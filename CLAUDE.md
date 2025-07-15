@@ -53,7 +53,7 @@ git log --grep="MCP\|Gemini\|Phase" --oneline -20
 ## 🛡️ 品質状況確認プロトコル
 **セッション開始時必須確認:**
 ```bash
-cat CURRENT_QUALITY_STATUS.md
+cat 現在の品質状況.md
 ```
 
 **品質チェック手動実行:**
@@ -75,11 +75,12 @@ MCP_VS_SELF_IMPLEMENTATION_STRATEGY.md
 ## 📚 マネージャー学習システム
 **セッション開始時必須確認:**
 ```bash
-cat docs/MANAGER_LEARNING_LOG.md
-cat 3AI_DEVELOPMENT_CHARTER.md
-cat DEVELOPMENT_STANDARDS.md
-cat MANDATORY_VERIFICATION_PROTOCOL.md
-cat GPT_REQUEST_PROTOCOL.md
+cat 文書/管理/マネージャー学習ログ.md
+cat 文書/核心/3AI開発規約.md
+cat 文書/核心/開発標準.md
+cat 文書/管理/必須検証プロトコル.md
+cat 文書/核心/GPT依頼プロトコル.md
+cat 文書/核心/日本語化ルール.md
 ```
 
 **🎯 品質管理チェックリスト:**
