@@ -293,6 +293,8 @@ if __name__ == "__main__":
             filename = f"{args.template}_request_{datetime.now().strftime('%Y%m%d_%H%M')}.md"
             output_file = self.template_dir / filename
             
+            # フォルダ存在確認・作成
+            output_file.parent.mkdir(parents=True, exist_ok=True)
             output_file.write_text(template_content, encoding='utf-8')
             print(f"✅ テンプレート生成完了: {output_file}")
             
