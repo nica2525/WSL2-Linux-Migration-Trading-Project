@@ -37,7 +37,7 @@ if [ "$TRIGGER_GPT_RULES" = true ]; then
     
     # GPTルール表示
     echo "📋 GPT依頼プロトコル（重要部分）:"
-    head -30 "$PROJECT_DIR/GPT_REQUEST_PROTOCOL.md"
+    head -30 "$PROJECT_DIR/文書/核心/GPT依頼プロトコル.md"
     
     echo ""
     echo "🔍 現在の品質状況:"
