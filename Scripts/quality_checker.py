@@ -340,7 +340,7 @@ class QualityChecker:
 
 def main():
     """メイン実行（Cron対応）"""
-    project_dir = "/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト"
+    project_dir = "/home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト"
     checker = QualityChecker(project_dir)
     
     # 品質レポート生成

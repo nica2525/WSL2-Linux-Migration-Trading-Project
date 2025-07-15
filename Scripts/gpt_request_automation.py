@@ -307,6 +307,6 @@ if __name__ == "__main__":
 
 
 if __name__ == "__main__":
-    project_dir = "/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト"
+    project_dir = "/home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト"
     automation = GPTRequestAutomation(project_dir)
     exit(automation.main())

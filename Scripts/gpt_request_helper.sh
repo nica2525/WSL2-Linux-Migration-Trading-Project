@@ -4,7 +4,7 @@
 # 簡単なコマンドでGPT依頼文自動化システムを使用
 #
 
-PROJECT_DIR="/mnt/e/Trading-Development/2.ブレイクアウト手法プロジェクト"
+PROJECT_DIR="/home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト"
 AUTOMATION_SCRIPT="$PROJECT_DIR/Scripts/gpt_request_automation.py"
 
 show_help() {
