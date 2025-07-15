@@ -1,29 +1,65 @@
 #!/bin/bash
-# Smart GPT Rule Loader - D案実装
-# Geminiの応答 + Claudeの発言パターンでGPT作業を検出
+# Smart GPT Rule Loader - JSON Hook対応版
+# HookのJSON入力からGPT作業を検出
 
 PROJECT_DIR="/home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト"
 TRIGGER_GPT_RULES=false
 
-# 1. Geminiの応答チェック（C案の残存機能）
-if echo "$GEMINI_RESPONSE" | grep "\[GPT_TASK_REQUIRED\]" > /dev/null; then
-    TRIGGER_GPT_RULES=true
-    echo "🤖 Geminiが明示的にGPT作業を推奨"
+# Hook JSON入力読み取り（stdin経由）
+HOOK_INPUT=""
+if [ -t 0 ]; then
+    # TTYからの実行（テスト時）
+    echo "📋 テストモード: Hook JSON入力なし"
+else
+    # 実際のHook実行時
+    HOOK_INPUT=$(cat)
 fi
 
-# 2. Claudeの発言パターンチェック（D案の核心）
-# 環境変数から直近のClaudeの応答を取得（存在すれば）
-RECENT_CLAUDE_RESPONSE=${CLAUDE_RESPONSE:-""}
+# Python JSONパーサー（jq代替）
+parse_json() {
+    python3 -c "
+import json, sys
+try:
+    data = json.load(sys.stdin) if sys.stdin.isatty() == False else json.loads('$1')
+    keys = '$2'.split('.')
+    result = data
+    for key in keys:
+        if key and isinstance(result, dict):
+            result = result.get(key, '')
+    print(result if result is not None else '')
+except:
+    pass
+"
+}
 
-if echo "$RECENT_CLAUDE_RESPONSE" | grep -iE "(GPT.*依頼|ChatGPT.*送信|実装依頼|依頼文.*作成|プロンプト.*作成|GPT.*で.*実装)" > /dev/null; then
-    TRIGGER_GPT_RULES=true
-    echo "🤖 Claude発言でGPT作業パターンを検出"
+# 1. Geminiの応答チェック（mcp__gemini-cli__chat実行時）
+TOOL_NAME=$(echo "$HOOK_INPUT" | parse_json "" "tool_name")
+if [ "$TOOL_NAME" = "mcp__gemini-cli__chat" ]; then
+    GEMINI_RESPONSE=$(echo "$HOOK_INPUT" | parse_json "" "tool_response.response")
+    if echo "$GEMINI_RESPONSE" | grep -q "\[GPT_TASK_REQUIRED\]"; then
+        TRIGGER_GPT_RULES=true
+        echo "🤖 Geminiが明示的にGPT作業を推奨"
+    fi
 fi
 
-# 3. 追加パターン: 作業フロー関連
-if echo "$RECENT_CLAUDE_RESPONSE" | grep -iE "(次.*GPT|続い.*GPT|GPT.*使用|GPT.*実行)" > /dev/null; then
-    TRIGGER_GPT_RULES=true
-    echo "🤖 GPT作業フローを検出"
+# 2. Claude作業パターン検出（transcript_path解析）
+TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | parse_json "" "transcript_path")
+if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
+    # 最新の20行からGPT関連パターンを検索
+    RECENT_CONTENT=$(tail -20 "$TRANSCRIPT_PATH" 2>/dev/null | tail -10)
+    if echo "$RECENT_CONTENT" | grep -iE "(GPT.*依頼|ChatGPT.*送信|実装依頼|依頼文.*作成|プロンプト.*作成|GPT.*で.*実装|3AI.*collaboration|to_chatgpt)" > /dev/null; then
+        TRIGGER_GPT_RULES=true
+        echo "🤖 Claude発言でGPT作業パターンを検出"
+    fi
+fi
+
+# 3. ファイル操作パターン検出（Write/Edit時の3AI_collaborationフォルダ）
+if [ "$TOOL_NAME" = "Write" ] || [ "$TOOL_NAME" = "Edit" ]; then
+    FILE_PATH=$(echo "$HOOK_INPUT" | parse_json "" "tool_input.file_path")
+    if echo "$FILE_PATH" | grep -E "3AI_collaboration|to_chatgpt|gpt.*request" > /dev/null; then
+        TRIGGER_GPT_RULES=true
+        echo "🤖 GPT関連ファイル操作を検出"
+    fi
 fi
 
 # 4. GPTルール読み込み実行

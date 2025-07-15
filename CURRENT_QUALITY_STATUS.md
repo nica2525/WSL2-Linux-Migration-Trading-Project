@@ -16,6 +16,11 @@
    🟡 debug_signal_generation.py:161 - シグナル生成時の未来価格参照 [generate_manual_signal]
    🟡 wfa_prototype.py:298 - Look-ahead bias（未来データ参照）
    🟡 wfa_prototype.py:298 - シグナル生成時の未来価格参照
+   🔴 Scripts/test_quality_checker.py:70 - バックテスト結果のランダム生成（偽装） [calculate_backtest_results]
+   🔴 Scripts/test_quality_checker.py:175 - バックテスト結果のランダム生成（偽装） [bad_strategy]
+   🔴 Scripts/test_quality_checker.py:34 - Look-ahead bias（未来データ参照） [generate_signal]
+   🔴 Scripts/test_quality_checker.py:104 - Look-ahead bias（未来データ参照） [some_function]
+   🔴 Scripts/test_quality_checker.py:174 - Look-ahead bias（未来データ参照） [bad_strategy]
    🟡 アーカイブ/old_tests/test_cost_resistant_strategy.py:68 - バックテスト結果のランダム生成（偽装）
    🟡 アーカイブ/old_tests/test_advanced_risk_management.py:206 - バックテスト結果のランダム生成（偽装） [generate_test_trade_history]
    🟡 アーカイブ/old_strategies/cost_resistant_wfa_execution_fixed.py:145 - Look-ahead bias（未来データ参照）
@@ -36,11 +41,6 @@
    🔴 アーカイブ/old_strategies/adaptive_wfa_system.py:338 - Look-ahead bias（未来データ参照）
    🔴 アーカイブ/old_strategies/adaptive_wfa_system.py:351 - Look-ahead bias（未来データ参照）
    🔴 アーカイブ/old_strategies/adaptive_wfa_system.py:360 - Look-ahead bias（未来データ参照）
-   🔴 Scripts/test_quality_checker.py:70 - バックテスト結果のランダム生成（偽装） [calculate_backtest_results]
-   🔴 Scripts/test_quality_checker.py:175 - バックテスト結果のランダム生成（偽装） [bad_strategy]
-   🔴 Scripts/test_quality_checker.py:34 - Look-ahead bias（未来データ参照） [generate_signal]
-   🔴 Scripts/test_quality_checker.py:104 - Look-ahead bias（未来データ参照） [some_function]
-   🔴 Scripts/test_quality_checker.py:174 - Look-ahead bias（未来データ参照） [bad_strategy]
 
 ## 🎯 改善提案
 🚨 高重要度問題の即座修正を推奨
@@ -61,4 +61,4 @@
 - 高信頼度問題: 23件
 - 要確認問題: 0件
 
-最終更新: 2025-07-15 23:06:51
+最終更新: 2025-07-16 06:35:55
