@@ -12,8 +12,8 @@ if echo "$GEMINI_RESPONSE" | grep "\[GPT_TASK_REQUIRED\]" > /dev/null; then
 fi
 
 # 2. Claudeの発言パターンチェック（D案の核心）
-# 直近の会話ログから私の発言をチェック
-RECENT_CLAUDE_RESPONSE=$(tail -50 "$PROJECT_DIR/.claude_conversation.log" 2>/dev/null || echo "")
+# 環境変数から直近のClaudeの応答を取得（存在すれば）
+RECENT_CLAUDE_RESPONSE=${CLAUDE_RESPONSE:-""}
 
 if echo "$RECENT_CLAUDE_RESPONSE" | grep -iE "(GPT.*依頼|ChatGPT.*送信|実装依頼|依頼文.*作成|プロンプト.*作成|GPT.*で.*実装)" > /dev/null; then
     TRIGGER_GPT_RULES=true
