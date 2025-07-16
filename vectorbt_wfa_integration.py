@@ -51,17 +51,18 @@ class VectorBTWFAIntegration:
         df = pd.DataFrame(raw_data)
         
         # 必要なカラムの確認と変換
-        required_columns = ['timestamp', 'open', 'high', 'low', 'close']
+        required_columns = ['datetime', 'open', 'high', 'low', 'close']
         if not all(col in df.columns for col in required_columns):
             print("❌ 必要なカラムが不足")
+            print(f"実際のカラム: {list(df.columns)}")
             return None
         
         # インデックス設定
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
-        df.set_index('timestamp', inplace=True)
+        df['datetime'] = pd.to_datetime(df['datetime'])
+        df.set_index('datetime', inplace=True)
         
         # カラム名統一
-        df.columns = [col.capitalize() for col in df.columns]
+        df.rename(columns={'open': 'Open', 'high': 'High', 'low': 'Low', 'close': 'Close', 'volume': 'Volume'}, inplace=True)
         
         return df
     
