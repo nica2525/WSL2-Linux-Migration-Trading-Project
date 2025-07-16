@@ -106,7 +106,8 @@ class BreakoutStrategy:
             buy_signals,
             sell_signals,
             init_cash=10000,
-            fees=0.001  # 0.1%の手数料
+            fees=0.001,  # 0.1%の手数料
+            freq='D'  # 日次データ
         )
         
         return portfolio
