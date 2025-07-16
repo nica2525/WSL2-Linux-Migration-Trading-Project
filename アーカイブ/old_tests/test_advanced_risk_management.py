@@ -198,21 +198,26 @@ def generate_test_trade_history():
     
     # 50取引のシミュレーション
     for i in range(50):
-        # 意図的に連続損失を作成
+        # 修正: ランダム代わりに決定的パターンを使用
         if 45 <= i <= 47:  # 最後の3取引を損失に
-            pnl = random.uniform(-200, -50)
+            pnl = -125  # 固定損失額
         else:
-            # 60%の勝率
-            pnl = random.uniform(50, 150) if random.random() < 0.6 else random.uniform(-150, -30)
+            # 60%の勝率を決定的パターンで再現
+            win_pattern = [(i % 10) < 6]  # 10回中6回勝利
+            pnl = 100 if win_pattern[0] else -90
+        
+        # 修正: ランダム代わりに決定的パターンを使用
+        direction_pattern = 'BUY' if (i % 2) == 0 else 'SELL'
+        price_base = 1.1000 + (i % 100) * 0.0001  # 決定的価格変動
         
         trade = {
             'timestamp': (base_date + timedelta(hours=i*12)).isoformat(),
-            'direction': random.choice(['BUY', 'SELL']),
-            'entry_price': 1.1000 + random.uniform(-0.01, 0.01),
-            'exit_price': 1.1000 + random.uniform(-0.01, 0.01),
-            'position_size': random.uniform(0.01, 0.10),
+            'direction': direction_pattern,
+            'entry_price': price_base,
+            'exit_price': price_base + (0.0005 if pnl > 0 else -0.0005),
+            'position_size': 0.01 + (i % 10) * 0.001,  # 決定的サイズ
             'pnl': pnl,
-            'holding_time': random.randint(1, 48)
+            'holding_time': 1 + (i % 47)  # 決定的保有時間
         }
         
         history.append(trade)

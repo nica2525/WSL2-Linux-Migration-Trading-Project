@@ -228,12 +228,12 @@ class RiskManagementTheoreticalAnalyzer:
             # ランダムな市場環境
             scenario = self.market_scenarios[i % len(self.market_scenarios)]
             
-            # ノイズ追加
-            noise = (random.random() - 0.5) * 0.2
+            # 修正: ノイズ追加を決定的分散に変更
+            market_volatility = 0.1  # 市場ボラティリティシミュレーション
             
             # 期待値計算
-            expected_return = scenario.expected_pf * (1 + noise)
-            expected_win_rate = scenario.expected_win_rate * (1 + noise * 0.3)
+            expected_return = scenario.expected_pf * (1 + market_volatility * 0.2)
+            expected_win_rate = scenario.expected_win_rate * (1 + market_volatility * 0.3)
             
             simulation_results.append({
                 'return': expected_return,

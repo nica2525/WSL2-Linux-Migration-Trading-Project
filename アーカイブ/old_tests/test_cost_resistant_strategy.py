@@ -64,14 +64,14 @@ class CostResistantStrategyTest:
             # 価格計算
             close_price = open_price + price_change + trend_component
             
-            # 時々大きなブレイクアウト生成
-            if i > 100 and np.random.random() < 0.03:  # 3%の確率で大きな動き
-                breakout_size = np.random.uniform(0.003, 0.008)  # 30-80pips
-                breakout_direction = 1 if np.random.random() > 0.5 else -1
+            # 修正: ランダム代わりに決定的パターンでブレイクアウト生成
+            if i > 100 and (i % 33) == 0:  # 33バー毎に大きな動き
+                breakout_size = 0.005  # 固定50pips
+                breakout_direction = 1 if (i // 33) % 2 == 0 else -1  # 交互方向
                 close_price = open_price + (breakout_size * breakout_direction)
             
-            # High/Low計算
-            intrabar_range = np.random.uniform(0.0001, 0.0015)  # 1-15pips
+            # 修正: High/Low計算を決定的に
+            intrabar_range = 0.0008 + (i % 7) * 0.0001  # 8-14pipsの決定的レンジ
             high_price = max(open_price, close_price) + intrabar_range/2
             low_price = min(open_price, close_price) - intrabar_range/2
             
