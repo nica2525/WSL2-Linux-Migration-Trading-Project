@@ -193,18 +193,23 @@ class WFAStrategy:
 
             resistance = max(high_prices)
             support = min(low_prices)
-            current_price = current_bar["close"]
+            # 修正: 現在バーの終値ではなく、前のバーの終値を使用
+            previous_price = recent_data[-2]["close"] if len(recent_data) >= 2 else current_bar["open"]
 
             # ブレイクアウト判定
-            if current_price > resistance * 1.001:  # 0.1%上抜け
+            if previous_price > resistance * 1.001:  # 0.1%上抜け
                 action = "BUY"
-            elif current_price < support * 0.999:  # 0.1%下抜け
+            elif previous_price < support * 0.999:  # 0.1%下抜け
                 action = "SELL"
             else:
                 return None
 
-            # リターン計算
-            entry_price = current_bar["open"]
+            # リターン計算（修正: 次バーの始値でエントリー）
+            if current_idx + 1 < len(data):
+                entry_price = data[current_idx + 1]["open"]
+            else:
+                return None  # 最後のバーではエントリーしない
+            
             exit_idx = min(current_idx + 20, len(data) - 1)
             exit_price = data[exit_idx]["close"]
 

@@ -102,11 +102,12 @@ class WFACompliantOptimizer:
             if not regime_params["active"]:
                 if position is not None:
                     # 強制決済（次バー始値で決済）
-                    next_open = (
-                        self.learning_data.iloc[i + 1]["open"]
-                        if i + 1 < len(self.learning_data)
-                        else current_bar["close"]
-                    )
+                    # 修正: 最後のバーでは代替価格を使用
+                    if i + 1 < len(self.learning_data):
+                        next_open = self.learning_data.iloc[i + 1]["open"]
+                    else:
+                        # 最後のバーでは決済しないまたは代替価格を使用
+                        next_open = current_bar["high"] if position["direction"] == "BUY" else current_bar["low"]
                     pnl = self._calculate_pnl(position, next_open)
                     balance += pnl
                     trades.append({"pnl": pnl, "exit_reason": "REGIME_STOP"})
@@ -131,11 +132,12 @@ class WFACompliantOptimizer:
             # ポジション管理
             if position is None and signal != "HOLD":
                 # 次バーの始値でエントリー（Look-ahead bias回避）
-                next_open = (
-                    self.learning_data.iloc[i + 1]["open"]
-                    if i + 1 < len(self.learning_data)
-                    else current_bar["close"]
-                )
+                # 修正: 最後のバーでは代替価格を使用
+                if i + 1 < len(self.learning_data):
+                    next_open = self.learning_data.iloc[i + 1]["open"]
+                else:
+                    # 最後のバーではエントリーしない
+                    continue
                 position = {
                     "direction": signal,
                     "entry_price": next_open,
@@ -153,11 +155,12 @@ class WFACompliantOptimizer:
 
                 if exit_signal:
                     # 次バーの始値で決済（Look-ahead bias回避）
-                    next_open = (
-                        self.learning_data.iloc[i + 1]["open"]
-                        if i + 1 < len(self.learning_data)
-                        else current_bar["close"]
-                    )
+                    # 修正: 最後のバーでは代替価格を使用
+                    if i + 1 < len(self.learning_data):
+                        next_open = self.learning_data.iloc[i + 1]["open"]
+                    else:
+                        # 最後のバーでは決済しないまたは代替価格を使用
+                        next_open = current_bar["high"] if position["direction"] == "BUY" else current_bar["low"]
                     pnl = self._calculate_pnl(position, next_open)
                     adjusted_pnl = pnl * position["position_size"]
                     balance += adjusted_pnl
