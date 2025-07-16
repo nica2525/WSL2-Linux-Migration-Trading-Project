@@ -31,7 +31,7 @@ class VectorBTWFAIntegration:
         """既存WFAシステムからデータ読み込み"""
         try:
             # 既存WFAシステムのデータ読み込み
-            self.raw_data = self.data_cache.get_cached_data(self.symbol, self.timeframe)
+            self.raw_data = self.data_cache.get_full_data()
             if not self.raw_data:
                 print("❌ データ読み込み失敗")
                 return False
