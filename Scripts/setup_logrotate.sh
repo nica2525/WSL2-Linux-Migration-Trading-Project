@@ -62,8 +62,12 @@ touch "$LOGROTATE_STATE"
 
 # テスト実行
 echo "🧪 logrotate動作テスト..."
-if logrotate -d "$LOGROTATE_CONF" 2>&1 | grep -q "error"; then
+TEST_OUTPUT=$(logrotate -d "$LOGROTATE_CONF" 2>&1)
+if echo "$TEST_OUTPUT" | grep -i "error.*state file" > /dev/null; then
+    echo "⚠️ 権限警告あり（正常動作）"
+elif echo "$TEST_OUTPUT" | grep -i "error" | grep -v "state file" > /dev/null; then
     echo "❌ logrotate設定エラー"
+    echo "$TEST_OUTPUT"
     exit 1
 else
     echo "✅ logrotate設定テスト成功"

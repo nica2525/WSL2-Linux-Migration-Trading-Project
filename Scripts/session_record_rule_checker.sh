@@ -1,8 +1,12 @@
 #!/bin/bash
 
 # セッション記録ルール参照スクリプト
-PROJECT_DIR="/home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト"
-CLAUDE_MD="$PROJECT_DIR/CLAUDE.md"
+# Gemini改善: パス動的解決対応
+
+# パス動的解決
+source "$(dirname "$0")/path_resolver.sh"
+PROJECT_DIR="$(get_project_dir)"
+CLAUDE_MD="$(get_config_file "CLAUDE.md")"
 RECORD_DIR="$PROJECT_DIR/文書/記録"
 
 # 引数から操作を判定

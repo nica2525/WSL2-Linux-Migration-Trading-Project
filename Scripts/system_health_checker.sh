@@ -2,8 +2,11 @@
 
 # システム自動化ヘルスチェッカー
 # hooks・cron・Git自動化の継続性監視
+# Gemini改善: パス動的解決対応
 
-PROJECT_DIR="/home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト"
+# パス動的解決
+source "$(dirname "$0")/path_resolver.sh"
+PROJECT_DIR="$(get_project_dir)"
 LOG_DIR="$PROJECT_DIR"
 SETTINGS_FILE="/home/trader/.claude/settings.json"
 
