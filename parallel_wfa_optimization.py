@@ -8,16 +8,92 @@ import json
 import numpy as np
 import pandas as pd
 from datetime import datetime
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Protocol
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import partial
 import multiprocessing as mp
 import time
 from pathlib import Path
+from abc import ABC, abstractmethod
 
 # システム情報
 CPU_COUNT = mp.cpu_count()
 MAX_WORKERS = max(1, CPU_COUNT - 1)  # 1つのCPUを他の処理用に残す
+
+class TradingStrategy(ABC):
+    """取引戦略基底クラス"""
+    
+    @abstractmethod
+    def generate_signals(self, data: pd.DataFrame, params: Dict) -> pd.Series:
+        """取引シグナル生成"""
+        pass
+    
+    @abstractmethod
+    def get_parameter_ranges(self) -> Dict:
+        """パラメータ範囲取得"""
+        pass
+    
+    @abstractmethod
+    def get_strategy_name(self) -> str:
+        """戦略名取得"""
+        pass
+
+class BreakoutStrategy(TradingStrategy):
+    """ブレイクアウト戦略"""
+    
+    def generate_signals(self, data: pd.DataFrame, params: Dict) -> pd.Series:
+        """ブレイクアウトシグナル生成"""
+        lookback = params.get('lookback', 20)
+        
+        if len(data) < lookback + 1:
+            return pd.Series(False, index=data.index)
+        
+        # ローリング最高値
+        rolling_high = data['High'].rolling(window=lookback).max()
+        
+        # ブレイクアウト条件（前日高値を上抜け）
+        breakout_condition = data['Close'] > rolling_high.shift(1)
+        
+        return breakout_condition.fillna(False)
+    
+    def get_parameter_ranges(self) -> Dict:
+        """パラメータ範囲"""
+        return {
+            'lookback': {'min': 5, 'max': 50, 'step': 5}
+        }
+    
+    def get_strategy_name(self) -> str:
+        return "BreakoutStrategy"
+
+class MeanReversionStrategy(TradingStrategy):
+    """平均回帰戦略"""
+    
+    def generate_signals(self, data: pd.DataFrame, params: Dict) -> pd.Series:
+        """平均回帰シグナル生成"""
+        lookback = params.get('lookback', 20)
+        threshold = params.get('threshold', 2.0)
+        
+        if len(data) < lookback + 1:
+            return pd.Series(False, index=data.index)
+        
+        # 移動平均とボリンジャーバンド
+        rolling_mean = data['Close'].rolling(window=lookback).mean()
+        rolling_std = data['Close'].rolling(window=lookback).std()
+        
+        # 下限ラインを下回った時に買いシグナル
+        lower_band = rolling_mean - threshold * rolling_std
+        mean_reversion_condition = data['Close'] < lower_band
+        
+        return mean_reversion_condition.fillna(False)
+    
+    def get_parameter_ranges(self) -> Dict:
+        return {
+            'lookback': {'min': 10, 'max': 30, 'step': 5},
+            'threshold': {'min': 1.5, 'max': 2.5, 'step': 0.5}
+        }
+    
+    def get_strategy_name(self) -> str:
+        return "MeanReversionStrategy"
 
 class ParallelWFAOptimization:
     """並列処理最適化WFAクラス"""
@@ -58,26 +134,35 @@ def calculate_single_fold_wfa(fold_params: Tuple) -> Dict:
     単一Fold WFA計算（並列実行用関数）
     
     Args:
-        fold_params: (fold_id, fold_config, lookback_params, cost_scenario)
+        fold_params: (fold_id, fold_config, strategy_config, cost_scenario)
     
     Returns:
         Dict: Fold実行結果
     """
-    fold_id, fold_config, lookback_params, cost_scenario = fold_params
+    fold_id, fold_config, strategy_config, cost_scenario = fold_params
     
     try:
         # データ分割
         in_sample_data = fold_config['in_sample_data']
         out_sample_data = fold_config['out_sample_data']
         
+        # 戦略インスタンス生成
+        strategy_name = strategy_config['strategy_name']
+        if strategy_name == 'BreakoutStrategy':
+            strategy = BreakoutStrategy()
+        elif strategy_name == 'MeanReversionStrategy':
+            strategy = MeanReversionStrategy()
+        else:
+            raise ValueError(f"Unknown strategy: {strategy_name}")
+        
         # In-Sample最適化
-        best_lookback = None
+        best_params = None
         best_in_sample_sharpe = -np.inf
         
-        for lookback in lookback_params:
+        for params in strategy_config['parameter_combinations']:
             try:
-                # ブレイクアウト戦略実行
-                in_sample_signals = generate_breakout_signals(in_sample_data, lookback)
+                # 戦略シグナル生成
+                in_sample_signals = strategy.generate_signals(in_sample_data, params)
                 
                 if in_sample_signals.sum() > 0:  # シグナル存在確認
                     # シンプルなバックテスト
@@ -85,14 +170,14 @@ def calculate_single_fold_wfa(fold_params: Tuple) -> Dict:
                     
                     if not np.isnan(sharpe_ratio) and sharpe_ratio > best_in_sample_sharpe:
                         best_in_sample_sharpe = sharpe_ratio
-                        best_lookback = lookback
+                        best_params = params
                         
             except Exception as e:
                 continue
         
         # Out-of-Sample検証
-        if best_lookback is not None:
-            out_sample_signals = generate_breakout_signals(out_sample_data, best_lookback)
+        if best_params is not None:
+            out_sample_signals = strategy.generate_signals(out_sample_data, best_params)
             
             if out_sample_signals.sum() > 0:
                 out_sample_sharpe = calculate_simple_sharpe(out_sample_data, out_sample_signals, cost_scenario)
@@ -101,7 +186,8 @@ def calculate_single_fold_wfa(fold_params: Tuple) -> Dict:
                 
                 return {
                     'fold_id': fold_id,
-                    'optimal_lookback': best_lookback,
+                    'optimal_params': best_params,
+                    'strategy_name': strategy.get_strategy_name(),
                     'in_sample_sharpe': best_in_sample_sharpe,
                     'out_sample_sharpe': out_sample_sharpe,
                     'total_return': total_return,
@@ -126,18 +212,33 @@ def calculate_single_fold_wfa(fold_params: Tuple) -> Dict:
             'cost_scenario': cost_scenario['name']
         }
 
-def generate_breakout_signals(data: pd.DataFrame, lookback: int) -> pd.Series:
-    """ブレイクアウトシグナル生成"""
-    if len(data) < lookback + 1:
-        return pd.Series(False, index=data.index)
+def generate_parameter_combinations(param_ranges: Dict) -> List[Dict]:
+    """パラメータ組み合わせ生成"""
+    import itertools
     
-    # ローリング最高値
-    rolling_high = data['High'].rolling(window=lookback).max()
+    param_names = list(param_ranges.keys())
+    param_values = []
     
-    # ブレイクアウト条件（前日高値を上抜け）
-    breakout_condition = data['Close'] > rolling_high.shift(1)
+    for param_name in param_names:
+        range_config = param_ranges[param_name]
+        if isinstance(range_config, dict) and 'min' in range_config:
+            # 数値範囲の場合
+            if 'step' in range_config:
+                values = np.arange(range_config['min'], range_config['max'], range_config['step'])
+            else:
+                values = np.linspace(range_config['min'], range_config['max'], 10)
+        else:
+            # リストの場合
+            values = range_config
+        param_values.append(values)
     
-    return breakout_condition.fillna(False)
+    # 全組み合わせ生成
+    combinations = []
+    for combination in itertools.product(*param_values):
+        param_dict = dict(zip(param_names, combination))
+        combinations.append(param_dict)
+    
+    return combinations
 
 def calculate_simple_sharpe(data: pd.DataFrame, signals: pd.Series, cost_scenario: Dict) -> float:
     """シンプルなシャープレシオ計算"""
@@ -183,29 +284,79 @@ def calculate_simple_return(data: pd.DataFrame, signals: pd.Series, cost_scenari
         return 0.0
 
 def calculate_simple_drawdown(data: pd.DataFrame, signals: pd.Series, cost_scenario: Dict) -> float:
-    """シンプルなドローダウン計算"""
+    """実際の最大ドローダウン計算"""
     try:
-        # 簡素化のため固定値を返す
-        return -0.1  # -10%のドローダウンを仮定
-    except:
+        # シグナル位置での売買実行
+        entry_prices = data['Close'][signals].values
+        if len(entry_prices) == 0:
+            return 0.0
+            
+        exit_signals = signals.shift(-1).fillna(False)
+        exit_prices = data['Close'][exit_signals].values
+        
+        if len(entry_prices) != len(exit_prices):
+            return 0.0
+        
+        # トレード毎のリターン計算
+        trade_returns = (exit_prices - entry_prices) / entry_prices
+        trade_returns -= (cost_scenario['fees'] + cost_scenario['slippage'])
+        
+        # 累積リターン計算
+        cumulative_returns = np.cumprod(1 + trade_returns)
+        
+        # 各時点での最高値更新
+        running_max = np.maximum.accumulate(cumulative_returns)
+        
+        # ドローダウン計算（現在値/最高値 - 1）
+        drawdowns = (cumulative_returns / running_max) - 1
+        
+        # 最大ドローダウン
+        max_drawdown = np.min(drawdowns)
+        
+        return max_drawdown
+        
+    except Exception as e:
         return 0.0
 
 class ParallelWFARunner:
     """並列WFA実行クラス"""
     
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame, config_path: str = "wfa_config.json"):
         self.data = data
         self.optimization_system = ParallelWFAOptimization(data)
+        self.config = self.load_config(config_path)
+    
+    def load_config(self, config_path: str) -> Dict:
+        """設定ファイル読み込み"""
+        try:
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+            print(f"✅ 設定ファイル読み込み完了: {config_path}")
+            return config
+        except FileNotFoundError:
+            print(f"⚠️ 設定ファイルが見つかりません: {config_path}、デフォルト設定を使用")
+            return self.get_default_config()
+    
+    def get_default_config(self) -> Dict:
+        """デフォルト設定"""
+        return {
+            "execution_config": {"num_folds": 3, "max_workers": "auto"},
+            "cost_scenarios": [
+                {"name": "Low Cost", "fees": 0.001, "slippage": 0.0005},
+                {"name": "Medium Cost", "fees": 0.002, "slippage": 0.001},
+                {"name": "High Cost", "fees": 0.003, "slippage": 0.002}
+            ]
+        }
         
     def run_parallel_wfa(self, 
-                        lookback_range: Tuple[int, int, int] = (5, 50, 5),
+                        strategy: TradingStrategy,
                         cost_scenarios: Optional[List[Dict]] = None,
                         num_folds: int = 5) -> Dict:
         """
         並列WFA実行
         
         Args:
-            lookback_range: (開始値, 終了値, ステップ)
+            strategy: 取引戦略インスタンス
             cost_scenarios: コストシナリオリスト
             num_folds: Fold数
             
@@ -219,16 +370,27 @@ class ParallelWFARunner:
         
         start_time = time.time()
         
-        # デフォルトコストシナリオ
+        # コストシナリオ（設定ファイル優先）
         if cost_scenarios is None:
-            cost_scenarios = [
+            cost_scenarios = self.config.get('cost_scenarios', [
                 {'name': 'Low Cost', 'fees': 0.001, 'slippage': 0.0005},
                 {'name': 'Medium Cost', 'fees': 0.002, 'slippage': 0.001},
                 {'name': 'High Cost', 'fees': 0.003, 'slippage': 0.002}
-            ]
+            ])
         
-        # パラメータ準備
-        lookback_params = list(range(lookback_range[0], lookback_range[1], lookback_range[2]))
+        # 実行設定（設定ファイル優先）
+        execution_config = self.config.get('execution_config', {})
+        if 'num_folds' in execution_config:
+            num_folds = execution_config['num_folds']
+        
+        # 戦略パラメータ準備
+        param_ranges = strategy.get_parameter_ranges()
+        parameter_combinations = generate_parameter_combinations(param_ranges)
+        
+        strategy_config = {
+            'strategy_name': strategy.get_strategy_name(),
+            'parameter_combinations': parameter_combinations
+        }
         total_length = len(self.data)
         
         # Fold設定生成
@@ -259,7 +421,7 @@ class ParallelWFARunner:
                 task = (
                     fold_config['fold_id'],
                     fold_config,
-                    lookback_params,
+                    strategy_config,
                     cost_scenario
                 )
                 tasks.append(task)
@@ -355,9 +517,10 @@ def performance_comparison_test():
     
     # 並列実行
     print("\n📊 並列処理実行...")
+    strategy = BreakoutStrategy()
     parallel_start = time.time()
     parallel_results = runner.run_parallel_wfa(
-        lookback_range=(10, 30, 5),
+        strategy=strategy,
         num_folds=3
     )
     parallel_time = time.time() - parallel_start
