@@ -84,6 +84,23 @@ MCP_VS_SELF_IMPLEMENTATION_STRATEGY.md
 - **スクリプト**: `Scripts/session_record_rule_checker.sh`
 - **設定場所**: `~/.claude/settings.json`
 
+## 🛡️ 自動化システム継続性保証
+**システムヘルスチェック:**
+```bash
+./Scripts/system_health_checker.sh
+```
+
+**監視項目:**
+- ✅ cron自動化システム (Git保存・システム監視)
+- ✅ Claude hooks設定 (セッション記録・メモリトラッカー)
+- ✅ 重要スクリプト実行権限
+- ✅ システム依存関係 (Git・Python3)
+
+**自己修復ガイド:**
+- **cron停止時**: `crontab -e` で再設定
+- **hooks停止時**: `~/.claude/settings.json` 確認
+- **権限問題時**: `chmod +x Scripts/*.sh` で修復
+
 ## 📚 マネージャー学習システム
 **セッション開始時必須確認:**
 ```bash
