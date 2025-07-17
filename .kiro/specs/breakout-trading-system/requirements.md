@@ -1,83 +1,83 @@
-# Requirements Document
+# 要件定義書
 
 **作成日時**: 2025年7月18日 07:18 JST  
 **作成者**: Kiro AI IDE  
 **プロジェクト**: ブレイクアウト手法実運用システム統合プロジェクト
 
-## Introduction
+## はじめに
 
 本プロジェクトは、Gemini満点評価(5.0/5.0)を獲得したPython WFAシステムを基盤として、実際の取引実行が可能な統合システムを構築することを目的とする。既存の並列処理最適化(19倍高速化・0.58秒実行)とスリッパージ統合機能を維持しながら、MT4との連携による実取引フローを実現する。
 
-## Requirements
+## 要件
 
-### Requirement 1
+### 要件1
 
-**User Story:** As a trader, I want the system to automatically execute breakout trades based on WFA-optimized parameters, so that I can benefit from systematic trading without manual intervention.
+**ユーザーストーリー:** トレーダーとして、WFA最適化パラメータに基づいてブレイクアウト取引を自動実行したい。手動介入なしに体系的な取引の恩恵を受けるため。
 
-#### Acceptance Criteria
+#### 受入基準
 
-1. WHEN WFA optimization completes THEN the system SHALL automatically update MT4 EA parameters within 5 seconds
-2. WHEN a breakout signal is generated THEN the system SHALL execute the trade within 100ms of signal detection
-3. WHEN market conditions change THEN the system SHALL adapt position sizing based on current volatility within 50ms
-4. IF communication between Python and MT4 fails THEN the system SHALL attempt automatic reconnection up to 3 times
-5. WHEN a trade is executed THEN the system SHALL log all execution details including slippage and actual fill price
+1. WFA最適化が完了した時、システムは5秒以内にMT4 EAパラメータを自動更新すること
+2. ブレイクアウトシグナルが生成された時、システムはシグナル検出から100ms以内に取引を実行すること
+3. 市場状況が変化した時、システムは50ms以内に現在のボラティリティに基づいてポジションサイズを調整すること
+4. PythonとMT4間の通信が失敗した場合、システムは最大3回まで自動再接続を試行すること
+5. 取引が実行された時、システムはスリッパージと実際の約定価格を含む全実行詳細をログに記録すること
 
-### Requirement 2
+### 要件2
 
-**User Story:** As a trader, I want real-time monitoring of system health and trading performance, so that I can ensure the system operates safely and profitably.
+**ユーザーストーリー:** トレーダーとして、システムの健全性と取引パフォーマンスをリアルタイムで監視したい。システムが安全かつ収益性を持って動作することを確保するため。
 
-#### Acceptance Criteria
+#### 受入基準
 
-1. WHEN the system starts THEN it SHALL perform comprehensive health checks on all components within 30 seconds
-2. WHEN system availability drops below 99% THEN the system SHALL send immediate alerts and initiate recovery procedures
-3. WHEN drawdown exceeds predefined limits THEN the system SHALL automatically halt trading and require manual intervention
-4. IF any component fails THEN the system SHALL isolate the failure and continue operating with remaining components
-5. WHEN trading session ends THEN the system SHALL generate comprehensive performance reports within 60 seconds
+1. システムが開始された時、30秒以内に全コンポーネントの包括的ヘルスチェックを実行すること
+2. システム可用性が99%を下回った時、即座にアラートを送信し復旧手順を開始すること
+3. ドローダウンが事前定義された限界を超えた時、システムは自動的に取引を停止し手動介入を要求すること
+4. 任意のコンポーネントが失敗した場合、システムは障害を分離し残りのコンポーネントで動作を継続すること
+5. 取引セッションが終了した時、60秒以内に包括的パフォーマンスレポートを生成すること
 
-### Requirement 3
+### 要件3
 
-**User Story:** As a trader, I want seamless integration between Python WFA optimization and MT4 execution, so that I can leverage the best of both platforms.
+**ユーザーストーリー:** トレーダーとして、Python WFA最適化とMT4実行間のシームレスな統合を望む。両プラットフォームの最良の部分を活用するため。
 
-#### Acceptance Criteria
+#### 受入基準
 
-1. WHEN Python generates trading signals THEN MT4 SHALL receive and process them within 50ms
-2. WHEN MT4 executes a trade THEN Python SHALL receive confirmation and update position tracking within 100ms
-3. IF WSL2-Windows communication fails THEN the system SHALL fall back to file-based communication automatically
-4. WHEN parameter updates are required THEN the system SHALL synchronize all components without service interruption
-5. WHEN system restarts THEN all components SHALL restore their previous state within 2 minutes
+1. Pythonが取引シグナルを生成した時、MT4は50ms以内にそれを受信し処理すること
+2. MT4が取引を実行した時、Pythonは100ms以内に確認を受信しポジション追跡を更新すること
+3. WSL2-Windows通信が失敗した場合、システムは自動的にファイルベース通信にフォールバックすること
+4. パラメータ更新が必要な時、システムはサービス中断なしに全コンポーネントを同期すること
+5. システムが再起動した時、全コンポーネントは2分以内に前の状態を復元すること
 
-### Requirement 4
+### 要件4
 
-**User Story:** As a trader, I want robust risk management and position control, so that I can protect my capital from unexpected market events.
+**ユーザーストーリー:** トレーダーとして、堅牢なリスク管理とポジション制御を望む。予期しない市場イベントから資本を保護するため。
 
-#### Acceptance Criteria
+#### 受入基準
 
-1. WHEN position size calculation is required THEN the system SHALL consider current account balance, volatility, and risk parameters
-2. WHEN maximum daily loss limit is reached THEN the system SHALL immediately close all positions and halt trading
-3. IF market volatility exceeds normal ranges THEN the system SHALL reduce position sizes by 50%
-4. WHEN network connectivity is lost THEN the system SHALL maintain protective stops on all open positions
-5. WHEN emergency shutdown is triggered THEN all positions SHALL be closed within 30 seconds
+1. ポジションサイズ計算が必要な時、システムは現在の口座残高、ボラティリティ、リスクパラメータを考慮すること
+2. 最大日次損失限界に達した時、システムは即座に全ポジションを決済し取引を停止すること
+3. 市場ボラティリティが通常範囲を超えた場合、システムはポジションサイズを50%削減すること
+4. ネットワーク接続が失われた時、システムは全オープンポジションの保護ストップを維持すること
+5. 緊急シャットダウンが発動された時、全ポジションは30秒以内に決済されること
 
-### Requirement 5
+### 要件5
 
-**User Story:** As a trader, I want comprehensive data persistence and recovery capabilities, so that I can maintain system continuity across restarts and failures.
+**ユーザーストーリー:** トレーダーとして、包括的なデータ永続化と復旧機能を望む。再起動と障害を通じてシステム継続性を維持するため。
 
-#### Acceptance Criteria
+#### 受入基準
 
-1. WHEN WFA optimization results are generated THEN they SHALL be persisted to SQLite database within 5 seconds
-2. WHEN system state changes THEN snapshots SHALL be saved automatically every hour
-3. IF system crashes THEN it SHALL recover to the last known good state within 3 minutes of restart
-4. WHEN data corruption is detected THEN the system SHALL restore from the most recent valid backup automatically
-5. WHEN historical data is requested THEN the system SHALL provide access to at least 6 months of trading history
+1. WFA最適化結果が生成された時、5秒以内にSQLiteデータベースに永続化されること
+2. システム状態が変化した時、スナップショットが毎時自動保存されること
+3. システムがクラッシュした場合、再起動から3分以内に最後の正常状態に復旧すること
+4. データ破損が検出された時、システムは自動的に最新の有効バックアップから復元すること
+5. 履歴データが要求された時、システムは最低6ヶ月の取引履歴へのアクセスを提供すること
 
-### Requirement 6
+### 要件6
 
-**User Story:** As a trader, I want the system to maintain compatibility with existing automation infrastructure, so that I can preserve my current operational setup.
+**ユーザーストーリー:** トレーダーとして、システムが既存の自動化インフラとの互換性を維持することを望む。現在の運用設定を保持するため。
 
-#### Acceptance Criteria
+#### 受入基準
 
-1. WHEN the new system is deployed THEN existing cron automation SHALL continue to function without modification
-2. WHEN system operates THEN it SHALL maintain the current 19-worker parallel processing performance
-3. IF existing Gemini 5.0/5.0 rated components are used THEN their functionality SHALL remain unchanged
-4. WHEN system runs THEN it SHALL respect the 09:00-22:00 operational window with automatic shutdown
-5. WHEN maintenance is required THEN the system SHALL support hot-swapping of individual components
+1. 新システムが展開された時、既存のcron自動化は変更なしに機能し続けること
+2. システムが動作する時、現在の19ワーカー並列処理性能を維持すること
+3. 既存のGemini 5.0/5.0評価コンポーネントが使用される場合、その機能は変更されないこと
+4. システムが実行される時、09:00-22:00の運用時間窓を遵守し自動シャットダウンすること
+5. メンテナンスが必要な時、システムは個別コンポーネントのホットスワップをサポートすること
