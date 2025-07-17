@@ -2,6 +2,22 @@
 
 # 生活リズム対応スマートlogrotate
 # PC稼働時間帯にサイズベース実行
+#
+# 【設計思想】
+# - PM22時PCシャットダウン環境での確実なログ管理
+# - 時刻ベース(daily)→サイズベース(2MB/1MB)への変更
+# - PC稼働時間(9:00-21:00)限定実行による生活リズム適合
+#
+# 【処理概要】
+# 1. 時間帯チェック: 9:00-21:00以外は即座に終了
+# 2. Git保存ログ: 2MB超過時にlogrotate実行
+# 3. 監視ログ: 1MB超過時にlogrotate実行
+# 4. システムログ記録: 成功・失敗をloggerで記録
+#
+# 【cron設定】
+# */15 9-21 * * * (15分間隔、PC稼働時間のみ)
+#
+# Gemini査読: "非常に効果的かつ技術的に妥当な設計"
 
 source "$(dirname "$0")/path_resolver.sh"
 PROJECT_DIR="$(get_project_dir)"
@@ -25,7 +41,11 @@ if [[ -f "$GIT_LOG" ]]; then
     GIT_SIZE_KB=$(du -k "$GIT_LOG" | cut -f1)
     if [[ $GIT_SIZE_KB -ge 2048 ]]; then
         echo "[$(date '+%H:%M:%S')] Git保存ログ ${GIT_SIZE_KB}KB -> logrotate実行"
-        /usr/sbin/logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF"
+        if /usr/sbin/logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF" 2>/dev/null; then
+            logger "Trading Project: Git log rotation completed successfully (${GIT_SIZE_KB}KB)"
+        else
+            logger "Trading Project: Git log rotation failed"
+        fi
         exit 0
     fi
 fi
@@ -35,7 +55,11 @@ if [[ -f "$MONITOR_LOG" ]]; then
     MONITOR_SIZE_KB=$(du -k "$MONITOR_LOG" | cut -f1)
     if [[ $MONITOR_SIZE_KB -ge 1024 ]]; then
         echo "[$(date '+%H:%M:%S')] 監視ログ ${MONITOR_SIZE_KB}KB -> logrotate実行"
-        /usr/sbin/logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF"
+        if /usr/sbin/logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF" 2>/dev/null; then
+            logger "Trading Project: Monitor log rotation completed successfully (${MONITOR_SIZE_KB}KB)"
+        else
+            logger "Trading Project: Monitor log rotation failed"
+        fi
         exit 0
     fi
 fi
