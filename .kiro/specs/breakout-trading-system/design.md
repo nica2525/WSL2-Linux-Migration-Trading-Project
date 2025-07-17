@@ -71,19 +71,19 @@ graph TB
     class TCP,FILE,PIPE critical
 ```
 
-## Components and Interfaces
+## コンポーネントとインターフェース
 
-### 1. WFA Optimization Engine (Existing)
-**File**: `enhanced_parallel_wfa_with_slippage.py`
-**Status**: Protected - No modifications allowed
-**Interface**: 
-- Input: Market data, configuration parameters
-- Output: Optimized parameters, performance metrics
-- Communication: Database persistence, signal generation trigger
+### 1. WFA最適化エンジン（既存）
+**ファイル**: `enhanced_parallel_wfa_with_slippage.py`
+**ステータス**: 保護対象 - 変更禁止
+**インターフェース**: 
+- 入力: 市場データ、設定パラメータ
+- 出力: 最適化パラメータ、パフォーマンス指標
+- 通信: データベース永続化、シグナル生成トリガー
 
-### 2. Real-time Signal Generator (New)
-**Purpose**: Market monitoring and signal generation
-**Key Interfaces**:
+### 2. リアルタイムシグナル生成器（新規）
+**目的**: 市場監視とシグナル生成
+**主要インターフェース**:
 ```python
 class SignalGenerator:
     def get_market_data() -> pd.DataFrame
@@ -92,11 +92,11 @@ class SignalGenerator:
     def send_signal_to_mt4(signal: Signal) -> bool
 ```
 
-### 3. Python-MT4 Bridge (Critical Component)
-**Purpose**: Cross-platform communication hub
-**Communication Protocols**:
+### 3. Python-MT4ブリッジ（重要コンポーネント）
+**目的**: クロスプラットフォーム通信ハブ
+**通信プロトコル**:
 
-#### Primary: TCP Socket Communication
+#### 主要: TCPソケット通信
 ```python
 class TCPBridge:
     def __init__(self, host='localhost', port=9090):
@@ -109,7 +109,7 @@ class TCPBridge:
     def heartbeat_check() -> bool
 ```
 
-#### Fallback: File-based Communication
+#### フォールバック: ファイルベース通信
 ```python
 class FileBridge:
     def __init__(self, shared_dir='/mnt/c/MT4_Bridge'):
@@ -121,7 +121,7 @@ class FileBridge:
     def read_status_file() -> SystemStatus
 ```
 
-#### Alternative: Named Pipe Communication
+#### 代替: 名前付きパイプ通信
 ```python
 class NamedPipeBridge:
     def __init__(self, pipe_name='\\\\.\\pipe\\MT4Bridge'):
@@ -132,43 +132,43 @@ class NamedPipeBridge:
     def send_message(self, message: str) -> bool
 ```
 
-### 4. Position Management System (New)
-**Purpose**: Risk control and position tracking
-**Key Functions**:
-- Position sizing calculation
-- Risk limit monitoring
-- Drawdown protection
-- Performance tracking
+### 4. ポジション管理システム（新規）
+**目的**: リスク制御とポジション追跡
+**主要機能**:
+- ポジションサイズ計算
+- リスク限界監視
+- ドローダウン保護
+- パフォーマンス追跡
 
-### 5. MT4 Expert Advisor (New)
-**Language**: MQL4
-**Key Functions**:
+### 5. MT4エキスパートアドバイザー（新規）
+**言語**: MQL4
+**主要機能**:
 ```mql4
-// Signal reception and processing
+// シグナル受信と処理
 bool ReceivePythonSignal();
 bool ExecuteTrade(string signal);
 
-// Position management
+// ポジション管理
 double CalculatePositionSize(double riskPercent);
 bool ManageOpenPositions();
 
-// Communication with Python
+// Pythonとの通信
 bool SendExecutionReport(int ticket, double fillPrice);
 bool SendHeartbeat();
 ```
 
-### 6. Health Monitor (New)
-**Purpose**: System-wide health monitoring
-**Monitoring Targets**:
-- Component availability
-- Communication latency
-- Memory/CPU usage
-- Database integrity
-- Network connectivity
+### 6. ヘルスモニター（新規）
+**目的**: システム全体の健全性監視
+**監視対象**:
+- コンポーネント可用性
+- 通信レイテンシ
+- メモリ/CPU使用量
+- データベース整合性
+- ネットワーク接続性
 
-## Data Models
+## データモデル
 
-### Trading Signal
+### 取引シグナル
 ```python
 @dataclass
 class TradingSignal:
@@ -183,7 +183,7 @@ class TradingSignal:
     strategy_params: Dict
 ```
 
-### Execution Report
+### 実行レポート
 ```python
 @dataclass
 class ExecutionReport:
@@ -197,7 +197,7 @@ class ExecutionReport:
     status: str  # 'FILLED', 'PARTIAL', 'REJECTED'
 ```
 
-### System Status
+### システムステータス
 ```python
 @dataclass
 class SystemStatus:
@@ -209,26 +209,26 @@ class SystemStatus:
     system_uptime: float
 ```
 
-## Error Handling
+## エラーハンドリング
 
-### Error Classification and Response
+### エラー分類と対応
 
-#### Level 1: Communication Errors
-- **TCP Connection Lost**: Automatic reconnection (max 3 attempts)
-- **File Lock Timeout**: Retry with exponential backoff
-- **Named Pipe Broken**: Switch to alternative communication method
+#### レベル1: 通信エラー
+- **TCP接続切断**: 自動再接続（最大3回試行）
+- **ファイルロックタイムアウト**: 指数バックオフでリトライ
+- **名前付きパイプ破損**: 代替通信方式に切り替え
 
-#### Level 2: Component Failures
-- **Signal Generator Failure**: Continue with last known good parameters
-- **Position Manager Failure**: Emergency position closure
-- **MT4 EA Crash**: Restart EA and restore state
+#### レベル2: コンポーネント障害
+- **シグナル生成器障害**: 最後の正常パラメータで継続
+- **ポジション管理器障害**: 緊急ポジション決済
+- **MT4 EAクラッシュ**: EA再起動と状態復元
 
-#### Level 3: System-wide Failures
-- **Database Corruption**: Restore from backup and alert
-- **Network Outage**: Maintain protective stops, halt new trades
-- **WSL2 System Failure**: Emergency shutdown protocol
+#### レベル3: システム全体障害
+- **データベース破損**: バックアップから復元とアラート
+- **ネットワーク障害**: 保護ストップ維持、新規取引停止
+- **WSL2システム障害**: 緊急シャットダウンプロトコル
 
-### Recovery Flow Diagram
+### 復旧フロー図
 
 ```mermaid
 flowchart TD
@@ -255,58 +255,58 @@ flowchart TD
     ALERT --> MANUAL[Manual Intervention Required]
 ```
 
-## Testing Strategy
+## テスト戦略
 
-### Unit Testing
-- Individual component testing
-- Mock interfaces for external dependencies
-- Performance benchmarking for critical paths
+### 単体テスト
+- 個別コンポーネントテスト
+- 外部依存関係のモックインターフェース
+- 重要パスのパフォーマンスベンチマーク
 
-### Integration Testing
-- End-to-end signal flow testing
-- Communication protocol validation
-- Failover scenario testing
+### 統合テスト
+- エンドツーエンドシグナルフローテスト
+- 通信プロトコル検証
+- フェイルオーバーシナリオテスト
 
-### System Testing
-- Load testing with historical data
-- Stress testing under high volatility
-- Recovery testing from various failure states
+### システムテスト
+- 履歴データを使用した負荷テスト
+- 高ボラティリティ下でのストレステスト
+- 各種障害状態からの復旧テスト
 
-### Performance Testing
-- Latency measurement (<50ms requirement)
-- Throughput testing (signals per second)
-- Resource utilization monitoring
+### パフォーマンステスト
+- レイテンシ測定（50ms要件）
+- スループットテスト（秒間シグナル数）
+- リソース使用率監視
 
-## Security Considerations
+## セキュリティ考慮事項
 
-### Communication Security
-- Local network communication only
-- Message integrity validation
-- Connection authentication
+### 通信セキュリティ
+- ローカルネットワーク通信のみ
+- メッセージ整合性検証
+- 接続認証
 
-### Data Protection
-- Encrypted database storage
-- Secure file permissions
-- Audit trail logging
+### データ保護
+- 暗号化データベースストレージ
+- セキュアファイル権限
+- 監査証跡ログ
 
-### Access Control
-- Component-level access restrictions
-- Configuration file protection
-- Log file access control
+### アクセス制御
+- コンポーネントレベルアクセス制限
+- 設定ファイル保護
+- ログファイルアクセス制御
 
-## Performance Optimization
+## パフォーマンス最適化
 
-### Latency Optimization
-- Connection pooling for TCP sockets
-- Message batching for non-critical updates
-- Asynchronous processing where possible
+### レイテンシ最適化
+- TCPソケット用接続プール
+- 非重要更新のメッセージバッチ処理
+- 可能な限りの非同期処理
 
-### Resource Management
-- Memory pool allocation
-- CPU affinity for critical processes
-- Disk I/O optimization
+### リソース管理
+- メモリプール割り当て
+- 重要プロセスのCPUアフィニティ
+- ディスクI/O最適化
 
-### Scalability Considerations
-- Horizontal scaling capability
-- Load balancing for multiple MT4 instances
-- Database partitioning strategy
+### スケーラビリティ考慮事項
+- 水平スケーリング機能
+- 複数MT4インスタンスの負荷分散
+- データベースパーティション戦略
