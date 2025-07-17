@@ -1,232 +1,232 @@
-# Implementation Plan
+# 実装計画書
 
 **作成日時**: 2025年7月18日 07:26 JST  
 **作成者**: Kiro AI IDE  
 **プロジェクト**: ブレイクアウト手法実運用システム統合プロジェクト
 
-## Phase 1: Communication Infrastructure Prototype (Critical Priority)
+## フェーズ1: 通信インフラプロトタイプ（最重要優先度）
 
-- [ ] 1. Create Python-MT4 Bridge prototype with multiple communication methods
-  - Implement TCP socket communication class with connection pooling
-  - Implement file-based communication as fallback mechanism
-  - Implement named pipe communication as alternative method
-  - Create communication protocol message format and validation
-  - Build automatic failover logic between communication methods
-  - _Requirements: 3.1, 3.3_
+- [ ] 1. 複数通信方式を持つPython-MT4ブリッジプロトタイプの作成
+  - 接続プール付きTCPソケット通信クラスの実装
+  - フォールバック機構としてのファイルベース通信の実装
+  - 代替方式として名前付きパイプ通信の実装
+  - 通信プロトコルメッセージ形式と検証の作成
+  - 通信方式間の自動フェイルオーバーロジックの構築
+  - _要件: 3.1, 3.3_
 
-- [ ] 1.1 Implement TCP Socket Bridge
-  - Create TCPBridge class with async socket handling
-  - Implement connection management with automatic reconnection
-  - Add heartbeat mechanism for connection health monitoring
-  - Create message serialization/deserialization for trading signals
-  - Write unit tests for TCP communication under various network conditions
-  - _Requirements: 3.1, 3.2_
+- [ ] 1.1 TCPソケットブリッジの実装
+  - 非同期ソケット処理を持つTCPBridgeクラスの作成
+  - 自動再接続機能付き接続管理の実装
+  - 接続健全性監視のためのハートビート機構の追加
+  - 取引シグナル用メッセージシリアライゼーション/デシリアライゼーションの作成
+  - 各種ネットワーク条件下でのTCP通信の単体テスト作成
+  - _要件: 3.1, 3.2_
 
-- [ ] 1.2 Implement File-based Fallback Bridge
-  - Create FileBridge class with file locking mechanisms
-  - Implement JSON-based message format for cross-platform compatibility
-  - Add file system monitoring for real-time message detection
-  - Create cleanup mechanism for processed message files
-  - Write unit tests for file-based communication with concurrent access
-  - _Requirements: 3.3_
+- [ ] 1.2 ファイルベースフォールバックブリッジの実装
+  - ファイルロック機構を持つFileBridgeクラスの作成
+  - クロスプラットフォーム互換性のためのJSONベースメッセージ形式の実装
+  - リアルタイムメッセージ検出のためのファイルシステム監視の追加
+  - 処理済みメッセージファイルのクリーンアップ機構の作成
+  - 同時アクセスでのファイルベース通信の単体テスト作成
+  - _要件: 3.3_
 
-- [ ] 1.3 Create MT4 Expert Advisor communication stub
-  - Write basic MQL4 EA with TCP socket client functionality
-  - Implement signal reception and acknowledgment system
-  - Add file monitoring capability for fallback communication
-  - Create basic trade execution simulation for testing
-  - Write MT4 backtest-compatible version for validation
-  - _Requirements: 1.1, 3.1, 3.2_
+- [ ] 1.3 MT4エキスパートアドバイザー通信スタブの作成
+  - TCPソケットクライアント機能を持つ基本MQL4 EAの作成
+  - シグナル受信と確認応答システムの実装
+  - フォールバック通信のためのファイル監視機能の追加
+  - テスト用基本取引実行シミュレーションの作成
+  - 検証用MT4バックテスト対応版の作成
+  - _要件: 1.1, 3.1, 3.2_
 
-- [ ] 1.4 Build communication protocol integration tests
-  - Create end-to-end communication test suite
-  - Test all communication methods under normal conditions
-  - Test failover scenarios with network interruptions
-  - Measure and validate latency requirements (<50ms)
-  - Create stress test for high-frequency signal transmission
-  - _Requirements: 3.1, 3.2, 3.3_
+- [ ] 1.4 通信プロトコル統合テストの構築
+  - エンドツーエンド通信テストスイートの作成
+  - 通常条件下での全通信方式のテスト
+  - ネットワーク中断でのフェイルオーバーシナリオテスト
+  - レイテンシ要件（<50ms）の測定と検証
+  - 高頻度シグナル送信のストレステスト作成
+  - _要件: 3.1, 3.2, 3.3_
 
-## Phase 2: Real-time Signal Generation System
+## フェーズ2: リアルタイムシグナル生成システム
 
-- [ ] 2. Implement real-time market data processing and signal generation
-  - Create market data feed interface compatible with existing WFA system
-  - Implement real-time breakout signal detection using WFA-optimized parameters
-  - Build signal quality evaluation and filtering system
-  - Create signal transmission queue with priority handling
-  - Integrate with existing slippage model for realistic execution simulation
-  - _Requirements: 1.1, 1.2, 1.3_
+- [ ] 2. リアルタイム市場データ処理とシグナル生成の実装
+  - 既存WFAシステムと互換性のある市場データフィードインターフェースの作成
+  - WFA最適化パラメータを使用したリアルタイムブレイクアウトシグナル検出の実装
+  - シグナル品質評価とフィルタリングシステムの構築
+  - 優先度処理付きシグナル送信キューの作成
+  - 現実的実行シミュレーションのための既存スリッパージモデルとの統合
+  - _要件: 1.1, 1.2, 1.3_
 
-- [ ] 2.1 Create market data feed interface
-  - Implement real-time price data acquisition from MT4
-  - Create data validation and cleaning pipeline
-  - Build data buffer management for historical lookback requirements
-  - Add data feed health monitoring and automatic reconnection
-  - Write unit tests for data feed reliability and accuracy
-  - _Requirements: 1.2_
+- [ ] 2.1 市場データフィードインターフェースの作成
+  - MT4からのリアルタイム価格データ取得の実装
+  - データ検証とクリーニングパイプラインの作成
+  - 履歴ルックバック要件のためのデータバッファ管理の構築
+  - データフィード健全性監視と自動再接続の追加
+  - データフィード信頼性と精度の単体テスト作成
+  - _要件: 1.2_
 
-- [ ] 2.2 Implement signal generation engine
-  - Create SignalGenerator class using existing BreakoutStrategy logic
-  - Implement parameter loading from WFA optimization results
-  - Add signal confidence scoring based on market conditions
-  - Create signal filtering based on risk management rules
-  - Write comprehensive unit tests for signal generation accuracy
-  - _Requirements: 1.1, 1.3_
+- [ ] 2.2 シグナル生成エンジンの実装
+  - 既存BreakoutStrategyロジックを使用したSignalGeneratorクラスの作成
+  - WFA最適化結果からのパラメータ読み込みの実装
+  - 市場状況に基づくシグナル信頼度スコアリングの追加
+  - リスク管理ルールに基づくシグナルフィルタリングの作成
+  - シグナル生成精度の包括的単体テスト作成
+  - _要件: 1.1, 1.3_
 
-- [ ] 2.3 Build signal transmission system
-  - Create signal queue management with priority levels
-  - Implement signal batching for efficiency optimization
-  - Add signal acknowledgment tracking and retry logic
-  - Create signal performance monitoring and logging
-  - Write integration tests with communication bridge
-  - _Requirements: 1.1, 3.2_
+- [ ] 2.3 シグナル送信システムの構築
+  - 優先度レベル付きシグナルキュー管理の作成
+  - 効率最適化のためのシグナルバッチ処理の実装
+  - シグナル確認応答追跡とリトライロジックの追加
+  - シグナルパフォーマンス監視とログ記録の作成
+  - 通信ブリッジとの統合テスト作成
+  - _要件: 1.1, 3.2_
 
-## Phase 3: Position Management and Risk Control
+## フェーズ3: ポジション管理とリスク制御
 
-- [ ] 3. Develop comprehensive position management and risk control system
-  - Create position tracking system with real-time P&L calculation
-  - Implement dynamic position sizing based on volatility and account balance
-  - Build risk limit monitoring with automatic trading halt functionality
-  - Create drawdown protection with emergency position closure
-  - Integrate with existing system health monitoring infrastructure
-  - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
+- [ ] 3. 包括的ポジション管理とリスク制御システムの開発
+  - リアルタイムP&L計算付きポジション追跡システムの作成
+  - ボラティリティと口座残高に基づく動的ポジションサイジングの実装
+  - 自動取引停止機能付きリスク限界監視の構築
+  - 緊急ポジション決済付きドローダウン保護の作成
+  - 既存システム健全性監視インフラとの統合
+  - _要件: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 3.1 Implement position tracking system
-  - Create Position class with real-time P&L calculation
-  - Implement position synchronization between Python and MT4
-  - Add position history tracking and performance analytics
-  - Create position state persistence for system restart recovery
-  - Write unit tests for position calculation accuracy
-  - _Requirements: 4.1_
+- [ ] 3.1 ポジション追跡システムの実装
+  - リアルタイムP&L計算付きPositionクラスの作成
+  - PythonとMT4間のポジション同期の実装
+  - ポジション履歴追跡とパフォーマンス分析の追加
+  - システム再起動復旧のためのポジション状態永続化の作成
+  - ポジション計算精度の単体テスト作成
+  - _要件: 4.1_
 
-- [ ] 3.2 Build risk management engine
-  - Create RiskManager class with configurable risk parameters
-  - Implement maximum drawdown monitoring with automatic halt
-  - Add position sizing calculation based on volatility and account size
-  - Create risk limit validation for all trading signals
-  - Write unit tests for risk calculation and limit enforcement
-  - _Requirements: 4.1, 4.2, 4.3_
+- [ ] 3.2 リスク管理エンジンの構築
+  - 設定可能リスクパラメータ付きRiskManagerクラスの作成
+  - 自動停止付き最大ドローダウン監視の実装
+  - ボラティリティと口座サイズに基づくポジションサイズ計算の追加
+  - 全取引シグナルのリスク限界検証の作成
+  - リスク計算と限界執行の単体テスト作成
+  - _要件: 4.1, 4.2, 4.3_
 
-- [ ] 3.3 Implement emergency protection system
-  - Create emergency shutdown protocol for system failures
-  - Implement automatic position closure on risk limit breach
-  - Add network connectivity monitoring with protective stop maintenance
-  - Create manual override system for emergency situations
-  - Write integration tests for emergency scenarios
-  - _Requirements: 4.4, 4.5_
+- [ ] 3.3 緊急保護システムの実装
+  - システム障害時の緊急シャットダウンプロトコルの作成
+  - リスク限界違反時の自動ポジション決済の実装
+  - 保護ストップ維持付きネットワーク接続監視の追加
+  - 緊急時の手動オーバーライドシステムの作成
+  - 緊急シナリオの統合テスト作成
+  - _要件: 4.4, 4.5_
 
-## Phase 4: Data Persistence and System Integration
+## フェーズ4: データ永続化とシステム統合
 
-- [ ] 4. Complete system integration with comprehensive data persistence and monitoring
-  - Extend existing SQLite database schema for trading operations
-  - Implement system state snapshots with automatic backup and recovery
-  - Create comprehensive system health monitoring dashboard
-  - Build performance reporting and analytics system
-  - Ensure full compatibility with existing cron automation infrastructure
-  - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3, 6.4, 6.5_
+- [ ] 4. 包括的データ永続化と監視によるシステム統合の完了
+  - 取引操作のための既存SQLiteデータベーススキーマの拡張
+  - 自動バックアップと復旧付きシステム状態スナップショットの実装
+  - 包括的システム健全性監視ダッシュボードの作成
+  - パフォーマンスレポートと分析システムの構築
+  - 既存cron自動化インフラとの完全互換性の確保
+  - _要件: 5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 4.1 Extend database schema for trading operations
-  - Create tables for trading signals, executions, and positions
-  - Implement database migration system for schema updates
-  - Add data integrity constraints and validation rules
-  - Create database backup and recovery procedures
-  - Write unit tests for database operations and data integrity
-  - _Requirements: 5.1, 5.4_
+- [ ] 4.1 取引操作のためのデータベーススキーマ拡張
+  - 取引シグナル、実行、ポジション用テーブルの作成
+  - スキーマ更新のためのデータベース移行システムの実装
+  - データ整合性制約と検証ルールの追加
+  - データベースバックアップと復旧手順の作成
+  - データベース操作とデータ整合性の単体テスト作成
+  - _要件: 5.1, 5.4_
 
-- [ ] 4.2 Implement system state management
-  - Create SystemStateManager class for snapshot creation and restoration
-  - Implement automatic hourly state snapshots
-  - Add system recovery procedures for crash scenarios
-  - Create state validation and corruption detection
-  - Write integration tests for system recovery scenarios
-  - _Requirements: 5.2, 5.3_
+- [ ] 4.2 システム状態管理の実装
+  - スナップショット作成と復元のためのSystemStateManagerクラスの作成
+  - 自動毎時状態スナップショットの実装
+  - クラッシュシナリオのためのシステム復旧手順の追加
+  - 状態検証と破損検出の作成
+  - システム復旧シナリオの統合テスト作成
+  - _要件: 5.2, 5.3_
 
-- [ ] 4.3 Build comprehensive monitoring system
-  - Create HealthMonitor class extending existing system monitoring
-  - Implement component health checks and availability monitoring
-  - Add performance metrics collection and alerting
-  - Create monitoring dashboard with real-time system status
-  - Write unit tests for monitoring accuracy and alert reliability
-  - _Requirements: 2.1, 2.2, 2.4_
+- [ ] 4.3 包括的監視システムの構築
+  - 既存システム監視を拡張するHealthMonitorクラスの作成
+  - コンポーネント健全性チェックと可用性監視の実装
+  - パフォーマンス指標収集とアラート機能の追加
+  - リアルタイムシステムステータス付き監視ダッシュボードの作成
+  - 監視精度とアラート信頼性の単体テスト作成
+  - _要件: 2.1, 2.2, 2.4_
 
-- [ ] 4.4 Create performance reporting system
-  - Implement daily and weekly performance report generation
-  - Create trading analytics with strategy performance breakdown
-  - Add system performance metrics and optimization recommendations
-  - Create automated report delivery system
-  - Write unit tests for report accuracy and completeness
-  - _Requirements: 2.5_
+- [ ] 4.4 パフォーマンスレポートシステムの作成
+  - 日次・週次パフォーマンスレポート生成の実装
+  - 戦略パフォーマンス内訳付き取引分析の作成
+  - システムパフォーマンス指標と最適化推奨の追加
+  - 自動レポート配信システムの作成
+  - レポート精度と完全性の単体テスト作成
+  - _要件: 2.5_
 
-- [ ] 4.5 Ensure compatibility with existing automation
-  - Validate integration with existing cron automation system
-  - Test compatibility with current 19-worker parallel processing
-  - Verify operational window compliance (09:00-22:00)
-  - Create hot-swap capability for individual components
-  - Write integration tests for existing system compatibility
-  - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
+- [ ] 4.5 既存自動化との互換性確保
+  - 既存cron自動化システムとの統合検証
+  - 現在の19ワーカー並列処理との互換性テスト
+  - 運用時間窓（09:00-22:00）遵守の検証
+  - 個別コンポーネントのホットスワップ機能の作成
+  - 既存システム互換性の統合テスト作成
+  - _要件: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-## Technical Risk Analysis and Mitigation
+## 技術リスク分析と軽減策
 
-### High Risk: Python-MT4 Communication (Phase 1)
-**Risk**: WSL2-Windows inter-process communication instability
-**Mitigation**: 
-- Multiple communication protocols implementation
-- Comprehensive failover testing
-- File-based fallback as guaranteed communication method
+### 高リスク: Python-MT4通信（フェーズ1）
+**リスク**: WSL2-Windows間プロセス通信の不安定性
+**軽減策**: 
+- 複数通信プロトコルの実装
+- 包括的フェイルオーバーテスト
+- 保証された通信方式としてのファイルベースフォールバック
 
-### Medium Risk: Real-time Performance (Phase 2)
-**Risk**: Latency requirements not met (<50ms)
-**Mitigation**:
-- Performance profiling at each development step
-- Asynchronous processing implementation
-- Connection pooling and message batching
+### 中リスク: リアルタイムパフォーマンス（フェーズ2）
+**リスク**: レイテンシ要件（<50ms）未達成
+**軽減策**:
+- 各開発ステップでのパフォーマンスプロファイリング
+- 非同期処理の実装
+- 接続プールとメッセージバッチ処理
 
-### Medium Risk: System Integration (Phase 4)
-**Risk**: Compatibility issues with existing Gemini 5.0/5.0 system
-**Mitigation**:
-- Read-only access to existing components
-- Comprehensive integration testing
-- Rollback procedures for each phase
+### 中リスク: システム統合（フェーズ4）
+**リスク**: 既存Gemini 5.0/5.0システムとの互換性問題
+**軽減策**:
+- 既存コンポーネントへの読み取り専用アクセス
+- 包括的統合テスト
+- 各フェーズのロールバック手順
 
-## Validation and Testing Strategy
+## 検証とテスト戦略
 
-### Phase 1 Validation
-- Communication latency measurement (<50ms)
-- Failover testing under network interruption
-- Message integrity validation across all protocols
+### フェーズ1検証
+- 通信レイテンシ測定（<50ms）
+- ネットワーク中断下でのフェイルオーバーテスト
+- 全プロトコルでのメッセージ整合性検証
 
-### Phase 2 Validation
-- Signal generation accuracy comparison with backtests
-- Real-time performance under market volatility
-- Integration testing with Phase 1 communication
+### フェーズ2検証
+- バックテストとのシグナル生成精度比較
+- 市場ボラティリティ下でのリアルタイムパフォーマンス
+- フェーズ1通信との統合テスト
 
-### Phase 3 Validation
-- Risk management effectiveness under stress scenarios
-- Position tracking accuracy validation
-- Emergency shutdown procedure testing
+### フェーズ3検証
+- ストレスシナリオ下でのリスク管理有効性
+- ポジション追跡精度検証
+- 緊急シャットダウン手順テスト
 
-### Phase 4 Validation
-- End-to-end system testing with live market simulation
-- Performance comparison with existing system benchmarks
-- Long-term stability testing over extended periods
+### フェーズ4検証
+- ライブ市場シミュレーションでのエンドツーエンドシステムテスト
+- 既存システムベンチマークとのパフォーマンス比較
+- 長期間での安定性テスト
 
-## Success Criteria
+## 成功基準
 
-### Phase 1 Success
-- All three communication methods functional
-- Latency <50ms achieved consistently
-- Automatic failover working reliably
+### フェーズ1成功
+- 3つの通信方式すべてが機能
+- レイテンシ<50msを一貫して達成
+- 自動フェイルオーバーが確実に動作
 
-### Phase 2 Success
-- Real-time signal generation matching backtest results
-- Signal transmission rate >100 signals/minute
-- Integration with existing WFA parameters confirmed
+### フェーズ2成功
+- バックテスト結果と一致するリアルタイムシグナル生成
+- シグナル送信レート>100シグナル/分
+- 既存WFAパラメータとの統合確認
 
-### Phase 3 Success
-- Risk limits enforced automatically
-- Position tracking 100% accurate
-- Emergency procedures tested and validated
+### フェーズ3成功
+- リスク限界の自動執行
+- ポジション追跡100%精度
+- 緊急手順のテストと検証完了
 
-### Phase 4 Success
-- Full system integration completed
-- Performance metrics meeting all requirements
-- 99%+ system availability achieved
+### フェーズ4成功
+- 完全システム統合完了
+- 全要件を満たすパフォーマンス指標
+- 99%以上のシステム可用性達成
