@@ -106,8 +106,10 @@ class TestPhase2Integration(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as tmp_db:
             # テスト用データベース設定
             import realtime_signal_generator
-            original_db_path = realtime_signal_generator.CONFIG['database_path']
-            realtime_signal_generator.CONFIG['database_path'] = tmp_db.name
+            original_config = realtime_signal_generator.CONFIG.copy()
+            if 'database' not in realtime_signal_generator.CONFIG:
+                realtime_signal_generator.CONFIG['database'] = {}
+            realtime_signal_generator.CONFIG['database']['path'] = tmp_db.name
             
             try:
                 # 送信システム初期化
@@ -137,7 +139,7 @@ class TestPhase2Integration(unittest.TestCase):
                 
             finally:
                 # 設定復元
-                realtime_signal_generator.CONFIG['database_path'] = original_db_path
+                realtime_signal_generator.CONFIG.update(original_config)
 
 class TestPhase2AsyncIntegration(unittest.IsolatedAsyncioTestCase):
     """Phase2非同期統合テスト"""
