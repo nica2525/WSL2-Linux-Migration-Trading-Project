@@ -1,0 +1,731 @@
+#!/usr/bin/env python3
+"""
+Phase 2: Real-time Signal Generation System
+Phase2タスク2.1-2.3実装 - kiro設計計画に基づく実装
+
+参照設計書: .kiro/specs/breakout-trading-system/tasks.md
+要件: 1.1, 1.2, 1.3 (requirements.md)
+実装担当: Claude (設計: kiro)
+"""
+
+import asyncio
+import json
+import time
+import logging
+import sqlite3
+import threading
+from datetime import datetime, timedelta
+from dataclasses import dataclass, asdict
+from typing import Dict, List, Optional, Any, Tuple
+from queue import PriorityQueue, Queue
+import pandas as pd
+import numpy as np
+from pathlib import Path
+import pickle
+import sys
+import os
+
+# 既存システムとの統合
+sys.path.append(str(Path(__file__).parent))
+from communication.tcp_bridge import TCPBridge
+from communication.file_bridge import FileBridge
+
+# 設定
+CONFIG = {
+    'data_buffer_size': 10000,
+    'signal_quality_threshold': 0.7,
+    'max_signals_per_minute': 100,
+    'health_check_interval': 30,
+    'reconnect_attempts': 3,
+    'wfa_results_path': './enhanced_parallel_wfa_with_slippage.py',
+    'database_path': './realtime_signals.db'
+}
+
+# ログ設定
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('realtime_signal_generator.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+@dataclass
+class MarketData:
+    """市場データ構造"""
+    timestamp: datetime
+    symbol: str
+    open: float
+    high: float
+    low: float
+    close: float
+    volume: float
+    
+    def to_dict(self) -> Dict:
+        return {
+            'timestamp': self.timestamp.isoformat(),
+            'symbol': self.symbol,
+            'open': self.open,
+            'high': self.high,
+            'low': self.low,
+            'close': self.close,
+            'volume': self.volume
+        }
+
+@dataclass
+class TradingSignal:
+    """取引シグナル構造 - kiro設計design.md準拠"""
+    timestamp: datetime
+    symbol: str
+    action: str  # 'BUY', 'SELL', 'CLOSE'
+    quantity: float
+    price: Optional[float] = None
+    stop_loss: Optional[float] = None
+    take_profit: Optional[float] = None
+    signal_quality: float = 0.0
+    strategy_params: Dict = None
+    priority: int = 1  # 1=High, 2=Medium, 3=Low
+    
+    def __post_init__(self):
+        if self.strategy_params is None:
+            self.strategy_params = {}
+    
+    def __lt__(self, other):
+        return self.priority < other.priority
+
+class MarketDataFeed:
+    """
+    Phase2タスク2.1: 市場データフィードインターフェース
+    kiro設計tasks.md:59-65準拠
+    """
+    
+    def __init__(self):
+        self.is_running = False
+        self.data_buffer = []
+        self.buffer_lock = threading.Lock()
+        self.subscribers = []
+        self.tcp_bridge = TCPBridge(host='localhost', port=9091)  # MT4データ受信用
+        self.file_bridge = FileBridge(shared_dir='/mnt/c/MT4_Bridge')
+        self.last_health_check = time.time()
+        
+    async def start(self):
+        """データフィード開始"""
+        logger.info("Market data feed starting...")
+        self.is_running = True
+        
+        # TCP接続試行
+        if await self._connect_tcp():
+            logger.info("TCP connection established")
+        else:
+            logger.warning("TCP connection failed, using file bridge")
+        
+        # データ取得ループ開始
+        asyncio.create_task(self._data_collection_loop())
+        asyncio.create_task(self._health_monitor_loop())
+        
+    async def _connect_tcp(self) -> bool:
+        """TCP接続確立"""
+        try:
+            return await self.tcp_bridge.connect()
+        except Exception as e:
+            logger.error(f"TCP connection failed: {e}")
+            return False
+    
+    async def _data_collection_loop(self):
+        """データ収集メインループ"""
+        while self.is_running:
+            try:
+                # TCP経由でデータ取得試行
+                data = await self._get_tcp_data()
+                if not data:
+                    # フォールバック: ファイル経由
+                    data = await self._get_file_data()
+                
+                if data:
+                    await self._process_market_data(data)
+                    
+                await asyncio.sleep(0.1)  # 100ms間隔
+                
+            except Exception as e:
+                logger.error(f"Data collection error: {e}")
+                await asyncio.sleep(1)
+    
+    async def _get_tcp_data(self) -> Optional[Dict]:
+        """TCP経由データ取得"""
+        try:
+            if self.tcp_bridge.is_connected():
+                return await self.tcp_bridge.receive_data()
+        except Exception as e:
+            logger.warning(f"TCP data fetch failed: {e}")
+        return None
+    
+    async def _get_file_data(self) -> Optional[Dict]:
+        """ファイル経由データ取得"""
+        try:
+            return await self.file_bridge.read_market_data()
+        except Exception as e:
+            logger.warning(f"File data fetch failed: {e}")
+        return None
+    
+    async def _process_market_data(self, raw_data: Dict):
+        """データ処理・検証・バッファ管理"""
+        try:
+            # データ検証
+            if not self._validate_data(raw_data):
+                logger.warning(f"Invalid data received: {raw_data}")
+                return
+            
+            # MarketDataオブジェクト作成
+            market_data = MarketData(
+                timestamp=datetime.fromisoformat(raw_data['timestamp']),
+                symbol=raw_data['symbol'],
+                open=float(raw_data['open']),
+                high=float(raw_data['high']),
+                low=float(raw_data['low']),
+                close=float(raw_data['close']),
+                volume=float(raw_data.get('volume', 0))
+            )
+            
+            # バッファ管理
+            with self.buffer_lock:
+                self.data_buffer.append(market_data)
+                if len(self.data_buffer) > CONFIG['data_buffer_size']:
+                    self.data_buffer.pop(0)
+            
+            # 購読者に通知
+            for subscriber in self.subscribers:
+                await subscriber(market_data)
+                
+        except Exception as e:
+            logger.error(f"Data processing error: {e}")
+    
+    def _validate_data(self, data: Dict) -> bool:
+        """データ品質検証"""
+        required_fields = ['timestamp', 'symbol', 'open', 'high', 'low', 'close']
+        
+        if not all(field in data for field in required_fields):
+            return False
+        
+        try:
+            o, h, l, c = float(data['open']), float(data['high']), float(data['low']), float(data['close'])
+            # 基本的な価格整合性チェック
+            if not (l <= o <= h and l <= c <= h):
+                return False
+            if any(price <= 0 for price in [o, h, l, c]):
+                return False
+        except (ValueError, TypeError):
+            return False
+        
+        return True
+    
+    async def _health_monitor_loop(self):
+        """健全性監視ループ"""
+        while self.is_running:
+            try:
+                current_time = time.time()
+                if current_time - self.last_health_check > CONFIG['health_check_interval']:
+                    await self._perform_health_check()
+                    self.last_health_check = current_time
+                
+                await asyncio.sleep(10)
+            except Exception as e:
+                logger.error(f"Health monitor error: {e}")
+    
+    async def _perform_health_check(self):
+        """健全性チェック実行"""
+        # TCP接続チェック
+        if not self.tcp_bridge.is_connected():
+            logger.warning("TCP connection lost, attempting reconnection...")
+            await self._connect_tcp()
+        
+        # データ受信チェック
+        with self.buffer_lock:
+            if len(self.data_buffer) == 0:
+                logger.warning("No data received recently")
+            else:
+                last_data_time = self.data_buffer[-1].timestamp
+                time_diff = datetime.now() - last_data_time
+                if time_diff.total_seconds() > 60:
+                    logger.warning(f"Last data is {time_diff.total_seconds():.1f}s old")
+    
+    def subscribe(self, callback):
+        """データ購読登録"""
+        self.subscribers.append(callback)
+    
+    def get_recent_data(self, symbol: str, count: int = 100) -> List[MarketData]:
+        """最近のデータ取得"""
+        with self.buffer_lock:
+            symbol_data = [d for d in self.data_buffer if d.symbol == symbol]
+            return symbol_data[-count:] if symbol_data else []
+
+class SignalGenerator:
+    """
+    Phase2タスク2.2: シグナル生成エンジン
+    kiro設計tasks.md:67-73準拠
+    """
+    
+    def __init__(self, market_feed: MarketDataFeed):
+        self.market_feed = market_feed
+        self.wfa_params = {}
+        self.is_running = False
+        self.signal_queue = PriorityQueue()
+        
+        # WFA最適化結果読み込み
+        self._load_wfa_parameters()
+        
+        # データ購読
+        self.market_feed.subscribe(self._on_market_data)
+    
+    def _load_wfa_parameters(self):
+        """WFA最適化結果からパラメータ読み込み"""
+        try:
+            # 既存enhanced_parallel_wfa_with_slippage.pyの結果ファイル探索
+            results_files = list(Path('.').glob('*wfa_results*.json'))
+            if results_files:
+                latest_file = max(results_files, key=os.path.getctime)
+                with open(latest_file, 'r') as f:
+                    wfa_results = json.load(f)
+                
+                # 最適パラメータ抽出
+                if 'best_parameters' in wfa_results:
+                    self.wfa_params = wfa_results['best_parameters']
+                    logger.info(f"WFA parameters loaded: {self.wfa_params}")
+                else:
+                    self._set_default_parameters()
+            else:
+                self._set_default_parameters()
+                
+        except Exception as e:
+            logger.error(f"Failed to load WFA parameters: {e}")
+            self._set_default_parameters()
+    
+    def _set_default_parameters(self):
+        """デフォルトパラメータ設定"""
+        self.wfa_params = {
+            'lookback_period': 20,
+            'breakout_threshold': 2.0,
+            'volume_filter': True,
+            'atr_period': 14,
+            'min_volume_ratio': 1.5
+        }
+        logger.info("Default parameters set")
+    
+    async def _on_market_data(self, market_data: MarketData):
+        """市場データ受信時の処理"""
+        try:
+            # ブレイクアウトシグナル検出
+            signal = await self._detect_breakout_signal(market_data)
+            if signal:
+                # シグナル品質評価
+                signal.signal_quality = self._evaluate_signal_quality(signal, market_data)
+                
+                # 品質閾値チェック
+                if signal.signal_quality >= CONFIG['signal_quality_threshold']:
+                    # 優先度設定
+                    signal.priority = self._calculate_priority(signal)
+                    
+                    # キューに追加
+                    await self.signal_queue.put(signal)
+                    logger.info(f"Signal generated: {signal.action} {signal.symbol} (Quality: {signal.signal_quality:.3f})")
+                
+        except Exception as e:
+            logger.error(f"Signal generation error: {e}")
+    
+    async def _detect_breakout_signal(self, current_data: MarketData) -> Optional[TradingSignal]:
+        """ブレイクアウトシグナル検出ロジック"""
+        try:
+            # 履歴データ取得
+            historical_data = self.market_feed.get_recent_data(
+                current_data.symbol, 
+                self.wfa_params.get('lookback_period', 20) + 1
+            )
+            
+            if len(historical_data) < self.wfa_params.get('lookback_period', 20):
+                return None
+            
+            # DataFrame変換
+            df = pd.DataFrame([d.to_dict() for d in historical_data])
+            df['timestamp'] = pd.to_datetime(df['timestamp'])
+            df = df.set_index('timestamp').sort_index()
+            
+            # ブレイクアウト検出
+            lookback = self.wfa_params.get('lookback_period', 20)
+            current_price = current_data.close
+            
+            # 最高値・最安値計算
+            recent_high = df['high'].tail(lookback).max()
+            recent_low = df['low'].tail(lookback).min()
+            
+            # ATRベースの閾値
+            atr_period = self.wfa_params.get('atr_period', 14)
+            if len(df) >= atr_period:
+                df['tr'] = np.maximum(
+                    df['high'] - df['low'],
+                    np.maximum(
+                        abs(df['high'] - df['close'].shift(1)),
+                        abs(df['low'] - df['close'].shift(1))
+                    )
+                )
+                atr = df['tr'].tail(atr_period).mean()
+                breakout_threshold = atr * self.wfa_params.get('breakout_threshold', 2.0)
+            else:
+                breakout_threshold = (recent_high - recent_low) * 0.1
+            
+            # ブレイクアウト判定
+            if current_price > recent_high + breakout_threshold:
+                # 上方ブレイクアウト
+                return TradingSignal(
+                    timestamp=current_data.timestamp,
+                    symbol=current_data.symbol,
+                    action='BUY',
+                    quantity=self._calculate_position_size(current_data, 'BUY'),
+                    price=current_price,
+                    stop_loss=recent_low,
+                    take_profit=current_price + (current_price - recent_low) * 2,
+                    strategy_params=self.wfa_params.copy()
+                )
+            
+            elif current_price < recent_low - breakout_threshold:
+                # 下方ブレイクアウト
+                return TradingSignal(
+                    timestamp=current_data.timestamp,
+                    symbol=current_data.symbol,
+                    action='SELL',
+                    quantity=self._calculate_position_size(current_data, 'SELL'),
+                    price=current_price,
+                    stop_loss=recent_high,
+                    take_profit=current_price - (recent_high - current_price) * 2,
+                    strategy_params=self.wfa_params.copy()
+                )
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Breakout detection error: {e}")
+            return None
+    
+    def _evaluate_signal_quality(self, signal: TradingSignal, market_data: MarketData) -> float:
+        """シグナル品質評価"""
+        try:
+            quality_score = 0.0
+            
+            # ボリューム評価
+            historical_data = self.market_feed.get_recent_data(market_data.symbol, 20)
+            if len(historical_data) >= 10:
+                avg_volume = np.mean([d.volume for d in historical_data[-10:]])
+                if market_data.volume > avg_volume * self.wfa_params.get('min_volume_ratio', 1.5):
+                    quality_score += 0.3
+            
+            # 価格モメンタム評価
+            if len(historical_data) >= 5:
+                recent_prices = [d.close for d in historical_data[-5:]]
+                price_momentum = (recent_prices[-1] - recent_prices[0]) / recent_prices[0]
+                if (signal.action == 'BUY' and price_momentum > 0.001) or \
+                   (signal.action == 'SELL' and price_momentum < -0.001):
+                    quality_score += 0.4
+            
+            # リスク・リワード比
+            if signal.stop_loss and signal.take_profit:
+                risk = abs(signal.price - signal.stop_loss)
+                reward = abs(signal.take_profit - signal.price)
+                if risk > 0:
+                    rr_ratio = reward / risk
+                    if rr_ratio >= 2.0:
+                        quality_score += 0.3
+                    elif rr_ratio >= 1.5:
+                        quality_score += 0.2
+            
+            return min(quality_score, 1.0)
+            
+        except Exception as e:
+            logger.error(f"Quality evaluation error: {e}")
+            return 0.0
+    
+    def _calculate_priority(self, signal: TradingSignal) -> int:
+        """シグナル優先度計算"""
+        if signal.signal_quality >= 0.9:
+            return 1  # High
+        elif signal.signal_quality >= 0.8:
+            return 2  # Medium
+        else:
+            return 3  # Low
+    
+    def _calculate_position_size(self, market_data: MarketData, action: str) -> float:
+        """ポジションサイズ計算"""
+        # 基本サイズ（後でリスク管理システムと統合）
+        return 0.1
+    
+    async def get_next_signal(self) -> Optional[TradingSignal]:
+        """次のシグナル取得"""
+        try:
+            if not self.signal_queue.empty():
+                return await self.signal_queue.get()
+        except Exception as e:
+            logger.error(f"Signal retrieval error: {e}")
+        return None
+
+class SignalTransmissionSystem:
+    """
+    Phase2タスク2.3: シグナル送信システム
+    kiro設計tasks.md:75-81準拠
+    """
+    
+    def __init__(self):
+        self.tcp_bridge = TCPBridge(host='localhost', port=9090)  # MT4送信用
+        self.file_bridge = FileBridge(shared_dir='/mnt/c/MT4_Bridge')
+        self.signal_history = []
+        self.is_running = False
+        self.transmission_queue = Queue()
+        self.sent_signals_count = 0
+        self.last_minute_reset = time.time()
+        
+        # データベース初期化
+        self._init_database()
+    
+    def _init_database(self):
+        """シグナル記録用データベース初期化"""
+        try:
+            conn = sqlite3.connect(CONFIG['database_path'])
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS signals (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    timestamp TEXT,
+                    symbol TEXT,
+                    action TEXT,
+                    quantity REAL,
+                    price REAL,
+                    stop_loss REAL,
+                    take_profit REAL,
+                    signal_quality REAL,
+                    priority INTEGER,
+                    strategy_params TEXT,
+                    transmission_status TEXT,
+                    transmission_time TEXT,
+                    error_message TEXT
+                )
+            ''')
+            conn.commit()
+            conn.close()
+            logger.info("Signal database initialized")
+        except Exception as e:
+            logger.error(f"Database initialization error: {e}")
+    
+    async def start(self):
+        """送信システム開始"""
+        logger.info("Signal transmission system starting...")
+        self.is_running = True
+        
+        # TCP接続確立
+        if await self._connect_tcp():
+            logger.info("Signal transmission TCP connected")
+        else:
+            logger.warning("TCP connection failed, using file transmission")
+        
+        # 送信ループ開始
+        asyncio.create_task(self._transmission_loop())
+        asyncio.create_task(self._rate_limit_monitor())
+    
+    async def _connect_tcp(self) -> bool:
+        """TCP接続確立"""
+        try:
+            return await self.tcp_bridge.connect()
+        except Exception as e:
+            logger.error(f"Signal TCP connection failed: {e}")
+            return False
+    
+    async def send_signal(self, signal: TradingSignal) -> bool:
+        """シグナル送信"""
+        try:
+            # レート制限チェック
+            if not self._check_rate_limit():
+                logger.warning("Signal rate limit exceeded")
+                return False
+            
+            # 送信実行
+            success = await self._transmit_signal(signal)
+            
+            # 記録
+            await self._record_signal(signal, success)
+            
+            if success:
+                self.sent_signals_count += 1
+                logger.info(f"Signal sent successfully: {signal.action} {signal.symbol}")
+            else:
+                logger.error(f"Signal transmission failed: {signal.action} {signal.symbol}")
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"Signal transmission error: {e}")
+            await self._record_signal(signal, False, str(e))
+            return False
+    
+    def _check_rate_limit(self) -> bool:
+        """送信レート制限チェック"""
+        current_time = time.time()
+        if current_time - self.last_minute_reset >= 60:
+            self.sent_signals_count = 0
+            self.last_minute_reset = current_time
+        
+        return self.sent_signals_count < CONFIG['max_signals_per_minute']
+    
+    async def _transmit_signal(self, signal: TradingSignal) -> bool:
+        """実際の送信処理"""
+        signal_data = {
+            'timestamp': signal.timestamp.isoformat(),
+            'symbol': signal.symbol,
+            'action': signal.action,
+            'quantity': signal.quantity,
+            'price': signal.price,
+            'stop_loss': signal.stop_loss,
+            'take_profit': signal.take_profit,
+            'signal_quality': signal.signal_quality,
+            'strategy_params': signal.strategy_params
+        }
+        
+        # TCP送信試行
+        if self.tcp_bridge.is_connected():
+            try:
+                success = await self.tcp_bridge.send_data(signal_data)
+                if success:
+                    return True
+            except Exception as e:
+                logger.warning(f"TCP transmission failed: {e}")
+        
+        # フォールバック: ファイル送信
+        try:
+            return await self.file_bridge.write_signal(signal_data)
+        except Exception as e:
+            logger.error(f"File transmission failed: {e}")
+            return False
+    
+    async def _record_signal(self, signal: TradingSignal, success: bool, error_msg: str = None):
+        """シグナル送信記録"""
+        try:
+            conn = sqlite3.connect(CONFIG['database_path'])
+            conn.execute('''
+                INSERT INTO signals (
+                    timestamp, symbol, action, quantity, price, stop_loss, take_profit,
+                    signal_quality, priority, strategy_params, transmission_status,
+                    transmission_time, error_message
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                signal.timestamp.isoformat(),
+                signal.symbol,
+                signal.action,
+                signal.quantity,
+                signal.price,
+                signal.stop_loss,
+                signal.take_profit,
+                signal.signal_quality,
+                signal.priority,
+                json.dumps(signal.strategy_params),
+                'SUCCESS' if success else 'FAILED',
+                datetime.now().isoformat(),
+                error_msg
+            ))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            logger.error(f"Signal recording error: {e}")
+    
+    async def _transmission_loop(self):
+        """送信処理ループ"""
+        while self.is_running:
+            try:
+                if not self.transmission_queue.empty():
+                    signal = self.transmission_queue.get_nowait()
+                    await self.send_signal(signal)
+                
+                await asyncio.sleep(0.01)  # 10ms
+                
+            except Exception as e:
+                logger.error(f"Transmission loop error: {e}")
+                await asyncio.sleep(1)
+    
+    async def _rate_limit_monitor(self):
+        """レート制限監視"""
+        while self.is_running:
+            await asyncio.sleep(60)  # 1分ごと
+            self.sent_signals_count = 0
+            logger.debug("Signal rate limit reset")
+    
+    def queue_signal(self, signal: TradingSignal):
+        """シグナルをキューに追加"""
+        self.transmission_queue.put(signal)
+
+class RealtimeSignalSystem:
+    """
+    Phase2: リアルタイムシグナル生成システム統合
+    kiro設計design.md準拠
+    """
+    
+    def __init__(self):
+        self.market_feed = MarketDataFeed()
+        self.signal_generator = SignalGenerator(self.market_feed)
+        self.transmission_system = SignalTransmissionSystem()
+        self.is_running = False
+        
+        logger.info("Realtime Signal System initialized")
+    
+    async def start(self):
+        """システム開始"""
+        logger.info("Starting Realtime Signal System...")
+        
+        try:
+            # 各コンポーネント開始
+            await self.market_feed.start()
+            await self.transmission_system.start()
+            
+            self.is_running = True
+            
+            # メインループ
+            await self._main_loop()
+            
+        except Exception as e:
+            logger.error(f"System startup error: {e}")
+            raise
+    
+    async def _main_loop(self):
+        """メイン処理ループ"""
+        logger.info("Main processing loop started")
+        
+        while self.is_running:
+            try:
+                # シグナル取得
+                signal = await self.signal_generator.get_next_signal()
+                
+                if signal:
+                    # 送信システムにキュー
+                    self.transmission_system.queue_signal(signal)
+                    logger.info(f"Signal queued for transmission: {signal.action} {signal.symbol}")
+                
+                await asyncio.sleep(0.01)  # 10ms
+                
+            except Exception as e:
+                logger.error(f"Main loop error: {e}")
+                await asyncio.sleep(1)
+    
+    async def stop(self):
+        """システム停止"""
+        logger.info("Stopping Realtime Signal System...")
+        self.is_running = False
+        # 各コンポーネントの停止処理は必要に応じて追加
+
+async def main():
+    """メイン実行関数"""
+    system = RealtimeSignalSystem()
+    
+    try:
+        await system.start()
+    except KeyboardInterrupt:
+        logger.info("System interrupted by user")
+    except Exception as e:
+        logger.error(f"System error: {e}")
+    finally:
+        await system.stop()
+
+if __name__ == "__main__":
+    asyncio.run(main())
