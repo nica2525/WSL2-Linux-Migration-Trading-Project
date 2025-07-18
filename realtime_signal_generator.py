@@ -16,12 +16,11 @@ import aiosqlite
 import threading
 from datetime import datetime, timedelta
 from dataclasses import dataclass, asdict
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any, Tuple, Union
 from queue import PriorityQueue, Queue
 import pandas as pd
 import numpy as np
 from pathlib import Path
-import pickle
 import sys
 import os
 import yaml
@@ -30,6 +29,33 @@ import yaml
 sys.path.append(str(Path(__file__).parent))
 from communication.tcp_bridge import TCPBridge
 from communication.file_bridge import FileBridge
+
+# 定数定義
+class SystemConstants:
+    """システム定数"""
+    # デフォルト設定値
+    DEFAULT_BUFFER_SIZE = 10000
+    DEFAULT_HEALTH_CHECK_INTERVAL = 30
+    DEFAULT_QUALITY_THRESHOLD = 0.7
+    DEFAULT_MAX_SIGNALS_PER_MINUTE = 100
+    DEFAULT_RECONNECT_ATTEMPTS = 3
+    DEFAULT_RECONNECT_TIMEOUT = 5.0
+    
+    # デフォルトWFAパラメータ
+    DEFAULT_WFA_PARAMS = {
+        'lookback_period': 20,
+        'breakout_threshold': 2.0,
+        'atr_period': 14,
+        'min_volume_ratio': 1.5
+    }
+    
+    # データ監視設定
+    DATA_STARVATION_THRESHOLD = 120  # 2分間データなし
+    DATA_WARNING_THRESHOLD = 60     # 1分間データなし
+    
+    # 性能要件
+    MAX_SIGNAL_GENERATION_LATENCY_MS = 100
+    MIN_DATA_THROUGHPUT_PER_SEC = 1000
 
 # 設定読み込み
 def load_config(config_path: str = 'config.yaml', environment: str = 'production') -> Dict[str, Any]:
@@ -62,22 +88,26 @@ def load_config(config_path: str = 'config.yaml', environment: str = 'production
         # フォールバック設定
     except Exception as e:
         logger.error(f"Unexpected configuration loading error: {e}")
-        # フォールバック設定
+        # フォールバック設定（定数使用）
         return {
-            'data_processing': {'buffer_size': 10000, 'health_check_interval': 30},
-            'signal_generation': {'quality_threshold': 0.7, 'max_signals_per_minute': 100},
+            'data_processing': {
+                'buffer_size': SystemConstants.DEFAULT_BUFFER_SIZE, 
+                'health_check_interval': SystemConstants.DEFAULT_HEALTH_CHECK_INTERVAL
+            },
+            'signal_generation': {
+                'quality_threshold': SystemConstants.DEFAULT_QUALITY_THRESHOLD, 
+                'max_signals_per_minute': SystemConstants.DEFAULT_MAX_SIGNALS_PER_MINUTE
+            },
             'communication': {
                 'data_tcp_host': 'localhost', 'data_tcp_port': 9091,
                 'signal_tcp_host': 'localhost', 'signal_tcp_port': 9090,
                 'file_bridge_dir': '/mnt/c/MT4_Bridge',
-                'reconnect_attempts': 3, 'reconnect_timeout': 5.0
+                'reconnect_attempts': SystemConstants.DEFAULT_RECONNECT_ATTEMPTS, 
+                'reconnect_timeout': SystemConstants.DEFAULT_RECONNECT_TIMEOUT
             },
             'database': {'path': './realtime_signals.db'},
             'wfa_integration': {
-                'default_params': {
-                    'lookback_period': 20, 'breakout_threshold': 2.0,
-                    'atr_period': 14, 'min_volume_ratio': 1.5
-                }
+                'default_params': SystemConstants.DEFAULT_WFA_PARAMS.copy()
             }
         }
 
@@ -283,7 +313,7 @@ class MarketDataFeed:
             )
             
             # バッファ管理（設定ベース）
-            buffer_size = CONFIG.get('data_processing', {}).get('buffer_size', 10000)
+            buffer_size = CONFIG.get('data_processing', {}).get('buffer_size', SystemConstants.DEFAULT_BUFFER_SIZE)
             with self.buffer_lock:
                 self.data_buffer.append(market_data)
                 if len(self.data_buffer) > buffer_size:
@@ -322,7 +352,7 @@ class MarketDataFeed:
         while self.is_running:
             try:
                 current_time = time.time()
-                health_interval = CONFIG.get('data_processing', {}).get('health_check_interval', 30)
+                health_interval = CONFIG.get('data_processing', {}).get('health_check_interval', SystemConstants.DEFAULT_HEALTH_CHECK_INTERVAL)
                 if current_time - self.last_health_check > health_interval:
                     await self._perform_health_check()
                     self.last_health_check = current_time
@@ -349,14 +379,14 @@ class MarketDataFeed:
             else:
                 last_data_time = self.data_buffer[-1].timestamp
                 time_diff = datetime.now() - last_data_time
-                if time_diff.total_seconds() > 60:
+                if time_diff.total_seconds() > SystemConstants.DATA_WARNING_THRESHOLD:
                     logger.warning(f"Last data is {time_diff.total_seconds():.1f}s old")
                     # データ途絶時の再接続試行
-                    if time_diff.total_seconds() > 120:  # 2分以上データなし
+                    if time_diff.total_seconds() > SystemConstants.DATA_STARVATION_THRESHOLD:
                         logger.warning("Data starvation detected, attempting TCP reconnection...")
                         await self._connect_tcp()
     
-    def subscribe(self, callback):
+    def subscribe(self, callback: callable) -> None:
         """データ購読登録"""
         self.subscribers.append(callback)
     
@@ -416,12 +446,14 @@ class SignalGenerator:
     def _set_default_parameters(self):
         """デフォルトパラメータ設定（設定ファイルベース）"""
         default_params = CONFIG.get('wfa_integration', {}).get('default_params', {})
+        constants_params = SystemConstants.DEFAULT_WFA_PARAMS
+        
         self.wfa_params = {
-            'lookback_period': default_params.get('lookback_period', 20),
-            'breakout_threshold': default_params.get('breakout_threshold', 2.0),
+            'lookback_period': default_params.get('lookback_period', constants_params['lookback_period']),
+            'breakout_threshold': default_params.get('breakout_threshold', constants_params['breakout_threshold']),
             'volume_filter': default_params.get('volume_filter', True),
-            'atr_period': default_params.get('atr_period', 14),
-            'min_volume_ratio': default_params.get('min_volume_ratio', 1.5)
+            'atr_period': default_params.get('atr_period', constants_params['atr_period']),
+            'min_volume_ratio': default_params.get('min_volume_ratio', constants_params['min_volume_ratio'])
         }
         logger.info(f"Default parameters set from config: {self.wfa_params}")
     
@@ -435,7 +467,7 @@ class SignalGenerator:
                 signal.signal_quality = self._evaluate_signal_quality(signal, market_data)
                 
                 # 品質閾値チェック（設定ベース）
-                quality_threshold = CONFIG.get('signal_generation', {}).get('quality_threshold', 0.7)
+                quality_threshold = CONFIG.get('signal_generation', {}).get('quality_threshold', SystemConstants.DEFAULT_QUALITY_THRESHOLD)
                 if signal.signal_quality >= quality_threshold:
                     # 優先度設定
                     signal.priority = self._calculate_priority(signal)
@@ -749,7 +781,7 @@ class SignalTransmissionSystem:
             self.sent_signals_count = 0
             self.last_minute_reset = current_time
         
-        max_signals = CONFIG.get('signal_generation', {}).get('max_signals_per_minute', 100)
+        max_signals = CONFIG.get('signal_generation', {}).get('max_signals_per_minute', SystemConstants.DEFAULT_MAX_SIGNALS_PER_MINUTE)
         return self.sent_signals_count < max_signals
     
     async def _transmit_signal(self, signal: TradingSignal) -> bool:
