@@ -12,9 +12,18 @@ import logging
 from typing import Dict, Any, Optional, Callable, List
 from dataclasses import dataclass, asdict
 from pathlib import Path
-import fcntl
 import tempfile
 import hashlib
+try:
+    import portalocker
+    PORTALOCKER_AVAILABLE = True
+except ImportError:
+    PORTALOCKER_AVAILABLE = False
+    try:
+        import fcntl
+        FCNTL_AVAILABLE = True
+    except ImportError:
+        FCNTL_AVAILABLE = False
 try:
     from watchdog.observers import Observer
     from watchdog.events import FileSystemEventHandler
@@ -148,6 +157,14 @@ class FileBridge:
             'lock_failures': 0
         }
         
+        # ファイルロック機能確認
+        if PORTALOCKER_AVAILABLE:
+            logger.info("クロスプラットフォームファイルロック（portalocker）使用")
+        elif FCNTL_AVAILABLE:
+            logger.info("Unix系ファイルロック（fcntl）使用")
+        else:
+            logger.warning("ファイルロック機能なし - 並行アクセスに注意")
+        
         logger.info(f"ファイルブリッジ初期化: {self.message_dir}")
     
     def start(self):
@@ -265,11 +282,14 @@ class FileBridge:
             temp_path = filepath.with_suffix('.tmp')
             
             with open(temp_path, 'w', encoding='utf-8') as f:
-                # ファイルロック
-                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                # クロスプラットフォームファイルロック
+                if PORTALOCKER_AVAILABLE:
+                    portalocker.lock(f, portalocker.LOCK_EX)
+                elif FCNTL_AVAILABLE:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
                 
                 # JSON書き込み
-                json.dump({
+                message_data = {
                     'message': {
                         'message_type': file_message.message.message_type.value,
                         'timestamp': file_message.message.timestamp,
@@ -281,10 +301,14 @@ class FileBridge:
                     'status': file_message.status,
                     'retry_count': file_message.retry_count,
                     'checksum': self._calculate_checksum(file_message.message)
-                }, f, indent=2)
+                }
+                json.dump(message_data, f, indent=2)
                 
                 # ファイルロック解除
-                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                if PORTALOCKER_AVAILABLE:
+                    portalocker.unlock(f)
+                elif FCNTL_AVAILABLE:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
             
             # 一時ファイルを正式ファイルに移動
             temp_path.rename(filepath)
@@ -374,14 +398,20 @@ class FileBridge:
         """
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
-                # ファイルロック
-                fcntl.flock(f.fileno(), fcntl.LOCK_SH)
+                # クロスプラットフォームファイルロック（共有）
+                if PORTALOCKER_AVAILABLE:
+                    portalocker.lock(f, portalocker.LOCK_SH)
+                elif FCNTL_AVAILABLE:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_SH)
                 
                 # JSON読み込み
                 data = json.load(f)
                 
                 # ファイルロック解除
-                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                if PORTALOCKER_AVAILABLE:
+                    portalocker.unlock(f)
+                elif FCNTL_AVAILABLE:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
             
             # メッセージ復元
             message_data = data['message']
