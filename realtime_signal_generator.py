@@ -54,8 +54,14 @@ def load_config(config_path: str = 'config.yaml', environment: str = 'production
                     config[key] = value
         
         return config
+    except (FileNotFoundError, PermissionError) as e:
+        logger.error(f"Configuration file access error: {e}")
+        # フォールバック設定
+    except yaml.YAMLError as e:
+        logger.error(f"Configuration file parsing error: {e}")
+        # フォールバック設定
     except Exception as e:
-        logger.error(f"Configuration loading error: {e}")
+        logger.error(f"Unexpected configuration loading error: {e}")
         # フォールバック設定
         return {
             'data_processing': {'buffer_size': 10000, 'health_check_interval': 30},
@@ -181,8 +187,11 @@ class MarketDataFeed:
         """TCP接続確立"""
         try:
             return await self.tcp_bridge.connect()
-        except Exception as e:
+        except (ConnectionError, OSError, TimeoutError) as e:
             logger.error(f"TCP connection failed: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Unexpected TCP connection error: {e}")
             return False
     
     async def _data_collection_loop(self):
@@ -200,8 +209,14 @@ class MarketDataFeed:
                     
                 await asyncio.sleep(0.1)  # 100ms間隔
                 
+            except (ConnectionError, TimeoutError, OSError) as e:
+                logger.error(f"Data collection connection error: {e}")
+                await asyncio.sleep(1)
+            except (ValueError, KeyError, TypeError) as e:
+                logger.error(f"Data collection parsing error: {e}")
+                await asyncio.sleep(0.1)  # より短い待機
             except Exception as e:
-                logger.error(f"Data collection error: {e}")
+                logger.error(f"Unexpected data collection error: {e}")
                 await asyncio.sleep(1)
     
     async def _get_tcp_data(self) -> Optional[Dict]:
@@ -209,8 +224,12 @@ class MarketDataFeed:
         try:
             if self.tcp_bridge.is_connected():
                 return await self.tcp_bridge.receive_data()
+        except (ConnectionError, TimeoutError, OSError) as e:
+            logger.warning(f"TCP data fetch connection failed: {e}")
+        except (ValueError, TypeError, KeyError) as e:
+            logger.warning(f"TCP data fetch parsing failed: {e}")
         except Exception as e:
-            logger.warning(f"TCP data fetch failed: {e}")
+            logger.warning(f"Unexpected TCP data fetch error: {e}")
         return None
     
     async def _get_file_data(self) -> Optional[Dict]:
@@ -220,8 +239,12 @@ class MarketDataFeed:
             message = await self.file_bridge.receive_message()
             if message and message.get('type') == 'market_data':
                 return message.get('data')
+        except (FileNotFoundError, PermissionError, OSError) as e:
+            logger.warning(f"File data fetch access failed: {e}")
+        except (ValueError, TypeError, KeyError, json.JSONDecodeError) as e:
+            logger.warning(f"File data fetch parsing failed: {e}")
         except Exception as e:
-            logger.warning(f"File data fetch failed: {e}")
+            logger.warning(f"Unexpected file data fetch error: {e}")
         return None
     
     async def _process_market_data(self, raw_data: Dict):
@@ -254,8 +277,10 @@ class MarketDataFeed:
             for subscriber in self.subscribers:
                 await subscriber(market_data)
                 
+        except (ValueError, TypeError, KeyError) as e:
+            logger.error(f"Data processing validation error: {e}")
         except Exception as e:
-            logger.error(f"Data processing error: {e}")
+            logger.error(f"Unexpected data processing error: {e}")
     
     def _validate_data(self, data: Dict) -> bool:
         """データ品質検証"""
@@ -287,8 +312,10 @@ class MarketDataFeed:
                     self.last_health_check = current_time
                 
                 await asyncio.sleep(10)
+            except (ConnectionError, TimeoutError, OSError) as e:
+                logger.error(f"Health monitor connection error: {e}")
             except Exception as e:
-                logger.error(f"Health monitor error: {e}")
+                logger.error(f"Unexpected health monitor error: {e}")
     
     async def _perform_health_check(self):
         """健全性チェック実行"""
@@ -354,8 +381,14 @@ class SignalGenerator:
             else:
                 self._set_default_parameters()
                 
+        except (FileNotFoundError, PermissionError) as e:
+            logger.error(f"WFA parameter file access error: {e}")
+            self._set_default_parameters()
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            logger.error(f"WFA parameter parsing error: {e}")
+            self._set_default_parameters()
         except Exception as e:
-            logger.error(f"Failed to load WFA parameters: {e}")
+            logger.error(f"Unexpected WFA parameter loading error: {e}")
             self._set_default_parameters()
     
     def _set_default_parameters(self):
@@ -389,8 +422,12 @@ class SignalGenerator:
                     await self.signal_queue.put(signal)
                     logger.info(f"Signal generated: {signal.action} {signal.symbol} (Quality: {signal.signal_quality:.3f})")
                 
+        except (ValueError, KeyError, IndexError) as e:
+            logger.error(f"Signal generation data error: {e}")
+        except (OverflowError, ZeroDivisionError, TypeError) as e:
+            logger.error(f"Signal generation calculation error: {e}")
         except Exception as e:
-            logger.error(f"Signal generation error: {e}")
+            logger.error(f"Unexpected signal generation error: {e}")
     
     async def _detect_breakout_signal(self, current_data: MarketData) -> Optional[TradingSignal]:
         """ブレイクアウトシグナル検出ロジック"""
@@ -461,8 +498,17 @@ class SignalGenerator:
             
             return None
             
+        except (ValueError, KeyError, IndexError) as e:
+            logger.error(f"Breakout detection data error: {e}")
+            return None
+        except (OverflowError, ZeroDivisionError, TypeError) as e:
+            logger.error(f"Breakout detection calculation error: {e}")
+            return None
+        except pd.errors.EmptyDataError as e:
+            logger.warning(f"Breakout detection insufficient data: {e}")
+            return None
         except Exception as e:
-            logger.error(f"Breakout detection error: {e}")
+            logger.error(f"Unexpected breakout detection error: {e}")
             return None
     
     def _evaluate_signal_quality(self, signal: TradingSignal, market_data: MarketData) -> float:
@@ -498,8 +544,14 @@ class SignalGenerator:
             
             return min(quality_score, 1.0)
             
+        except (ValueError, TypeError, ZeroDivisionError) as e:
+            logger.error(f"Quality evaluation calculation error: {e}")
+            return 0.0
+        except (IndexError, KeyError) as e:
+            logger.error(f"Quality evaluation data error: {e}")
+            return 0.0
         except Exception as e:
-            logger.error(f"Quality evaluation error: {e}")
+            logger.error(f"Unexpected quality evaluation error: {e}")
             return 0.0
     
     def _calculate_priority(self, signal: TradingSignal) -> int:
@@ -521,8 +573,11 @@ class SignalGenerator:
         try:
             if not self.signal_queue.empty():
                 return await self.signal_queue.get()
+        except asyncio.QueueEmpty:
+            # 正常な状態（キューが空）
+            pass
         except Exception as e:
-            logger.error(f"Signal retrieval error: {e}")
+            logger.error(f"Unexpected signal retrieval error: {e}")
         return None
 
 class SignalTransmissionSystem:
@@ -575,8 +630,12 @@ class SignalTransmissionSystem:
                 ''')
                 await conn.commit()
             logger.info("Signal database initialized (async)")
+        except aiosqlite.Error as e:
+            logger.error(f"Database initialization SQL error: {e}")
+        except (OSError, PermissionError) as e:
+            logger.error(f"Database initialization access error: {e}")
         except Exception as e:
-            logger.error(f"Database initialization error: {e}")
+            logger.error(f"Unexpected database initialization error: {e}")
     
     async def start(self):
         """送信システム開始"""
@@ -603,8 +662,11 @@ class SignalTransmissionSystem:
         """TCP接続確立"""
         try:
             return await self.tcp_bridge.connect()
-        except Exception as e:
+        except (ConnectionError, OSError, TimeoutError) as e:
             logger.error(f"Signal TCP connection failed: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Unexpected signal TCP connection error: {e}")
             return False
     
     async def send_signal(self, signal: TradingSignal) -> bool:
@@ -629,9 +691,17 @@ class SignalTransmissionSystem:
             
             return success
             
+        except (ConnectionError, TimeoutError, OSError) as e:
+            logger.error(f"Signal transmission connection error: {e}")
+            await self._record_signal(signal, False, f"Connection error: {e}")
+            return False
+        except (ValueError, TypeError, json.JSONEncodeError) as e:
+            logger.error(f"Signal transmission data error: {e}")
+            await self._record_signal(signal, False, f"Data error: {e}")
+            return False
         except Exception as e:
-            logger.error(f"Signal transmission error: {e}")
-            await self._record_signal(signal, False, str(e))
+            logger.error(f"Unexpected signal transmission error: {e}")
+            await self._record_signal(signal, False, f"Unexpected error: {e}")
             return False
     
     def _check_rate_limit(self) -> bool:
@@ -664,8 +734,12 @@ class SignalTransmissionSystem:
                 success = await self.tcp_bridge.send_data(signal_data)
                 if success:
                     return True
+            except (ConnectionError, TimeoutError, OSError) as e:
+                logger.warning(f"TCP transmission connection failed: {e}")
+            except (ValueError, TypeError, json.JSONEncodeError) as e:
+                logger.warning(f"TCP transmission data failed: {e}")
             except Exception as e:
-                logger.warning(f"TCP transmission failed: {e}")
+                logger.warning(f"Unexpected TCP transmission error: {e}")
         
         # フォールバック: ファイル送信
         try:
@@ -675,8 +749,14 @@ class SignalTransmissionSystem:
                 'timestamp': datetime.now().isoformat()
             }
             return await self.file_bridge.send_message(message, 'mt4')
+        except (FileNotFoundError, PermissionError, OSError) as e:
+            logger.error(f"File transmission access failed: {e}")
+            return False
+        except (ValueError, TypeError, json.JSONEncodeError) as e:
+            logger.error(f"File transmission data failed: {e}")
+            return False
         except Exception as e:
-            logger.error(f"File transmission failed: {e}")
+            logger.error(f"Unexpected file transmission error: {e}")
             return False
     
     async def _record_signal(self, signal: TradingSignal, success: bool, error_msg: str = None):
@@ -706,8 +786,12 @@ class SignalTransmissionSystem:
                     error_msg
                 ))
                 await conn.commit()
+        except aiosqlite.Error as e:
+            logger.error(f"Signal recording SQL error: {e}")
+        except (OSError, PermissionError) as e:
+            logger.error(f"Signal recording access error: {e}")
         except Exception as e:
-            logger.error(f"Signal recording error: {e}")
+            logger.error(f"Unexpected signal recording error: {e}")
     
     async def _transmission_loop(self):
         """送信処理ループ"""
@@ -719,8 +803,11 @@ class SignalTransmissionSystem:
                 
                 await asyncio.sleep(0.01)  # 10ms
                 
+            except asyncio.CancelledError:
+                logger.info("Transmission loop cancelled")
+                break
             except Exception as e:
-                logger.error(f"Transmission loop error: {e}")
+                logger.error(f"Unexpected transmission loop error: {e}")
                 await asyncio.sleep(1)
     
     async def _rate_limit_monitor(self):
@@ -762,8 +849,11 @@ class RealtimeSignalSystem:
             # メインループ
             await self._main_loop()
             
+        except (ConnectionError, OSError) as e:
+            logger.error(f"System startup connection error: {e}")
+            raise
         except Exception as e:
-            logger.error(f"System startup error: {e}")
+            logger.error(f"Unexpected system startup error: {e}")
             raise
     
     async def _main_loop(self):
@@ -782,8 +872,11 @@ class RealtimeSignalSystem:
                 
                 await asyncio.sleep(0.01)  # 10ms
                 
+            except asyncio.CancelledError:
+                logger.info("Main loop cancelled")
+                break
             except Exception as e:
-                logger.error(f"Main loop error: {e}")
+                logger.error(f"Unexpected main loop error: {e}")
                 await asyncio.sleep(1)
     
     async def stop(self):
@@ -800,8 +893,10 @@ async def main():
         await system.start()
     except KeyboardInterrupt:
         logger.info("System interrupted by user")
+    except (ConnectionError, OSError) as e:
+        logger.error(f"System connection error: {e}")
     except Exception as e:
-        logger.error(f"System error: {e}")
+        logger.error(f"Unexpected system error: {e}")
     finally:
         await system.stop()
 
