@@ -9,7 +9,7 @@ import asyncio
 import unittest
 import tempfile
 import json
-import sqlite3
+import aiosqlite
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 import sys
@@ -113,13 +113,25 @@ class TestPhase2Integration(unittest.TestCase):
                 # 送信システム初期化
                 transmission = SignalTransmissionSystem()
                 
-                # データベーステーブル存在確認
-                conn = sqlite3.connect(tmp_db.name)
-                cursor = conn.cursor()
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='signals'")
-                result = cursor.fetchone()
-                self.assertIsNotNone(result)
-                conn.close()
+                # データベーステーブル存在確認（非同期）
+                async def check_db():
+                    async with aiosqlite.connect(tmp_db.name) as conn:
+                        cursor = await conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='signals'")
+                        result = await cursor.fetchone()
+                        return result
+                
+                # 送信システムの非同期初期化実行
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    # データベース初期化
+                    loop.run_until_complete(transmission._init_database())
+                    # テーブル存在確認
+                    result = loop.run_until_complete(check_db())
+                    self.assertIsNotNone(result)
+                finally:
+                    loop.close()
                 
             finally:
                 # 設定復元

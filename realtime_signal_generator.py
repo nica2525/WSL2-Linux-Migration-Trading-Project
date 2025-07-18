@@ -615,32 +615,31 @@ class SignalTransmissionSystem:
             return False
     
     async def _record_signal(self, signal: TradingSignal, success: bool, error_msg: str = None):
-        """シグナル送信記録"""
+        """シグナル送信記録（非同期）"""
         try:
-            conn = sqlite3.connect(CONFIG['database_path'])
-            conn.execute('''
-                INSERT INTO signals (
-                    timestamp, symbol, action, quantity, price, stop_loss, take_profit,
-                    signal_quality, priority, strategy_params, transmission_status,
-                    transmission_time, error_message
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                signal.timestamp.isoformat(),
-                signal.symbol,
-                signal.action,
-                signal.quantity,
-                signal.price,
-                signal.stop_loss,
-                signal.take_profit,
-                signal.signal_quality,
-                signal.priority,
-                json.dumps(signal.strategy_params),
-                'SUCCESS' if success else 'FAILED',
-                datetime.now().isoformat(),
-                error_msg
-            ))
-            conn.commit()
-            conn.close()
+            async with aiosqlite.connect(CONFIG['database_path']) as conn:
+                await conn.execute('''
+                    INSERT INTO signals (
+                        timestamp, symbol, action, quantity, price, stop_loss, take_profit,
+                        signal_quality, priority, strategy_params, transmission_status,
+                        transmission_time, error_message
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    signal.timestamp.isoformat(),
+                    signal.symbol,
+                    signal.action,
+                    signal.quantity,
+                    signal.price,
+                    signal.stop_loss,
+                    signal.take_profit,
+                    signal.signal_quality,
+                    signal.priority,
+                    json.dumps(signal.strategy_params),
+                    'SUCCESS' if success else 'FAILED',
+                    datetime.now().isoformat(),
+                    error_msg
+                ))
+                await conn.commit()
         except Exception as e:
             logger.error(f"Signal recording error: {e}")
     
