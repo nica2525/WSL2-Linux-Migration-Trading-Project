@@ -17,6 +17,9 @@ from unittest.mock import AsyncMock, patch, MagicMock
 import subprocess
 import sys
 
+# パス設定
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # テスト対象インポート
 from communication.tcp_bridge import (
     TCPBridge, TradingSignal, TradingMessage, MessageType, ConnectionState

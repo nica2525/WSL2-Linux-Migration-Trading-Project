@@ -15,14 +15,40 @@ from pathlib import Path
 import fcntl
 import tempfile
 import hashlib
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler
+    WATCHDOG_AVAILABLE = True
+except ImportError:
+    WATCHDOG_AVAILABLE = False
+    print("警告: watchdogモジュールが利用できません。ファイル監視機能が制限されます。")
+    
+    # 代替クラス定義
+    class FileSystemEventHandler:
+        def on_created(self, event):
+            pass
+            
+    class Observer:
+        def __init__(self):
+            pass
+        def schedule(self, handler, path, recursive=False):
+            pass
+        def start(self):
+            pass
+        def stop(self):
+            pass
+        def join(self):
+            pass
+
 from concurrent.futures import ThreadPoolExecutor
 import queue
 import uuid
 
 # 共通インポート
-from .tcp_bridge import TradingMessage, TradingSignal, MessageType
+try:
+    from .tcp_bridge import TradingMessage, TradingSignal, MessageType
+except ImportError:
+    from tcp_bridge import TradingMessage, TradingSignal, MessageType
 
 # ログ設定
 logging.basicConfig(level=logging.INFO)
@@ -97,7 +123,10 @@ class FileBridge:
         # 監視システム
         self.observer = Observer()
         self.handler = FileBridgeHandler(self)
-        self.observer.schedule(self.handler, str(self.inbox_dir), recursive=False)
+        if WATCHDOG_AVAILABLE:
+            self.observer.schedule(self.handler, str(self.inbox_dir), recursive=False)
+        else:
+            logger.warning("ファイル監視機能が無効です。ポーリング方式を使用します。")
         
         # メッセージ処理
         self.message_queue = queue.Queue()
@@ -130,7 +159,10 @@ class FileBridge:
         self.running = True
         
         # ファイル監視開始
-        self.observer.start()
+        if WATCHDOG_AVAILABLE:
+            self.observer.start()
+        else:
+            logger.info("ポーリング方式でファイル監視開始")
         
         # メッセージ処理スレッド開始
         self.processing_thread = threading.Thread(target=self._process_messages)
@@ -152,8 +184,9 @@ class FileBridge:
         self.running = False
         
         # ファイル監視停止
-        self.observer.stop()
-        self.observer.join()
+        if WATCHDOG_AVAILABLE:
+            self.observer.stop()
+            self.observer.join()
         
         # スレッド終了待機
         if self.processing_thread:
