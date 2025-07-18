@@ -89,24 +89,13 @@ git log --grep="MCP\|Gemini\|Phase" --oneline -20
 ## 🛡️ 品質状況確認プロトコル
 **セッション開始時必須確認:**
 ```bash
-cat 現在の品質状況.md
+cat 文書/管理/現在の品質状況.md
 ```
 
 **品質チェック手動実行:**
 ```bash
 python3 Scripts/quality_checker.py
 ```
-
-## 🤖 MCP-Gemini vs 自己実装ツール使い分け戦略
-**セッション開始時必須参照:**
-```
-MCP_VS_SELF_IMPLEMENTATION_STRATEGY.md
-```
-
-**基本方針:**
-- **複雑分析・新戦略開発**: MCP-Gemini使用
-- **定型処理・自動化**: 自己実装Gemini使用
-- **コスト最適化**: タスク性質により適切選択
 
 ## 📝 セッション記録基本ルール
 **同日追記対応（ファイル散らかり防止）:**
@@ -143,10 +132,14 @@ MCP_VS_SELF_IMPLEMENTATION_STRATEGY.md
 cat 文書/管理/マネージャー学習ログ.md
 cat 文書/核心/3AI開発規約.md
 cat 文書/核心/開発標準.md
-cat 文書/管理/必須検証プロトコル.md
-cat 文書/核心/GPT依頼プロトコル.md
-cat 文書/核心/日本語化ルール.md
+cat 文書/管理/現在の品質状況.md
 ```
+
+**存在しないファイル（参照不要）:**
+- ~~MCP_VS_SELF_IMPLEMENTATION_STRATEGY.md~~
+- ~~文書/管理/必須検証プロトコル.md~~
+- ~~文書/核心/GPT依頼プロトコル.md~~
+- ~~文書/核心/日本語化ルール.md~~
 
 **🎯 品質管理チェックリスト:**
 - [ ] 前回学習事項の確認と適用
