@@ -24,32 +24,77 @@ from pathlib import Path
 import pickle
 import sys
 import os
+import yaml
 
 # 既存システムとの統合
 sys.path.append(str(Path(__file__).parent))
 from communication.tcp_bridge import TCPBridge
 from communication.file_bridge import FileBridge
 
-# 設定
-CONFIG = {
-    'data_buffer_size': 10000,
-    'signal_quality_threshold': 0.7,
-    'max_signals_per_minute': 100,
-    'health_check_interval': 30,
-    'reconnect_attempts': 3,
-    'wfa_results_path': './enhanced_parallel_wfa_with_slippage.py',
-    'database_path': './realtime_signals.db'
-}
+# 設定読み込み
+def load_config(config_path: str = 'config.yaml', environment: str = 'production') -> Dict[str, Any]:
+    """設定ファイル読み込み"""
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+        
+        # 環境別設定をマージ
+        if environment in config.get('environments', {}):
+            env_config = config['environments'][environment]
+            # 環境固有設定で上書き
+            for key, value in env_config.items():
+                if '.' in key:
+                    # ネストした設定 (例: "communication.file_bridge_dir")
+                    keys = key.split('.')
+                    target = config
+                    for k in keys[:-1]:
+                        target = target.setdefault(k, {})
+                    target[keys[-1]] = value
+                else:
+                    config[key] = value
+        
+        return config
+    except Exception as e:
+        logger.error(f"Configuration loading error: {e}")
+        # フォールバック設定
+        return {
+            'data_processing': {'buffer_size': 10000, 'health_check_interval': 30},
+            'signal_generation': {'quality_threshold': 0.7, 'max_signals_per_minute': 100},
+            'communication': {
+                'data_tcp_host': 'localhost', 'data_tcp_port': 9091,
+                'signal_tcp_host': 'localhost', 'signal_tcp_port': 9090,
+                'file_bridge_dir': '/mnt/c/MT4_Bridge',
+                'reconnect_attempts': 3, 'reconnect_timeout': 5.0
+            },
+            'database': {'path': './realtime_signals.db'},
+            'wfa_integration': {
+                'default_params': {
+                    'lookback_period': 20, 'breakout_threshold': 2.0,
+                    'atr_period': 14, 'min_volume_ratio': 1.5
+                }
+            }
+        }
 
-# ログ設定
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('realtime_signal_generator.log'),
-        logging.StreamHandler()
-    ]
-)
+# グローバル設定
+CONFIG = load_config()
+
+# ログ設定（設定ファイルベース）
+def setup_logging(config: Dict[str, Any]):
+    """設定に基づくログ設定"""
+    log_config = config.get('logging', {})
+    level = getattr(logging, log_config.get('level', 'INFO'))
+    log_file = log_config.get('file', 'realtime_signal_generator.log')
+    
+    logging.basicConfig(
+        level=level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ]
+    )
+
+setup_logging(CONFIG)
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -106,8 +151,15 @@ class MarketDataFeed:
         self.data_buffer = []
         self.buffer_lock = threading.Lock()
         self.subscribers = []
-        self.tcp_bridge = TCPBridge(host='localhost', port=9091)  # MT4データ受信用
-        self.file_bridge = FileBridge(message_dir='/mnt/c/MT4_Bridge')
+        # 設定から通信パラメータ取得
+        comm_config = CONFIG.get('communication', {})
+        self.tcp_bridge = TCPBridge(
+            host=comm_config.get('data_tcp_host', 'localhost'), 
+            port=comm_config.get('data_tcp_port', 9091)
+        )
+        self.file_bridge = FileBridge(
+            message_dir=comm_config.get('file_bridge_dir', '/mnt/c/MT4_Bridge')
+        )
         self.last_health_check = time.time()
         
     async def start(self):
@@ -191,10 +243,11 @@ class MarketDataFeed:
                 volume=float(raw_data.get('volume', 0))
             )
             
-            # バッファ管理
+            # バッファ管理（設定ベース）
+            buffer_size = CONFIG.get('data_processing', {}).get('buffer_size', 10000)
             with self.buffer_lock:
                 self.data_buffer.append(market_data)
-                if len(self.data_buffer) > CONFIG['data_buffer_size']:
+                if len(self.data_buffer) > buffer_size:
                     self.data_buffer.pop(0)
             
             # 購読者に通知
@@ -228,7 +281,8 @@ class MarketDataFeed:
         while self.is_running:
             try:
                 current_time = time.time()
-                if current_time - self.last_health_check > CONFIG['health_check_interval']:
+                health_interval = CONFIG.get('data_processing', {}).get('health_check_interval', 30)
+                if current_time - self.last_health_check > health_interval:
                     await self._perform_health_check()
                     self.last_health_check = current_time
                 
@@ -305,15 +359,16 @@ class SignalGenerator:
             self._set_default_parameters()
     
     def _set_default_parameters(self):
-        """デフォルトパラメータ設定"""
+        """デフォルトパラメータ設定（設定ファイルベース）"""
+        default_params = CONFIG.get('wfa_integration', {}).get('default_params', {})
         self.wfa_params = {
-            'lookback_period': 20,
-            'breakout_threshold': 2.0,
-            'volume_filter': True,
-            'atr_period': 14,
-            'min_volume_ratio': 1.5
+            'lookback_period': default_params.get('lookback_period', 20),
+            'breakout_threshold': default_params.get('breakout_threshold', 2.0),
+            'volume_filter': default_params.get('volume_filter', True),
+            'atr_period': default_params.get('atr_period', 14),
+            'min_volume_ratio': default_params.get('min_volume_ratio', 1.5)
         }
-        logger.info("Default parameters set")
+        logger.info(f"Default parameters set from config: {self.wfa_params}")
     
     async def _on_market_data(self, market_data: MarketData):
         """市場データ受信時の処理"""
@@ -324,8 +379,9 @@ class SignalGenerator:
                 # シグナル品質評価
                 signal.signal_quality = self._evaluate_signal_quality(signal, market_data)
                 
-                # 品質閾値チェック
-                if signal.signal_quality >= CONFIG['signal_quality_threshold']:
+                # 品質閾値チェック（設定ベース）
+                quality_threshold = CONFIG.get('signal_generation', {}).get('quality_threshold', 0.7)
+                if signal.signal_quality >= quality_threshold:
                     # 優先度設定
                     signal.priority = self._calculate_priority(signal)
                     
@@ -476,8 +532,15 @@ class SignalTransmissionSystem:
     """
     
     def __init__(self):
-        self.tcp_bridge = TCPBridge(host='localhost', port=9090)  # MT4送信用
-        self.file_bridge = FileBridge(message_dir='/mnt/c/MT4_Bridge')
+        # 設定から通信パラメータ取得
+        comm_config = CONFIG.get('communication', {})
+        self.tcp_bridge = TCPBridge(
+            host=comm_config.get('signal_tcp_host', 'localhost'), 
+            port=comm_config.get('signal_tcp_port', 9090)
+        )
+        self.file_bridge = FileBridge(
+            message_dir=comm_config.get('file_bridge_dir', '/mnt/c/MT4_Bridge')
+        )
         self.signal_history = []
         self.is_running = False
         self.transmission_queue = Queue()
@@ -490,7 +553,8 @@ class SignalTransmissionSystem:
     async def _init_database(self):
         """シグナル記録用データベース初期化（非同期）"""
         try:
-            async with aiosqlite.connect(CONFIG['database_path']) as conn:
+            db_path = CONFIG.get('database', {}).get('path', './realtime_signals.db')
+            async with aiosqlite.connect(db_path) as conn:
                 await conn.execute('''
                     CREATE TABLE IF NOT EXISTS signals (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -577,7 +641,8 @@ class SignalTransmissionSystem:
             self.sent_signals_count = 0
             self.last_minute_reset = current_time
         
-        return self.sent_signals_count < CONFIG['max_signals_per_minute']
+        max_signals = CONFIG.get('signal_generation', {}).get('max_signals_per_minute', 100)
+        return self.sent_signals_count < max_signals
     
     async def _transmit_signal(self, signal: TradingSignal) -> bool:
         """実際の送信処理"""
@@ -617,7 +682,8 @@ class SignalTransmissionSystem:
     async def _record_signal(self, signal: TradingSignal, success: bool, error_msg: str = None):
         """シグナル送信記録（非同期）"""
         try:
-            async with aiosqlite.connect(CONFIG['database_path']) as conn:
+            db_path = CONFIG.get('database', {}).get('path', './realtime_signals.db')
+            async with aiosqlite.connect(db_path) as conn:
                 await conn.execute('''
                     INSERT INTO signals (
                         timestamp, symbol, action, quantity, price, stop_loss, take_profit,

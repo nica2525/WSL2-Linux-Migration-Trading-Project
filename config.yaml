@@ -1,0 +1,89 @@
+# Phase2 Real-time Signal Generator Configuration
+# kiro設計準拠・環境依存設定外部化
+
+# データ処理設定
+data_processing:
+  buffer_size: 10000
+  health_check_interval: 30
+  cleanup_interval: 300
+
+# シグナル生成設定
+signal_generation:
+  quality_threshold: 0.7
+  max_signals_per_minute: 100
+  wfa_results_path: "./enhanced_parallel_wfa_with_slippage.py"
+
+# 通信設定
+communication:
+  # MT4データ受信用
+  data_tcp_host: "localhost"
+  data_tcp_port: 9091
+  
+  # MT4シグナル送信用
+  signal_tcp_host: "localhost"
+  signal_tcp_port: 9090
+  
+  # ファイルブリッジ設定（環境に応じて変更）
+  file_bridge_dir: "/mnt/c/MT4_Bridge"  # WSL環境用
+  # file_bridge_dir: "C:\\MT4_Bridge"   # Windows環境用
+  # file_bridge_dir: "/tmp/MT4_Bridge"  # Linux環境用
+  
+  # 再接続設定
+  reconnect_attempts: 3
+  reconnect_timeout: 5.0
+
+# データベース設定
+database:
+  path: "./realtime_signals.db"
+  connection_timeout: 30.0
+
+# WFA統合設定
+wfa_integration:
+  # デフォルトパラメータ
+  default_params:
+    lookback_period: 20
+    breakout_threshold: 2.0
+    volume_filter: true
+    atr_period: 14
+    min_volume_ratio: 1.5
+  
+  # 結果ファイル探索パターン
+  results_file_patterns:
+    - "*wfa_results*.json"
+    - "*enhanced_parallel_wfa*.json"
+    - "*slippage_wfa*.json"
+
+# ログ設定
+logging:
+  level: "INFO"
+  file: "realtime_signal_generator.log"
+  max_file_size: "10MB"
+  backup_count: 5
+
+# パフォーマンス設定
+performance:
+  # レイテンシ要件 (ミリ秒)
+  max_signal_generation_latency: 100
+  max_signal_detection_latency: 50
+  max_data_processing_latency: 10
+  
+  # スループット要件
+  max_ticks_per_second: 1000
+  max_concurrent_symbols: 5
+
+# 環境別設定
+environments:
+  development:
+    logging_level: "DEBUG"
+    file_bridge_dir: "/tmp/MT4_Bridge_dev"
+    database_path: "./dev_realtime_signals.db"
+  
+  production:
+    logging_level: "INFO"
+    file_bridge_dir: "/mnt/c/MT4_Bridge"
+    database_path: "./prod_realtime_signals.db"
+  
+  testing:
+    logging_level: "WARNING"
+    file_bridge_dir: "/tmp/test_MT4_Bridge"
+    database_path: ":memory:"

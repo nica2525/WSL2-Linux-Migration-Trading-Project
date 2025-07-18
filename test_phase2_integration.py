@@ -115,7 +115,9 @@ class TestPhase2Integration(unittest.TestCase):
                 
                 # データベーステーブル存在確認（非同期）
                 async def check_db():
-                    async with aiosqlite.connect(tmp_db.name) as conn:
+                    import realtime_signal_generator
+                    db_path = realtime_signal_generator.CONFIG.get('database', {}).get('path', tmp_db.name)
+                    async with aiosqlite.connect(db_path) as conn:
                         cursor = await conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='signals'")
                         result = await cursor.fetchone()
                         return result
