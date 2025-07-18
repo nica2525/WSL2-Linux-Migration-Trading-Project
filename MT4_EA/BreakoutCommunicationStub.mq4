@@ -651,11 +651,11 @@ void SendMessage(string message)
         }
     }
     
-    // ファイル送信
-    if (UseFileCommunication)
+    // ファイル送信（TCPが失敗した場合のみ）
+    if (UseFileCommunication && !tcpSent)
     {
         string fileName = "mt4_message_" + IntegerToString(MessageCounter) + "_" + IntegerToString(TimeCurrent()) + ".msg";
-        string filePath = MessageFileDirectory + "\\outbox\\" + fileName;
+        string filePath = ActualMessageDirectory + "\\outbox\\" + fileName;
         
         int fileHandle = FileOpen(filePath, FILE_WRITE | FILE_TXT);
         if (fileHandle != INVALID_HANDLE)
@@ -695,4 +695,55 @@ void PrintStatistics()
     Print("実行取引数: ", ExecutedTrades);
     Print("現在接続状態: ", (IsConnected ? "接続中" : "切断中"));
     Print("===============");
+}
+
+//+------------------------------------------------------------------+
+//| データセクション抽出                                             |
+//+------------------------------------------------------------------+
+string ExtractDataSection(string message)
+{
+    // data_json フィールドから値を抽出
+    if (JsonParser.HasKey("data_json"))
+    {
+        return JsonParser.GetStringValue("data_json");
+    }
+    
+    // 従来のdata オブジェクトを文字列として抽出（簡易実装）
+    int dataStart = StringFind(message, "\"data\":");
+    if (dataStart < 0)
+    {
+        return "";
+    }
+    
+    dataStart += 7; // "data":をスキップ
+    int braceCount = 0;
+    int dataEnd = dataStart;
+    bool inBrace = false;
+    
+    for (int i = dataStart; i < StringLen(message); i++)
+    {
+        string char = StringGetChar(message, i);
+        
+        if (char == "{")
+        {
+            braceCount++;
+            inBrace = true;
+        }
+        else if (char == "}")
+        {
+            braceCount--;
+            if (braceCount == 0 && inBrace)
+            {
+                dataEnd = i + 1;
+                break;
+            }
+        }
+    }
+    
+    if (dataEnd > dataStart)
+    {
+        return StringSubstr(message, dataStart, dataEnd - dataStart);
+    }
+    
+    return "";
 }
