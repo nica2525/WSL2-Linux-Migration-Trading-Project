@@ -107,7 +107,7 @@ class MarketDataFeed:
         self.buffer_lock = threading.Lock()
         self.subscribers = []
         self.tcp_bridge = TCPBridge(host='localhost', port=9091)  # MT4データ受信用
-        self.file_bridge = FileBridge(shared_dir='/mnt/c/MT4_Bridge')
+        self.file_bridge = FileBridge(message_dir='/mnt/c/MT4_Bridge')
         self.last_health_check = time.time()
         
     async def start(self):
@@ -164,7 +164,10 @@ class MarketDataFeed:
     async def _get_file_data(self) -> Optional[Dict]:
         """ファイル経由データ取得"""
         try:
-            return await self.file_bridge.read_market_data()
+            # ファイルブリッジからメッセージ受信
+            message = await self.file_bridge.receive_message()
+            if message and message.get('type') == 'market_data':
+                return message.get('data')
         except Exception as e:
             logger.warning(f"File data fetch failed: {e}")
         return None
@@ -474,7 +477,7 @@ class SignalTransmissionSystem:
     
     def __init__(self):
         self.tcp_bridge = TCPBridge(host='localhost', port=9090)  # MT4送信用
-        self.file_bridge = FileBridge(shared_dir='/mnt/c/MT4_Bridge')
+        self.file_bridge = FileBridge(message_dir='/mnt/c/MT4_Bridge')
         self.signal_history = []
         self.is_running = False
         self.transmission_queue = Queue()
@@ -596,7 +599,12 @@ class SignalTransmissionSystem:
         
         # フォールバック: ファイル送信
         try:
-            return await self.file_bridge.write_signal(signal_data)
+            message = {
+                'type': 'trading_signal',
+                'data': signal_data,
+                'timestamp': datetime.now().isoformat()
+            }
+            return await self.file_bridge.send_message(message, 'mt4')
         except Exception as e:
             logger.error(f"File transmission failed: {e}")
             return False
