@@ -184,15 +184,31 @@ class MarketDataFeed:
         asyncio.create_task(self._health_monitor_loop())
         
     async def _connect_tcp(self) -> bool:
-        """TCP接続確立"""
-        try:
-            return await self.tcp_bridge.connect()
-        except (ConnectionError, OSError, TimeoutError) as e:
-            logger.error(f"TCP connection failed: {e}")
-            return False
-        except Exception as e:
-            logger.error(f"Unexpected TCP connection error: {e}")
-            return False
+        """TCP接続確立（再接続ロジック強化）"""
+        max_attempts = CONFIG.get('communication', {}).get('reconnect_attempts', 3)
+        base_timeout = CONFIG.get('communication', {}).get('reconnect_timeout', 5.0)
+        
+        for attempt in range(max_attempts):
+            try:
+                logger.info(f"TCP connection attempt {attempt + 1}/{max_attempts}")
+                if await self.tcp_bridge.connect():
+                    logger.info(f"TCP connection successful on attempt {attempt + 1}")
+                    return True
+            except (ConnectionError, OSError, TimeoutError) as e:
+                logger.warning(f"TCP connection attempt {attempt + 1} failed: {e}")
+                if attempt < max_attempts - 1:
+                    # 指数バックオフ: 2^attempt * base_timeout
+                    wait_time = base_timeout * (2 ** attempt)
+                    logger.info(f"Waiting {wait_time:.1f}s before retry...")
+                    await asyncio.sleep(wait_time)
+            except Exception as e:
+                logger.error(f"Unexpected TCP connection error on attempt {attempt + 1}: {e}")
+                if attempt < max_attempts - 1:
+                    wait_time = base_timeout * (2 ** attempt)
+                    await asyncio.sleep(wait_time)
+        
+        logger.error(f"TCP connection failed after {max_attempts} attempts")
+        return False
     
     async def _data_collection_loop(self):
         """データ収集メインループ"""
@@ -318,11 +334,13 @@ class MarketDataFeed:
                 logger.error(f"Unexpected health monitor error: {e}")
     
     async def _perform_health_check(self):
-        """健全性チェック実行"""
+        """健全性チェック実行（再接続ロジック強化）"""
         # TCP接続チェック
         if not self.tcp_bridge.is_connected():
             logger.warning("TCP connection lost, attempting reconnection...")
-            await self._connect_tcp()
+            reconnection_success = await self._connect_tcp()
+            if not reconnection_success:
+                logger.error("TCP reconnection failed, using file bridge only")
         
         # データ受信チェック
         with self.buffer_lock:
@@ -333,6 +351,10 @@ class MarketDataFeed:
                 time_diff = datetime.now() - last_data_time
                 if time_diff.total_seconds() > 60:
                     logger.warning(f"Last data is {time_diff.total_seconds():.1f}s old")
+                    # データ途絶時の再接続試行
+                    if time_diff.total_seconds() > 120:  # 2分以上データなし
+                        logger.warning("Data starvation detected, attempting TCP reconnection...")
+                        await self._connect_tcp()
     
     def subscribe(self, callback):
         """データ購読登録"""
@@ -659,15 +681,31 @@ class SignalTransmissionSystem:
         asyncio.create_task(self._rate_limit_monitor())
     
     async def _connect_tcp(self) -> bool:
-        """TCP接続確立"""
-        try:
-            return await self.tcp_bridge.connect()
-        except (ConnectionError, OSError, TimeoutError) as e:
-            logger.error(f"Signal TCP connection failed: {e}")
-            return False
-        except Exception as e:
-            logger.error(f"Unexpected signal TCP connection error: {e}")
-            return False
+        """TCP接続確立（再接続ロジック強化）"""
+        max_attempts = CONFIG.get('communication', {}).get('reconnect_attempts', 3)
+        base_timeout = CONFIG.get('communication', {}).get('reconnect_timeout', 5.0)
+        
+        for attempt in range(max_attempts):
+            try:
+                logger.info(f"Signal TCP connection attempt {attempt + 1}/{max_attempts}")
+                if await self.tcp_bridge.connect():
+                    logger.info(f"Signal TCP connection successful on attempt {attempt + 1}")
+                    return True
+            except (ConnectionError, OSError, TimeoutError) as e:
+                logger.warning(f"Signal TCP connection attempt {attempt + 1} failed: {e}")
+                if attempt < max_attempts - 1:
+                    # 指数バックオフ: 2^attempt * base_timeout
+                    wait_time = base_timeout * (2 ** attempt)
+                    logger.info(f"Waiting {wait_time:.1f}s before retry...")
+                    await asyncio.sleep(wait_time)
+            except Exception as e:
+                logger.error(f"Unexpected signal TCP connection error on attempt {attempt + 1}: {e}")
+                if attempt < max_attempts - 1:
+                    wait_time = base_timeout * (2 ** attempt)
+                    await asyncio.sleep(wait_time)
+        
+        logger.error(f"Signal TCP connection failed after {max_attempts} attempts")
+        return False
     
     async def send_signal(self, signal: TradingSignal) -> bool:
         """シグナル送信"""
@@ -728,7 +766,7 @@ class SignalTransmissionSystem:
             'strategy_params': signal.strategy_params
         }
         
-        # TCP送信試行
+        # TCP送信試行（再接続ロジック強化）
         if self.tcp_bridge.is_connected():
             try:
                 success = await self.tcp_bridge.send_data(signal_data)
@@ -736,6 +774,16 @@ class SignalTransmissionSystem:
                     return True
             except (ConnectionError, TimeoutError, OSError) as e:
                 logger.warning(f"TCP transmission connection failed: {e}")
+                # 接続失敗時の再接続試行
+                logger.info("Attempting TCP reconnection for signal transmission...")
+                if await self._connect_tcp():
+                    try:
+                        success = await self.tcp_bridge.send_data(signal_data)
+                        if success:
+                            logger.info("Signal sent successfully after reconnection")
+                            return True
+                    except Exception as reconnect_e:
+                        logger.warning(f"Signal transmission failed even after reconnection: {reconnect_e}")
             except (ValueError, TypeError, json.JSONEncodeError) as e:
                 logger.warning(f"TCP transmission data failed: {e}")
             except Exception as e:
