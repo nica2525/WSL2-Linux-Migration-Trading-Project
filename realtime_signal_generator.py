@@ -12,7 +12,7 @@ import asyncio
 import json
 import time
 import logging
-import sqlite3
+import aiosqlite
 import threading
 from datetime import datetime, timedelta
 from dataclasses import dataclass, asdict
@@ -484,40 +484,45 @@ class SignalTransmissionSystem:
         self.sent_signals_count = 0
         self.last_minute_reset = time.time()
         
-        # データベース初期化
-        self._init_database()
+        # データベース初期化（非同期なので後で実行）
+        self._db_initialized = False
     
-    def _init_database(self):
-        """シグナル記録用データベース初期化"""
+    async def _init_database(self):
+        """シグナル記録用データベース初期化（非同期）"""
         try:
-            conn = sqlite3.connect(CONFIG['database_path'])
-            conn.execute('''
-                CREATE TABLE IF NOT EXISTS signals (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp TEXT,
-                    symbol TEXT,
-                    action TEXT,
-                    quantity REAL,
-                    price REAL,
-                    stop_loss REAL,
-                    take_profit REAL,
-                    signal_quality REAL,
-                    priority INTEGER,
-                    strategy_params TEXT,
-                    transmission_status TEXT,
-                    transmission_time TEXT,
-                    error_message TEXT
-                )
-            ''')
-            conn.commit()
-            conn.close()
-            logger.info("Signal database initialized")
+            async with aiosqlite.connect(CONFIG['database_path']) as conn:
+                await conn.execute('''
+                    CREATE TABLE IF NOT EXISTS signals (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        timestamp TEXT,
+                        symbol TEXT,
+                        action TEXT,
+                        quantity REAL,
+                        price REAL,
+                        stop_loss REAL,
+                        take_profit REAL,
+                        signal_quality REAL,
+                        priority INTEGER,
+                        strategy_params TEXT,
+                        transmission_status TEXT,
+                        transmission_time TEXT,
+                        error_message TEXT
+                    )
+                ''')
+                await conn.commit()
+            logger.info("Signal database initialized (async)")
         except Exception as e:
             logger.error(f"Database initialization error: {e}")
     
     async def start(self):
         """送信システム開始"""
         logger.info("Signal transmission system starting...")
+        
+        # データベース初期化
+        if not self._db_initialized:
+            await self._init_database()
+            self._db_initialized = True
+        
         self.is_running = True
         
         # TCP接続確立
