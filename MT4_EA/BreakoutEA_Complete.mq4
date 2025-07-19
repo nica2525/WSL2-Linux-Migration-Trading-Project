@@ -624,11 +624,15 @@ int OnInit()
     
     // 初期設定
     g_initial_balance = AccountBalance();
+    g_daily_start_balance = AccountBalance();    // 日次開始残高初期化
     g_month_start_balance = AccountBalance();
     g_week_start_balance = AccountBalance();
     g_month_start = TimeLocal();
     g_week_start = TimeLocal();
     g_last_trade_date = TimeLocal();
+    
+    if(EnableDebugPrint)
+        Print("💰 残高初期化: 初期=", g_initial_balance, " 日次開始=", g_daily_start_balance);
     
     // OnTrade代替実装のための履歴総数初期化
     g_previous_history_total = OrdersHistoryTotal();
@@ -838,9 +842,19 @@ void UpdateTradeStatistics(int ticket)
         g_losing_trades++;
         g_consecutive_losses++;
         
-        // 損失統計更新（初期残高基準）
-        double loss_percent = MathAbs(profit) / g_initial_balance * 100.0;
+        // 損失統計更新（日次開始残高基準）
+        double loss_percent = 0.0;
+        if(g_daily_start_balance > 0)
+            loss_percent = MathAbs(profit) / g_daily_start_balance * 100.0;
+        else
+            loss_percent = MathAbs(profit) / g_initial_balance * 100.0;  // フォールバック
+        
         g_daily_loss += loss_percent;
+        
+        if(EnableDebugPrint)
+            Print("💰 損失率計算: 損失=$", NormalizeDouble(MathAbs(profit), 2),
+                  " 日次開始残高=$", g_daily_start_balance, 
+                  " 損失率=", NormalizeDouble(loss_percent, 3), "%");
         
         if(EnableDebugPrint)
             Print("📉 負けトレード: Ticket=", ticket, " Loss=$", 

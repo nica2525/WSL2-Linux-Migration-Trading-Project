@@ -1,0 +1,106 @@
+Step3修正: リスク計算修正 + OnInit残高初期化
+=================================================
+
+修正前の問題:
+- 損失率計算がg_initial_balance（初期残高）基準
+- 日次リスク管理として不正確（1日目に10%損失→翌日の損失も初期残高基準で計算）
+- g_daily_start_balanceは宣言済みだが、使用されていない状態
+
+修正後の改善:
+1. 日次開始残高基準のリスク計算: g_daily_start_balance使用
+2. 期間変更時の残高更新: UpdateRiskStatistics()で日次開始残高記録
+3. OnInit初期化追加: g_daily_start_balance初期化
+4. フォールバック処理: g_daily_start_balance=0時の安全処理
+5. 詳細ログ追加: 損失率計算の透明性向上
+
+修正されたコード（主要部分）:
+
+```cpp
+// グローバル変数（既存に追加）
+double g_daily_start_balance = 0.0;      // 日開始残高（追加済み）
+
+// UpdateRiskStatistics関数内（既に修正済み）
+void UpdateRiskStatistics()
+{
+    datetime current_time = TimeLocal();
+    
+    // 日付変更チェック
+    if(TimeDay(current_time) != TimeDay(g_last_trade_date))
+    {
+        g_daily_loss = 0.0;
+        g_daily_trades = 0;
+        g_daily_start_balance = AccountBalance();  // 日開始残高を記録
+        g_last_trade_date = current_time;
+        
+        if(EnableDebugPrint)
+            Print("📅 新しい日開始: 残高=", g_daily_start_balance);
+    }
+    // ...その他の処理
+}
+
+// UpdateTradeStatistics関数内（今回修正）
+void UpdateTradeStatistics(int ticket)
+{
+    // ... 勝ちトレード処理 ...
+    
+    else // 負けトレード
+    {
+        g_losing_trades++;
+        g_consecutive_losses++;
+        
+        // 損失統計更新（日次開始残高基準）
+        double loss_percent = 0.0;
+        if(g_daily_start_balance > 0)
+            loss_percent = MathAbs(profit) / g_daily_start_balance * 100.0;
+        else
+            loss_percent = MathAbs(profit) / g_initial_balance * 100.0;  // フォールバック
+        
+        g_daily_loss += loss_percent;
+        
+        if(EnableDebugPrint)
+            Print("💰 損失率計算: 損失=$", NormalizeDouble(MathAbs(profit), 2),
+                  " 日次開始残高=$", g_daily_start_balance, 
+                  " 損失率=", NormalizeDouble(loss_percent, 3), "%");
+    }
+    // ...その他の処理
+}
+
+// OnInit関数内（今回修正）
+int OnInit()
+{
+    // ... WFAパラメータ読み込み ...
+    
+    // 初期設定
+    g_initial_balance = AccountBalance();
+    g_daily_start_balance = AccountBalance();    // 日次開始残高初期化
+    g_month_start_balance = AccountBalance();
+    g_week_start_balance = AccountBalance();
+    g_month_start = TimeLocal();
+    g_week_start = TimeLocal();
+    g_last_trade_date = TimeLocal();
+    
+    if(EnableDebugPrint)
+        Print("💰 残高初期化: 初期=", g_initial_balance, " 日次開始=", g_daily_start_balance);
+    
+    // ...その他の初期化処理
+}
+```
+
+重要な改善ポイント:
+1. **正確な日次リスク管理**: 日開始残高基準で損失率を計算し、真の日次リスクを把握
+2. **期間基準の一貫性**: 各期間（日次・週次・月次）の開始残高を基準とした統一的計算
+3. **安全性向上**: g_daily_start_balance=0時のフォールバック処理
+4. **透明性向上**: 詳細ログで損失率計算過程を表示
+5. **初期化の完全性**: OnInit時の全残高変数の適切な初期化
+
+修正前後の差:
+- **修正前**: 1日目残高$1000で$50損失→5% / 2日目残高$950で$50損失→初期残高基準で5%（不正確）
+- **修正後**: 1日目残高$1000で$50損失→5% / 2日目残高$950で$50損失→日次開始残高基準で5.26%（正確）
+
+期待される効果:
+1. **リスク管理精度**: 日次リスク限界の正確な監視
+2. **資金保護**: 適切なリスク計算による口座保護
+3. **運用透明性**: 損失率計算プロセスの可視化
+4. **システム安定性**: 初期化・フォールバック処理による堅牢性
+
+この修正により、Geminiが指摘した「リスク計算の不正確性」が完全に解決されました。
