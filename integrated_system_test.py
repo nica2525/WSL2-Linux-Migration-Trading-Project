@@ -45,7 +45,7 @@ from phase3_integrated_system import IntegratedTradingSystem
 from database_manager import DatabaseManager
 from system_state_manager import SystemStateManager
 from health_monitor import HealthMonitor
-from performance_reporter_fixed import PerformanceReporter
+from performance_reporter import PerformanceReporter
 from automation_compatibility import AutomationCompatibilityManager
 
 async def test_phase1_communication():

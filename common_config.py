@@ -109,9 +109,25 @@ def load_unified_config(config_path: Optional[str] = None) -> SystemConfig:
     
     # 設定オブジェクト作成
     return SystemConfig(
-        database=DatabaseConfig(**config_dict['database']),
-        communication=CommunicationConfig(**config_dict['communication']),
-        trading=TradingConfig(**config_dict['trading']),
+        database=DatabaseConfig(
+            path=config_dict['database'].get('path', './trading_system.db'),
+            backup_enabled=config_dict['database'].get('backup_enabled', True),
+            cleanup_days=config_dict['database'].get('cleanup_days', 30)
+        ),
+        communication=CommunicationConfig(
+            tcp_host=config_dict['communication'].get('tcp_host', 'localhost'),
+            tcp_port=config_dict['communication'].get('tcp_port', 9090),
+            signal_tcp_port=config_dict['communication'].get('signal_tcp_port', 9090),
+            file_bridge_dir=config_dict['communication'].get('file_bridge_dir', '/mnt/c/MT4_Bridge'),
+            timeout_ms=config_dict['communication'].get('timeout_ms', 5000)
+        ),
+        trading=TradingConfig(
+            lookback_period=config_dict['trading'].get('lookback_period', 20),
+            breakout_threshold=config_dict['trading'].get('breakout_threshold', 2.0),
+            volume_filter=config_dict['trading'].get('volume_filter', True),
+            atr_period=config_dict['trading'].get('atr_period', 14),
+            min_volume_ratio=config_dict['trading'].get('min_volume_ratio', 1.5)
+        ),
         environment=config_dict['environment'],
         log_level=config_dict['log_level']
     )
