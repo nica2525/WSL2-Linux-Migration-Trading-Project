@@ -1,0 +1,44 @@
+MT4 Expert Advisor Code Review Request
+=====================================
+
+This is a complete MT4 Expert Advisor (EA) that implements a breakout trading strategy with Python integration. 
+
+KEY FEATURES:
+- Multi-timeframe breakout detection (H4 + H1)
+- WFA (Walk Forward Analysis) parameter loading
+- Advanced risk management (daily/weekly/monthly limits)
+- Python communication via TCP/File
+- ATR-based dynamic stop/target calculation
+- Session filtering (London/NY/Tokyo)
+- Quality filters (ATR quality, trend strength)
+- Cost-resistant optimization
+
+MAIN COMPONENTS:
+1. WFA Parameter Loading System
+2. Advanced Risk Management
+3. Breakout Detection Logic
+4. Position Sizing with Risk Adjustment
+5. Quality Filters (ATR, Trend Strength)
+6. JSON Signal Generation
+7. Trade Execution and Monitoring
+
+TECHNICAL SPECIFICATIONS:
+- Language: MQL4 (MetaTrader 4)
+- Integration: Python communication
+- Risk Management: Multi-level (daily 2%, weekly 5%, monthly 12%)
+- Strategy: Multi-timeframe breakout with ATR-based levels
+- Optimization: WFA parameter support
+- Sessions: London (7-16 GMT), NY (12-21 GMT), Tokyo (23-8 GMT)
+
+The EA includes comprehensive error handling, parameter validation, and statistical tracking. It's designed for production trading with extensive risk controls and market condition filters.
+
+Please analyze this code for:
+1. Code Quality (structure, error handling, performance)
+2. Trading Logic (breakout strategy, risk management)
+3. Technical Implementation (MQL4 best practices)
+4. Potential Issues and Recommendations
+5. Production Readiness Rating (1-100)
+
+CODE FOLLOWS:
+
+[The complete 711-line MQL4 Expert Advisor code with all functions and features as described above]
