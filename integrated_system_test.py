@@ -216,8 +216,8 @@ async def test_phase4_infrastructure():
         automation = AutomationCompatibilityManager(db_manager)
         await automation.initialize()
         
-        components = await automation.list_registered_components()
-        logger.info(f"  ✅ 自動化コンポーネント: {len(components)}個登録")
+        status = await automation.get_automation_status()
+        logger.info(f"  ✅ 自動化コンポーネント: {len(status.get('components', []))}個登録")
         
         # クリーンアップ
         await health_monitor.stop()
