@@ -101,9 +101,9 @@ async def test_phase2_signal_generation():
         await db_manager.initialize()
         
         # コンポーネント初期化
-        market_feed = MarketDataFeed(comm_manager=None)
-        signal_generator = SignalGenerator()
-        transmission = SignalTransmissionSystem(db_manager=db_manager)
+        market_feed = MarketDataFeed()
+        signal_generator = SignalGenerator(market_feed)
+        transmission = SignalTransmissionSystem()
         
         # テストマーケットデータ
         test_data = {
