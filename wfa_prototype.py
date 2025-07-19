@@ -295,7 +295,8 @@ class PurgedEmbargoedWFA:
             high_level = max(bar['high'] for bar in lookback_data)
             low_level = min(bar['low'] for bar in lookback_data)
             
-            current_price = current_bar['close']
+            # Look-ahead bias修正：現在バーのCloseではなくOpenを使用
+            current_price = current_bar['open']
             
             # ブレイクアウト判定
             signal = None

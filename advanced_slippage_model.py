@@ -185,9 +185,12 @@ class AdvancedSlippageModel:
                     data.iloc[:current_idx+1]
                 )
                 
-                # スリッパージ計算
+                # スリッパージ計算（Look-ahead bias完全修正）
+                # 実際の取引では現在バーのCloseは使用不可、常にOpenを使用
+                current_price = current_bar['Open']
+                
                 slippage_info = self.calculate_dynamic_slippage(
-                    price=current_bar['Close'],
+                    price=current_price,
                     volume=current_bar['Volume'],
                     market_condition=market_condition,
                     order_type=order_type,
@@ -209,15 +212,15 @@ class AdvancedSlippageModel:
                     else:
                         continue
                 else:
-                    # 指値・逆指値注文：現在価格 + スリッパージ
-                    execution_price = current_bar['Close'] * (1 + slippage_info['total_slippage'])
+                    # 指値・逆指値注文：現在価格 + スリッパージ（Look-ahead bias修正）
+                    execution_price = current_price * (1 + slippage_info['total_slippage'])
                 
-                # 約定記録
+                # 約定記録（Look-ahead bias修正）
                 execution = {
                     'timestamp': timestamp,
-                    'signal_price': current_bar['Close'],
+                    'signal_price': current_price,
                     'execution_price': execution_price,
-                    'slippage_cost': execution_price - current_bar['Close'],
+                    'slippage_cost': execution_price - current_price,
                     'slippage_pct': slippage_info['total_slippage'],
                     'market_condition': market_condition.value,
                     'order_type': order_type.value,

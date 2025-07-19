@@ -156,9 +156,10 @@ def generate_manual_signal(h1_data, h4_data, current_index, params, current_time
     if current_index < max(params['h1_period'], params['h4_period']):
         return {'action': 'HOLD', 'reason': 'insufficient_data'}
     
-    # 現在価格
+    # 現在価格（Look-ahead bias修正）
     current_bar = h1_data[current_index]
-    current_price = current_bar['close']
+    # 実際の取引では現在バーのCloseは未確定のため、Openを使用
+    current_price = current_bar['open']
     
     # H1ブレイクアウト判定
     h1_start = current_index - params['h1_period']
