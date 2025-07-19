@@ -82,6 +82,19 @@ int g_socket_handle = -1;
 bool g_is_connected = false;
 datetime g_last_heartbeat = 0;
 
+// パフォーマンス最適化用
+datetime g_last_risk_update = 0;      // 最終リスク統計更新時刻
+int g_tick_count = 0;                 // Tick計数（デバッグ用）
+bool g_risk_limits_ok = true;         // リスク制限チェック結果キャッシュ
+datetime g_last_risk_check = 0;       // 最終リスク制限チェック時刻
+
+// ATRキャッシュ用
+double g_cached_atr = 0.0;            // キャッシュされたATR値
+datetime g_last_atr_update = 0;       // 最終ATR更新時刻
+bool g_atr_quality_ok = false;        // ATR品質チェック結果
+bool g_trend_strength_ok = false;     // トレンド強度チェック結果
+datetime g_last_quality_check = 0;    // 最終品質チェック時刻
+
 // ブレイクアウト計算
 double g_h4_range_high = 0.0;
 double g_h4_range_low = 0.0;
@@ -511,7 +524,8 @@ double CalculatePositionSize(double stop_loss_distance)
 //+------------------------------------------------------------------+
 string GenerateSignalJSON(int direction, double lot_size, double sl_distance, double tp_distance)
 {
-    double atr = iATR(Symbol(), PERIOD_H1, g_wfa_params.atr_period, 0);
+    // キャッシュされたATRを使用（パフォーマンス最適化）
+    double atr = g_cached_atr;
     
     string json = "{";
     json += "\"type\": \"ADVANCED_BREAKOUT_SIGNAL\",";
@@ -634,6 +648,17 @@ int OnInit()
     if(EnableDebugPrint)
         Print("💰 残高初期化: 初期=", g_initial_balance, " 日次開始=", g_daily_start_balance);
     
+    // パフォーマンス最適化変数の初期化
+    g_last_risk_update = TimeLocal();
+    g_last_risk_check = TimeLocal();
+    g_last_atr_update = 0;  // 初回は必ずATR計算を実行
+    g_last_quality_check = 0;
+    g_tick_count = 0;
+    g_risk_limits_ok = true;
+    g_cached_atr = 0.0;
+    g_atr_quality_ok = false;
+    g_trend_strength_ok = false;
+    
     // OnTrade代替実装のための履歴総数初期化
     g_previous_history_total = OrdersHistoryTotal();
     if(EnableDebugPrint)
@@ -667,16 +692,37 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
+    g_tick_count++;
+    
     // MQL4のOnTrade代替実装: 履歴変更を監視
     int current_history_total = OrdersHistoryTotal();
     if(current_history_total > g_previous_history_total)
     {
         ProcessNewClosedOrders(g_previous_history_total, current_history_total);
         g_previous_history_total = current_history_total;
+        
+        // 取引発生時にリスク統計を強制更新
+        UpdateRiskStatistics();
+        g_last_risk_update = TimeLocal();
+        
+        // リスク制限チェックを無効化（再チェックが必要）
+        g_risk_limits_ok = false;
+        g_last_risk_check = 0;
     }
-    
-    // リスク統計更新
-    UpdateRiskStatistics();
+    else
+    {
+        // 通常時は1分間隔でリスク統計更新（パフォーマンス最適化）
+        datetime current_time = TimeLocal();
+        if(current_time - g_last_risk_update >= 60)  // 60秒間隔
+        {
+            UpdateRiskStatistics();
+            g_last_risk_update = current_time;
+            
+            // リスク制限チェックも無効化
+            g_risk_limits_ok = false;
+            g_last_risk_check = 0;
+        }
+    }
     
     // レンジ更新
     datetime current_h4_time = iTime(Symbol(), PERIOD_H4, 0);
@@ -693,13 +739,43 @@ void OnTick()
         g_last_h1_time = current_h1_time;
     }
     
-    // エントリー条件チェック
-    if(!IsInTradingSession() || !CheckAdvancedRiskLimits() || OrdersTotal() > 0)
+    // 基本条件チェック（高速）
+    if(!IsInTradingSession() || OrdersTotal() > 0)
         return;
     
-    // ATR計算と品質チェック
-    double atr = iATR(Symbol(), PERIOD_H1, g_wfa_params.atr_period, 0);
-    if(!CheckATRQuality(atr) || !CheckTrendStrength())
+    // リスク制限チェック（キャッシュ付き・30秒間隔）
+    datetime current_time = TimeLocal();
+    if(!g_risk_limits_ok || (current_time - g_last_risk_check >= 30))
+    {
+        g_risk_limits_ok = CheckAdvancedRiskLimits();
+        g_last_risk_check = current_time;
+        
+        if(EnableDebugPrint && (g_tick_count % 100 == 0))  // 100tick毎にログ
+            Print("🔍 リスク制限チェック: ", (g_risk_limits_ok ? "OK" : "NG"), " (Tick: ", g_tick_count, ")");
+    }
+    
+    if(!g_risk_limits_ok)
+        return;
+    
+    // ATR計算と品質チェック（キャッシュ付き・5分間隔）
+    if(current_time - g_last_atr_update >= 300 || g_cached_atr == 0.0)  // 5分間隔
+    {
+        g_cached_atr = iATR(Symbol(), PERIOD_H1, g_wfa_params.atr_period, 0);
+        g_last_atr_update = current_time;
+        
+        // ATR品質チェックも同時実行
+        g_atr_quality_ok = CheckATRQuality(g_cached_atr);
+        g_trend_strength_ok = CheckTrendStrength();
+        g_last_quality_check = current_time;
+        
+        if(EnableDebugPrint)
+            Print("📈 ATR更新: ", NormalizeDouble(g_cached_atr, Digits), 
+                  " 品質:", (g_atr_quality_ok ? "OK" : "NG"), 
+                  " トレンド:", (g_trend_strength_ok ? "OK" : "NG"));
+    }
+    
+    // キャッシュされた結果を使用
+    if(!g_atr_quality_ok || !g_trend_strength_ok)
         return;
     
     // ブレイクアウトチェック
@@ -712,8 +788,8 @@ void OnTick()
     // 両時間軸でブレイクアウト確認
     if(h4_breakout && h1_breakout && h4_direction == h1_direction)
     {
-        double sl_distance = atr * g_wfa_params.atr_multiplier_sl;
-        double tp_distance = atr * g_wfa_params.atr_multiplier_tp;
+        double sl_distance = g_cached_atr * g_wfa_params.atr_multiplier_sl;
+        double tp_distance = g_cached_atr * g_wfa_params.atr_multiplier_tp;
         double lot_size = CalculatePositionSize(sl_distance);
         
         // 最小利益チェック
@@ -750,6 +826,12 @@ void OnTick()
         
         // シグナル生成とPython送信
         string signal_json = GenerateSignalJSON(h4_direction, lot_size, sl_distance, tp_distance);
+        
+        // パフォーマンスログ
+        if(EnableDebugPrint && (g_tick_count % 1000 == 0))  // 1000tick毎に統計表示
+            Print("📊 パフォーマンス: Tick数=", g_tick_count, 
+                  " シグナル数=", g_total_signals, 
+                  " 取引数=", g_total_trades);
         
         // 取引実行
         if(ExecuteTrade(h4_direction, lot_size, sl_distance, tp_distance))
