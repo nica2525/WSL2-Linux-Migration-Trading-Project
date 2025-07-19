@@ -133,6 +133,22 @@ def setup_logging(config: Dict[str, Any]):
 setup_logging(CONFIG)
 logger = logging.getLogger(__name__)
 
+# ユーティリティ関数
+def get_config_value(config: Dict[str, Any], path: str, default: Any) -> Any:
+    """ネストした設定値を安全に取得"""
+    keys = path.split('.')
+    value = config
+    for key in keys:
+        if isinstance(value, dict) and key in value:
+            value = value[key]
+        else:
+            return default
+    return value
+
+def calculate_time_diff_seconds(timestamp: datetime) -> float:
+    """現在時刻との差分を秒で計算"""
+    return (datetime.now() - timestamp).total_seconds()
+
 @dataclass
 class MarketData:
     """市場データ構造"""
@@ -215,8 +231,8 @@ class MarketDataFeed:
         
     async def _connect_tcp(self) -> bool:
         """TCP接続確立（再接続ロジック強化）"""
-        max_attempts = CONFIG.get('communication', {}).get('reconnect_attempts', 3)
-        base_timeout = CONFIG.get('communication', {}).get('reconnect_timeout', 5.0)
+        max_attempts = CONFIG.get('communication', {}).get('reconnect_attempts', SystemConstants.DEFAULT_RECONNECT_ATTEMPTS)
+        base_timeout = CONFIG.get('communication', {}).get('reconnect_timeout', SystemConstants.DEFAULT_RECONNECT_TIMEOUT)
         
         for attempt in range(max_attempts):
             try:
@@ -378,11 +394,11 @@ class MarketDataFeed:
                 logger.warning("No data received recently")
             else:
                 last_data_time = self.data_buffer[-1].timestamp
-                time_diff = datetime.now() - last_data_time
-                if time_diff.total_seconds() > SystemConstants.DATA_WARNING_THRESHOLD:
-                    logger.warning(f"Last data is {time_diff.total_seconds():.1f}s old")
+                time_diff_seconds = calculate_time_diff_seconds(last_data_time)
+                if time_diff_seconds > SystemConstants.DATA_WARNING_THRESHOLD:
+                    logger.warning(f"Last data is {time_diff_seconds:.1f}s old")
                     # データ途絶時の再接続試行
-                    if time_diff.total_seconds() > SystemConstants.DATA_STARVATION_THRESHOLD:
+                    if time_diff_seconds > SystemConstants.DATA_STARVATION_THRESHOLD:
                         logger.warning("Data starvation detected, attempting TCP reconnection...")
                         await self._connect_tcp()
     
@@ -714,8 +730,8 @@ class SignalTransmissionSystem:
     
     async def _connect_tcp(self) -> bool:
         """TCP接続確立（再接続ロジック強化）"""
-        max_attempts = CONFIG.get('communication', {}).get('reconnect_attempts', 3)
-        base_timeout = CONFIG.get('communication', {}).get('reconnect_timeout', 5.0)
+        max_attempts = CONFIG.get('communication', {}).get('reconnect_attempts', SystemConstants.DEFAULT_RECONNECT_ATTEMPTS)
+        base_timeout = CONFIG.get('communication', {}).get('reconnect_timeout', SystemConstants.DEFAULT_RECONNECT_TIMEOUT)
         
         for attempt in range(max_attempts):
             try:
