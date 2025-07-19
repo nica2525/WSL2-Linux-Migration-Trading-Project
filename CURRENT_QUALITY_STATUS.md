@@ -1,13 +1,12 @@
 # 現在の品質状況
 
 🔍 品質状況サマリー
-   総問題数: 19
-   高重要度: 19
+   総問題数: 18
+   高重要度: 18
    新規問題: 0
    修正済み: 0
 
 🚨 緊急修正要件:
-   🟡 advanced_slippage_model.py:190 - Look-ahead bias（未来データ参照）
    🟡 アーカイブ/old_strategies/cost_resistant_wfa_execution_fixed.py:145 - Look-ahead bias（未来データ参照）
    🟡 アーカイブ/old_strategies/cost_resistant_wfa_execution_fixed.py:295 - Look-ahead bias（未来データ参照） [_generate_simple_signal]
    🟡 アーカイブ/old_strategies/cost_resistant_wfa_execution_fixed.py:145 - シグナル生成時の未来価格参照
@@ -38,12 +37,12 @@
    - アーカイブ/old_strategies/cost_resistant_wfa_execution.py: 2件の問題
 
 🔍 最頻出パターン:
-   - lookahead_bias: 16件
+   - lookahead_bias: 15件
    - future_price_access: 3件
 
 ## 📊 検出精度
-- 平均信頼度: 96.3%
+- 平均信頼度: 96.7%
 - 高信頼度問題: 12件
 - 要確認問題: 0件
 
-最終更新: 2025-07-20 08:36:51
+最終更新: 2025-07-20 08:45:07
