@@ -106,18 +106,9 @@ int g_socket_handle = -1;
 bool g_is_connected = false;
 datetime g_last_heartbeat = 0;
 
-// パフォーマンス最適化用
-datetime g_last_risk_update = 0;      // 最終リスク統計更新時刻
+// パフォーマンス最適化（Gemini改善案）
+PerformanceCache g_cache;
 int g_tick_count = 0;                 // Tick計数（デバッグ用）
-bool g_risk_limits_ok = true;         // リスク制限チェック結果キャッシュ
-datetime g_last_risk_check = 0;       // 最終リスク制限チェック時刻
-
-// ATRキャッシュ用
-double g_cached_atr = 0.0;            // キャッシュされたATR値
-datetime g_last_atr_update = 0;       // 最終ATR更新時刻
-bool g_atr_quality_ok = false;        // ATR品質チェック結果
-bool g_trend_strength_ok = false;     // トレンド強度チェック結果
-datetime g_last_quality_check = 0;    // 最終品質チェック時刻
 
 // ブレイクアウト計算
 double g_h4_range_high = 0.0;
@@ -386,6 +377,42 @@ void UpdateRiskStatistics()
 }
 
 //+------------------------------------------------------------------+
+//| ATR関連更新関数（Gemini改善案）                                  |
+//+------------------------------------------------------------------+
+void UpdateAtrCache()
+{
+    datetime current_time = TimeCurrent();
+    g_cache.atr_value = iATR(Symbol(), PERIOD_H1, g_wfa_params.atr_period, 0);
+    g_cache.last_atr_update = current_time;
+    
+    g_cache.atr_quality_ok = CheckATRQuality(g_cache.atr_value);
+    g_cache.trend_strength_ok = CheckTrendStrength();
+    
+    if(EnableDebugPrint)
+        Print("📈 ATR更新: ", NormalizeDouble(g_cache.atr_value, Digits), 
+              " 品質:", (g_cache.atr_quality_ok ? "OK" : "NG"), 
+              " トレンド:", (g_cache.trend_strength_ok ? "OK" : "NG"));
+}
+
+//+------------------------------------------------------------------+
+//| リスク統計・制限チェック統合関数（Gemini改善案）                 |
+//+------------------------------------------------------------------+
+void UpdateRiskAndLimits()
+{
+    datetime current_time = TimeCurrent();
+    
+    UpdateRiskStatistics();
+    g_cache.last_risk_update = current_time;
+    
+    // 統計更新に基づき、リスク制限を即時チェック
+    g_cache.limits_ok = CheckAdvancedRiskLimits();
+    g_cache.last_risk_check = current_time;
+
+    if(EnableDebugPrint)
+        Print("📊 リスク情報更新完了。制限: ", (g_cache.limits_ok ? "OK" : "NG"));
+}
+
+//+------------------------------------------------------------------+
 //| ATR品質フィルター                                                |
 //+------------------------------------------------------------------+
 bool CheckATRQuality(double atr)
@@ -548,8 +575,8 @@ double CalculatePositionSize(double stop_loss_distance)
 //+------------------------------------------------------------------+
 string GenerateSignalJSON(int direction, double lot_size, double sl_distance, double tp_distance)
 {
-    // キャッシュされたATRを使用（パフォーマンス最適化）
-    double atr = g_cached_atr;
+    // キャッシュされたATRを使用（Gemini改善案）
+    double atr = g_cache.atr_value;
     
     string json = "{";
     json += "\"type\": \"ADVANCED_BREAKOUT_SIGNAL\",";
@@ -672,16 +699,20 @@ int OnInit()
     if(EnableDebugPrint)
         Print("💰 残高初期化: 初期=", g_initial_balance, " 日次開始=", g_daily_start_balance);
     
-    // パフォーマンス最適化変数の初期化
-    g_last_risk_update = TimeLocal();
-    g_last_risk_check = TimeLocal();
-    g_last_atr_update = 0;  // 初回は必ずATR計算を実行
-    g_last_quality_check = 0;
+    // パフォーマンス最適化変数の初期化（Gemini改善案）
+    g_cache.last_risk_update = 0;        // 初回実行を促す
+    g_cache.last_risk_check = 0;
+    g_cache.last_atr_update = 0;
+    g_cache.limits_ok = true;            // 最初はOKと仮定
+    g_cache.atr_value = 0.0;
+    g_cache.atr_quality_ok = false;
+    g_cache.trend_strength_ok = false;
+    
     g_tick_count = 0;
-    g_risk_limits_ok = true;
-    g_cached_atr = 0.0;
-    g_atr_quality_ok = false;
-    g_trend_strength_ok = false;
+    
+    // OnInit時に初回計算を実行（Gemini改善案）
+    UpdateRiskAndLimits();
+    UpdateAtrCache();
     
     // OnTrade代替実装のための履歴総数初期化
     g_previous_history_total = OrdersHistoryTotal();
@@ -718,6 +749,9 @@ void OnTick()
 {
     g_tick_count++;
     
+    // TimeCurrent()に統一（Gemini改善案）
+    datetime current_time = TimeCurrent();
+    
     // MQL4のOnTrade代替実装: 履歴変更を監視
     int current_history_total = OrdersHistoryTotal();
     if(current_history_total > g_previous_history_total)
@@ -725,26 +759,15 @@ void OnTick()
         ProcessNewClosedOrders(g_previous_history_total, current_history_total);
         g_previous_history_total = current_history_total;
         
-        // 取引発生時にリスク統計を強制更新
-        UpdateRiskStatistics();
-        g_last_risk_update = TimeLocal();
-        
-        // リスク制限チェックを無効化（再チェックが必要）
-        g_risk_limits_ok = false;
-        g_last_risk_check = 0;
+        // 取引発生時にリスク評価を即時実行（Gemini改善案）
+        UpdateRiskAndLimits();
     }
     else
     {
-        // 通常時は1分間隔でリスク統計更新（パフォーマンス最適化）
-        datetime current_time = TimeLocal();
-        if(current_time - g_last_risk_update >= 60)  // 60秒間隔
+        // 通常時は設定間隔でリスク統計更新
+        if(current_time - g_cache.last_risk_update >= RiskUpdateIntervalSec)
         {
-            UpdateRiskStatistics();
-            g_last_risk_update = current_time;
-            
-            // リスク制限チェックも無効化
-            g_risk_limits_ok = false;
-            g_last_risk_check = 0;
+            UpdateRiskAndLimits();
         }
     }
     
@@ -767,39 +790,27 @@ void OnTick()
     if(!IsInTradingSession() || OrdersTotal() > 0)
         return;
     
-    // リスク制限チェック（キャッシュ付き・30秒間隔）
-    datetime current_time = TimeLocal();
-    if(!g_risk_limits_ok || (current_time - g_last_risk_check >= 30))
+    // リスク制限チェック（キャッシュ利用・Gemini改善案）
+    if(current_time - g_cache.last_risk_check >= RiskCheckIntervalSec)
     {
-        g_risk_limits_ok = CheckAdvancedRiskLimits();
-        g_last_risk_check = current_time;
+        g_cache.limits_ok = CheckAdvancedRiskLimits();
+        g_cache.last_risk_check = current_time;
         
-        if(EnableDebugPrint && (g_tick_count % 100 == 0))  // 100tick毎にログ
-            Print("🔍 リスク制限チェック: ", (g_risk_limits_ok ? "OK" : "NG"), " (Tick: ", g_tick_count, ")");
+        if(EnableDebugPrint && (g_tick_count % LogTickInterval == 0))
+            Print("🔍 定期リスク制限チェック: ", (g_cache.limits_ok ? "OK" : "NG"));
     }
     
-    if(!g_risk_limits_ok)
+    if(!g_cache.limits_ok)
         return;
     
-    // ATR計算と品質チェック（キャッシュ付き・5分間隔）
-    if(current_time - g_last_atr_update >= 300 || g_cached_atr == 0.0)  // 5分間隔
+    // ATR計算と品質チェック（キャッシュ付き）
+    if(current_time - g_cache.last_atr_update >= AtrUpdateIntervalSec || g_cache.atr_value == 0.0)
     {
-        g_cached_atr = iATR(Symbol(), PERIOD_H1, g_wfa_params.atr_period, 0);
-        g_last_atr_update = current_time;
-        
-        // ATR品質チェックも同時実行
-        g_atr_quality_ok = CheckATRQuality(g_cached_atr);
-        g_trend_strength_ok = CheckTrendStrength();
-        g_last_quality_check = current_time;
-        
-        if(EnableDebugPrint)
-            Print("📈 ATR更新: ", NormalizeDouble(g_cached_atr, Digits), 
-                  " 品質:", (g_atr_quality_ok ? "OK" : "NG"), 
-                  " トレンド:", (g_trend_strength_ok ? "OK" : "NG"));
+        UpdateAtrCache();
     }
     
     // キャッシュされた結果を使用
-    if(!g_atr_quality_ok || !g_trend_strength_ok)
+    if(!g_cache.atr_quality_ok || !g_cache.trend_strength_ok)
         return;
     
     // ブレイクアウトチェック
@@ -812,8 +823,8 @@ void OnTick()
     // 両時間軸でブレイクアウト確認
     if(h4_breakout && h1_breakout && h4_direction == h1_direction)
     {
-        double sl_distance = g_cached_atr * g_wfa_params.atr_multiplier_sl;
-        double tp_distance = g_cached_atr * g_wfa_params.atr_multiplier_tp;
+        double sl_distance = g_cache.atr_value * g_wfa_params.atr_multiplier_sl;
+        double tp_distance = g_cache.atr_value * g_wfa_params.atr_multiplier_tp;
         double lot_size = CalculatePositionSize(sl_distance);
         
         // 最小利益チェック
