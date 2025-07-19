@@ -119,8 +119,9 @@ class RealisticBreakoutStrategy(EnhancedWFAStrategy):
         # ローリング最高値
         rolling_high = data['High'].rolling(window=lookback).max()
         
-        # ブレイクアウト条件
-        breakout_condition = data['Close'] > rolling_high.shift(1)
+        # ブレイクアウト条件（Look-ahead bias修正）
+        # 現在足のCloseではなく、当足高値でのブレイクアウト判定
+        breakout_condition = data['High'] > rolling_high.shift(1)
         
         return breakout_condition.fillna(False)
     

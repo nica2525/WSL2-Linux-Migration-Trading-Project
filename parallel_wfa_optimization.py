@@ -51,8 +51,9 @@ class BreakoutStrategy(TradingStrategy):
         # ローリング最高値
         rolling_high = data['High'].rolling(window=lookback).max()
         
-        # ブレイクアウト条件（前日高値を上抜け）
-        breakout_condition = data['Close'] > rolling_high.shift(1)
+        # ブレイクアウト条件（前日高値を上抜け - Look-ahead bias修正）
+        # 現在足のCloseではなく、当足高値でのブレイクアウト判定
+        breakout_condition = data['High'] > rolling_high.shift(1)
         
         return breakout_condition.fillna(False)
     
@@ -80,9 +81,10 @@ class MeanReversionStrategy(TradingStrategy):
         rolling_mean = data['Close'].rolling(window=lookback).mean()
         rolling_std = data['Close'].rolling(window=lookback).std()
         
-        # 下限ラインを下回った時に買いシグナル
+        # 下限ラインを下回った時に買いシグナル（Look-ahead bias修正）
         lower_band = rolling_mean - threshold * rolling_std
-        mean_reversion_condition = data['Close'] < lower_band
+        # 現在足のCloseではなく、当足安値でのバンド下抜け判定
+        mean_reversion_condition = data['Low'] < lower_band.shift(1)
         
         return mean_reversion_condition.fillna(False)
     
@@ -243,14 +245,15 @@ def generate_parameter_combinations(param_ranges: Dict) -> List[Dict]:
 def calculate_simple_sharpe(data: pd.DataFrame, signals: pd.Series, cost_scenario: Dict) -> float:
     """シンプルなシャープレシオ計算"""
     try:
-        # シグナル位置での売買リターン計算
-        entry_prices = data['Close'][signals].values
+        # シグナル位置での売買リターン計算（Look-ahead bias修正）
+        # シグナル発生の次足Open価格でエントリー
+        entry_prices = data['Open'].shift(-1)[signals].values
         if len(entry_prices) == 0:
             return np.nan
             
-        # 次の日の価格で決済（簡素化）
-        exit_signals = signals.shift(-1).fillna(False)
-        exit_prices = data['Close'][exit_signals].values
+        # エントリーの次足Open価格で決済（簡素化）
+        exit_signals = signals.shift(-2).fillna(False)  # 2期間後
+        exit_prices = data['Open'].shift(-1)[exit_signals].values
         
         # リターン計算（コスト考慮）
         if len(entry_prices) == len(exit_prices):
