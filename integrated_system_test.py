@@ -194,6 +194,7 @@ async def test_phase4_infrastructure():
         
         # 健全性監視
         health_monitor = HealthMonitor(
+            position_tracker=position_tracker,
             risk_manager=risk_manager,
             emergency_system=emergency_system, 
             db_manager=db_manager,
@@ -201,7 +202,7 @@ async def test_phase4_infrastructure():
         )
         await health_monitor.initialize()
         
-        health_summary = await health_monitor.get_health_summary()
+        health_summary = await health_monitor.get_system_health_summary()
         logger.info(f"  ✅ システム健全性: {health_summary['overall_status']}")
         
         # パフォーマンスレポート（修正版）
@@ -274,7 +275,13 @@ async def test_integrated_workflow():
             price=150.500,
             stop_loss=150.000,
             take_profit=151.000,
-            quality_score=0.85
+            quality_score=0.85,
+            confidence_level=0.75,
+            strategy_params={"breakout_threshold": 2.0},
+            source_system="IntegratedTest",
+            processing_time_ms=12.5,
+            market_conditions={"volatility": "normal"},
+            signal_status="GENERATED"
         )
         await db_manager.save_trading_signal(test_signal_data)
         logger.info("  → Phase4データベース記録: OK")
