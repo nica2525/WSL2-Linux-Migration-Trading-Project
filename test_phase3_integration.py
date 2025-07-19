@@ -35,52 +35,56 @@ class TestPhase3PositionManagement(unittest.IsolatedAsyncioTestCase):
             position_type=PositionType.BUY,
             entry_price=1.1000,
             quantity=0.1,
-            entry_time=datetime.now()
+            entry_time=datetime.now(),
+            current_price=1.1000  # 初期価格設定
         )
         
         # 未実現損益テスト（利益）
         unrealized_pnl = position.calculate_unrealized_pnl(1.1050)
-        self.assertAlmostEqual(unrealized_pnl, 50.0, places=1)  # 0.005 * 10,000 = 50
+        expected_pnl = 0.005 * 0.1 * 100000  # 50.0
+        self.assertAlmostEqual(unrealized_pnl, expected_pnl, places=1)
         
         # 実現損益テスト
         position.exit_price = 1.1050
         position.status = PositionStatus.CLOSED
         realized_pnl = position.calculate_realized_pnl()
-        self.assertAlmostEqual(realized_pnl, 50.0, places=1)
+        self.assertAlmostEqual(realized_pnl, expected_pnl, places=1)
         
         print(f"✅ P&L Calculation Test: Unrealized={unrealized_pnl:.2f}, Realized={realized_pnl:.2f}")
     
     async def test_position_synchronization(self):
         """ポジション同期テスト - kiro要件4.1"""
-        tracker = PositionTracker()
+        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as tmp_db:
+            tracker = PositionTracker()
+            tracker.db_path = tmp_db.name  # 独立DB
+            
+            # モック通信ブリッジ設定
+            tracker.tcp_bridge = AsyncMock()
+            tracker.tcp_bridge.is_connected.return_value = True
+            tracker.tcp_bridge.send_data = AsyncMock(return_value=True)
+            
+            await tracker.initialize()
         
-        # モック通信ブリッジ設定
-        tracker.tcp_bridge = AsyncMock()
-        tracker.tcp_bridge.is_connected.return_value = True
-        tracker.tcp_bridge.send_data = AsyncMock(return_value=True)
-        
-        await tracker.initialize()
-        
-        try:
-            # ポジション開設テスト
-            position = await tracker.open_position(
-                symbol="EURUSD",
-                position_type="BUY",
-                entry_price=1.1000,
-                quantity=0.1
-            )
-            
-            self.assertIsNotNone(position)
-            self.assertEqual(position.symbol, "EURUSD")
-            self.assertEqual(len(tracker.active_positions), 1)
-            
-            # MT4送信確認
-            tracker.tcp_bridge.send_data.assert_called()
-            
-            print(f"✅ Position Synchronization Test: Position created and synced")
-            
-        finally:
-            await tracker.stop()
+            try:
+                # ポジション開設テスト
+                position = await tracker.open_position(
+                    symbol="EURUSD",
+                    position_type="BUY",
+                    entry_price=1.1000,
+                    quantity=0.1
+                )
+                
+                self.assertIsNotNone(position)
+                self.assertEqual(position.symbol, "EURUSD")
+                self.assertEqual(len(tracker.active_positions), 1)
+                
+                # MT4送信確認
+                tracker.tcp_bridge.send_data.assert_called()
+                
+                print(f"✅ Position Synchronization Test: Position created and synced")
+                
+            finally:
+                await tracker.stop()
 
 class TestPhase3RiskManagement(unittest.IsolatedAsyncioTestCase):
     """リスク管理システムテスト"""

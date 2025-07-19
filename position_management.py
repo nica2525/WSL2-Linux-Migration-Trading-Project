@@ -77,7 +77,7 @@ class Position:
         if current_price:
             self.current_price = current_price
         
-        if self.status != PositionStatus.OPEN or not self.current_price:
+        if not self.current_price:
             return 0.0
         
         price_diff = self.current_price - self.entry_price
