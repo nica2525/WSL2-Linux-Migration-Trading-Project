@@ -100,6 +100,7 @@ int g_daily_trades = 0;
 datetime g_last_trade_date = 0;
 datetime g_week_start = 0;
 datetime g_month_start = 0;
+double g_daily_start_balance = 0.0;      // 日開始残高（追加）
 double g_week_start_balance = 0.0;
 double g_month_start_balance = 0.0;
 
@@ -282,7 +283,7 @@ bool CheckAdvancedRiskLimits()
 }
 
 //+------------------------------------------------------------------+
-//| リスク統計更新関数                                               |
+//| リスク統計更新関数（修正版 - 期間開始残高基準）                   |
 //+------------------------------------------------------------------+
 void UpdateRiskStatistics()
 {
@@ -293,7 +294,11 @@ void UpdateRiskStatistics()
     {
         g_daily_loss = 0.0;
         g_daily_trades = 0;
+        g_daily_start_balance = AccountBalance();  // 日開始残高を記録
         g_last_trade_date = current_time;
+        
+        if(EnableDebugPrint)
+            Print("📅 新しい日開始: 残高=", g_daily_start_balance);
     }
     
     // 週変更チェック
@@ -302,6 +307,9 @@ void UpdateRiskStatistics()
         g_weekly_loss = 0.0;
         g_week_start_balance = AccountBalance();
         g_week_start = current_time;
+        
+        if(EnableDebugPrint)
+            Print("📅 新しい週開始: 残高=", g_week_start_balance);
     }
     
     // 月変更チェック
@@ -310,22 +318,33 @@ void UpdateRiskStatistics()
         g_monthly_drawdown = 0.0;
         g_month_start_balance = AccountBalance();
         g_month_start = current_time;
+        
+        if(EnableDebugPrint)
+            Print("📅 新しい月開始: 残高=", g_month_start_balance);
     }
     
-    // 週次損失計算
+    // 日次損失計算（日開始残高基準）
+    if(g_daily_start_balance > 0)
+    {
+        double current_daily_loss = (g_daily_start_balance - AccountBalance()) / g_daily_start_balance * 100.0;
+        if(current_daily_loss > g_daily_loss)
+            g_daily_loss = current_daily_loss;
+    }
+    
+    // 週次損失計算（週開始残高基準）
     if(g_week_start_balance > 0)
     {
-        double weekly_loss = (g_week_start_balance - AccountBalance()) / g_week_start_balance * 100.0;
-        if(weekly_loss > g_weekly_loss)
-            g_weekly_loss = weekly_loss;
+        double current_weekly_loss = (g_week_start_balance - AccountBalance()) / g_week_start_balance * 100.0;
+        if(current_weekly_loss > g_weekly_loss)
+            g_weekly_loss = current_weekly_loss;
     }
     
-    // 月次ドローダウン計算
+    // 月次ドローダウン計算（月開始残高基準）
     if(g_month_start_balance > 0)
     {
-        double monthly_dd = (g_month_start_balance - AccountBalance()) / g_month_start_balance * 100.0;
-        if(monthly_dd > g_monthly_drawdown)
-            g_monthly_drawdown = monthly_dd;
+        double current_monthly_dd = (g_month_start_balance - AccountBalance()) / g_month_start_balance * 100.0;
+        if(current_monthly_dd > g_monthly_drawdown)
+            g_monthly_drawdown = current_monthly_dd;
     }
 }
 
