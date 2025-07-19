@@ -109,6 +109,9 @@ int g_total_trades = 0;
 int g_winning_trades = 0;
 int g_losing_trades = 0;
 
+// OnTrade処理用（MQL4には標準でOnTradeがないため独自実装）
+static int g_previous_history_total = 0;
+
 //+------------------------------------------------------------------+
 //| デフォルトパラメータ設定関数                                     |
 //+------------------------------------------------------------------+
@@ -608,6 +611,11 @@ int OnInit()
     g_week_start = TimeLocal();
     g_last_trade_date = TimeLocal();
     
+    // OnTrade代替実装のための履歴総数初期化
+    g_previous_history_total = OrdersHistoryTotal();
+    if(EnableDebugPrint)
+        Print("📊 初期履歴総数: ", g_previous_history_total, "件");
+    
     // レンジ計算
     CalculateRange(PERIOD_H4, g_wfa_params.h4_period, g_h4_range_high, g_h4_range_low);
     CalculateRange(PERIOD_H1, g_wfa_params.h1_period, g_h1_range_high, g_h1_range_low);
@@ -636,6 +644,14 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
+    // MQL4のOnTrade代替実装: 履歴変更を監視
+    int current_history_total = OrdersHistoryTotal();
+    if(current_history_total > g_previous_history_total)
+    {
+        ProcessNewClosedOrders(g_previous_history_total, current_history_total);
+        g_previous_history_total = current_history_total;
+    }
+    
     // リスク統計更新
     UpdateRiskStatistics();
     
@@ -721,38 +737,121 @@ void OnTick()
 }
 
 //+------------------------------------------------------------------+
-//| Trade event handler                                              |
+//| 新規決済注文処理関数（安全版 - 全件処理・マジックナンバーフィルタリング） |
+//+------------------------------------------------------------------+
+void ProcessNewClosedOrders(int from_index, int to_index)
+{
+    if(EnableDebugPrint)
+        Print("📊 新規決済注文検出: ", (to_index - from_index), "件を処理開始");
+    
+    int processed_count = 0;
+    int our_ea_orders = 0;
+    
+    // 新規決済注文を逆順で処理（最新から）
+    for(int i = to_index - 1; i >= from_index; i--)
+    {
+        if(!OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
+        {
+            if(EnableDebugPrint)
+                Print("⚠️ 履歴注文選択失敗: インデックス=", i, " エラー=", GetLastError());
+            continue;
+        }
+        
+        processed_count++;
+        
+        // マジックナンバーフィルタリング（最重要）
+        if(OrderMagicNumber() != MagicNumber)
+        {
+            if(EnableDebugPrint)
+                Print("💡 他EA/手動取引をスキップ: Ticket=", OrderTicket(), 
+                      " Magic=", OrderMagicNumber(), " (EA Magic=", MagicNumber, ")");
+            continue;
+        }
+        
+        // 決済済み注文のみ処理
+        if(OrderCloseTime() == 0)
+        {
+            if(EnableDebugPrint)
+                Print("💡 未決済注文をスキップ: Ticket=", OrderTicket());
+            continue;
+        }
+        
+        our_ea_orders++;
+        
+        // 取引統計更新
+        UpdateTradeStatistics(OrderTicket());
+    }
+    
+    if(EnableDebugPrint)
+        Print("✅ 決済注文処理完了: 総処理=", processed_count, "件 EA注文=", our_ea_orders, "件");
+}
+
+//+------------------------------------------------------------------+
+//| 取引統計更新関数                                                 |
+//+------------------------------------------------------------------+
+void UpdateTradeStatistics(int ticket)
+{
+    double profit = OrderProfit() + OrderSwap() + OrderCommission();
+    double profit_pips = 0.0;
+    
+    // pip利益計算
+    double pip_value = MarketInfo(OrderSymbol(), MODE_POINT);
+    if(MarketInfo(OrderSymbol(), MODE_DIGITS) == 3 || MarketInfo(OrderSymbol(), MODE_DIGITS) == 5)
+        pip_value *= 10;
+    
+    if(OrderType() == OP_BUY)
+        profit_pips = (OrderClosePrice() - OrderOpenPrice()) / pip_value;
+    else if(OrderType() == OP_SELL)
+        profit_pips = (OrderOpenPrice() - OrderClosePrice()) / pip_value;
+    
+    // 勝敗判定と統計更新
+    if(profit > 0)
+    {
+        g_winning_trades++;
+        g_consecutive_losses = 0;
+        
+        if(EnableDebugPrint)
+            Print("🎉 勝ちトレード: Ticket=", ticket, " Profit=$", 
+                  NormalizeDouble(profit, 2), " (", NormalizeDouble(profit_pips, 1), "pips)");
+    }
+    else
+    {
+        g_losing_trades++;
+        g_consecutive_losses++;
+        
+        // 損失統計更新（初期残高基準）
+        double loss_percent = MathAbs(profit) / g_initial_balance * 100.0;
+        g_daily_loss += loss_percent;
+        
+        if(EnableDebugPrint)
+            Print("📉 負けトレード: Ticket=", ticket, " Loss=$", 
+                  NormalizeDouble(profit, 2), " (", NormalizeDouble(profit_pips, 1), "pips)",
+                  " 連続損失=", g_consecutive_losses);
+    }
+    
+    // 取引実行統計
+    g_total_trades++;
+    
+    // 詳細ログ
+    if(EnableDebugPrint)
+    {
+        Print("📊 取引統計更新:");
+        Print("  総取引数: ", g_total_trades);
+        Print("  勝ちトレード: ", g_winning_trades);
+        Print("  負けトレード: ", g_losing_trades);
+        Print("  勝率: ", (g_total_trades > 0 ? NormalizeDouble((double)g_winning_trades / g_total_trades * 100.0, 1) : 0.0), "%");
+        Print("  連続損失: ", g_consecutive_losses);
+        Print("  日次損失: ", NormalizeDouble(g_daily_loss, 2), "%");
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Trade event handler（旧版・互換性のため保持）                    |
 //+------------------------------------------------------------------+
 void OnTrade()
 {
-    // 最新取引結果処理
-    if(OrdersHistoryTotal() > 0)
-    {
-        if(OrderSelect(OrdersHistoryTotal() - 1, SELECT_BY_POS, MODE_HISTORY))
-        {
-            if(OrderMagicNumber() == MagicNumber && OrderCloseTime() > 0)
-            {
-                double profit = OrderProfit() + OrderSwap() + OrderCommission();
-                
-                if(profit > 0)
-                {
-                    g_winning_trades++;
-                    g_consecutive_losses = 0;
-                }
-                else
-                {
-                    g_losing_trades++;
-                    g_consecutive_losses++;
-                    
-                    // 損失統計更新
-                    double loss_percent = MathAbs(profit) / g_initial_balance * 100.0;
-                    g_daily_loss += loss_percent;
-                }
-                
-                Print("📊 取引結果: Profit=", profit, " ConsecutiveLosses=", g_consecutive_losses);
-            }
-        }
-    }
+    // 新しいProcessNewClosedOrders()で処理されるため、この関数は空でOK
+    // 互換性のため関数は残すが、実際の処理はOnTick()内で実行
 }
 
 //+------------------------------------------------------------------+
