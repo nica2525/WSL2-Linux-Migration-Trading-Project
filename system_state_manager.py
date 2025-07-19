@@ -308,7 +308,8 @@ class SystemStateManager:
             file_size = file_path.stat().st_size
             
             # 圧縮比計算（推定）
-            original_size = len(json.dumps(asdict(snapshot)).encode())
+            snapshot_data_temp = asdict(snapshot)
+            original_size = len(json.dumps(snapshot_data_temp, default=lambda x: x.isoformat() if isinstance(x, datetime) else str(x)).encode())
             compression_ratio = file_size / original_size if original_size > 0 else 1.0
             
             # スナップショット更新
@@ -464,9 +465,14 @@ class SystemStateManager:
             file_name = f"{snapshot.snapshot_id}_{snapshot.snapshot_type.value}.json.gz"
             file_path = self.snapshot_dir / file_name
             
-            # JSON形式でシリアライズ
+            # JSON形式でシリアライズ（datetime対応）
+            def datetime_serializer(obj):
+                if isinstance(obj, datetime):
+                    return obj.isoformat()
+                raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+            
             snapshot_data = asdict(snapshot)
-            json_data = json.dumps(snapshot_data, indent=2, default=str).encode()
+            json_data = json.dumps(snapshot_data, indent=2, default=datetime_serializer).encode()
             
             # gzip圧縮して保存
             with gzip.open(file_path, 'wb') as f:

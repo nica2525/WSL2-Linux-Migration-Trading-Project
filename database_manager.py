@@ -319,7 +319,7 @@ class DatabaseManager:
         """データ整合性制約と検証ルール作成 - kiro要件5.1準拠"""
         try:
             async with aiosqlite.connect(self.db_path) as conn:
-                # インデックス作成（パフォーマンス向上）
+                # Phase4テーブルのインデックス作成（パフォーマンス向上）
                 indexes = [
                     "CREATE INDEX IF NOT EXISTS idx_trading_signals_timestamp ON trading_signals(timestamp)",
                     "CREATE INDEX IF NOT EXISTS idx_trading_signals_symbol ON trading_signals(symbol)",
@@ -329,9 +329,7 @@ class DatabaseManager:
                     "CREATE INDEX IF NOT EXISTS idx_trade_executions_status ON trade_executions(execution_status)",
                     "CREATE INDEX IF NOT EXISTS idx_risk_assessments_timestamp ON risk_assessments(timestamp)",
                     "CREATE INDEX IF NOT EXISTS idx_risk_assessments_level ON risk_assessments(risk_level)",
-                    "CREATE INDEX IF NOT EXISTS idx_system_snapshots_timestamp ON system_snapshots(timestamp)",
-                    "CREATE INDEX IF NOT EXISTS idx_positions_symbol ON positions(symbol)",
-                    "CREATE INDEX IF NOT EXISTS idx_positions_status ON positions(status)"
+                    "CREATE INDEX IF NOT EXISTS idx_system_snapshots_timestamp ON system_snapshots(timestamp)"
                 ]
                 
                 for index_sql in indexes:
