@@ -143,8 +143,7 @@ async def test_phase3_position_risk():
         await db_manager.initialize()
         
         # Phase3システム初期化
-        phase3_system = Phase3IntegratedSystem(
-            db_manager=db_manager,
+        phase3_system = IntegratedTradingSystem(
             config=CONFIG
         )
         await phase3_system.initialize()
