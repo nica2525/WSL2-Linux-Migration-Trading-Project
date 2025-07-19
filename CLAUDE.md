@@ -16,15 +16,15 @@
 - kiroの設計計画に準拠した実装のみ実行
 - 余計な設計文書作成は即座に削除対象
 
-**🔍 必須参照: .kiroフォルダ**
-- **設計書の場所**: `.kiro/` フォルダ内
-- **セッション開始時必須確認**: `ls .kiro/` で設計書確認
-- **実装前必須**: .kiroフォルダ内の関連設計書を必ず参照
+**🔍 最新作業状況の確認方法**
+- **最新セッション記録確認**: `ls -la 文書/記録/セッション記録*.md | tail -5`
+- **記録形式**: `セッション記録_YYYY-MM-DD_作業内容.md`
+- **最新日時ファイルを必ず確認**: 現在の作業状況とタスクを把握
 
 **セッション記録必須記載事項:**
 - タスク担当者: kiro（設計計画）、Claude（実装）
 - 役割分担の明記を全セッション記録に必須記載
-- 参照した.kiroフォルダ内設計書の明記
+- 実施したタスクと次回作業事項の明記
 
 ## 🚨 最重要 - cron自動化システム確認プロトコル
 **セッション開始時に必ず実行:**
@@ -54,21 +54,19 @@ tail -10 .cron_monitor.log
 - 🛑 **制御方法**: crontab コマンド
 - 📋 **ログ確認**: .cron_*.log ファイル
 
-## 🔍 kiro設計書参照プロトコル（最優先）
+## 🔍 最新タスク確認プロトコル（最優先）
 **セッション開始時必須確認:**
 ```bash
-ls .kiro/
-ls .kiro/specs/
-ls .kiro/steering/
+# 最新セッション記録を確認
+ls -la 文書/記録/セッション記録*.md | tail -5
+# 最新のセッション記録を読む
+cat "$(ls -t 文書/記録/セッション記録*.md | head -1)"
 ```
 
-**Phase2実装時必須参照:**
-- `.kiro/specs/breakout-trading-system/design.md` - kiro設計書
-- `.kiro/specs/breakout-trading-system/requirements.md` - kiro要件定義
-- `.kiro/specs/breakout-trading-system/tasks.md` - kiro作業計画
-- `.kiro/steering/product.md` - 製品仕様
-- `.kiro/steering/standards.md` - 開発基準
-- `.kiro/steering/tech.md` - 技術基準
+**kiro設計書の場所（必要時のみ参照）:**
+- `.kiro/` フォルダ内に設計書・要件定義・作業計画が格納
+- 混乱を避けるため、特に必要がない限り直接参照しない
+- 最新のタスクと作業状況はセッション記録で確認
 
 ## 🔍 Gitログ参照プロトコル
 **セッション開始時必須確認:**
