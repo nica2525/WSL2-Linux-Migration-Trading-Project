@@ -23,10 +23,9 @@
 - **用途**: システム図・アーキテクチャ図自動生成
 - **状態**: 依存関係インストール済み
 
-### 4. ⚠️ **Puppeteer MCP**
-- **パッケージ**: @modelcontextprotocol/server-puppeteer
-- **用途**: Web自動化・経済指標取得
-- **注意**: npmで非推奨警告あり（代替検討要）
+### 4. ❌ **Puppeteer MCP** (削除済み)
+- **理由**: npm非推奨警告のため導入中止
+- **代替案**: 将来的に安定版が出た際に再検討
 
 ---
 
@@ -47,10 +46,6 @@
     "drawio": {
       "command": "node",
       "args": ["mcp-servers/drawio-mcp-server/index.js"]
-    },
-    "puppeteer": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
     }
   }
 }
@@ -84,7 +79,7 @@
 
 1. **Claudecode再起動必要**: 新MCP反映のため
 2. **Jupyter MCP**: Python環境での動作確認要
-3. **Puppeteer**: 非推奨警告あり（将来的に代替検討）
+3. **Draw.io MCP**: ブラウザ拡張機能との連携推奨
 
 ---
 
