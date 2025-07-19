@@ -110,42 +110,81 @@ int g_winning_trades = 0;
 int g_losing_trades = 0;
 
 //+------------------------------------------------------------------+
-//| WFAパラメータ読み込み関数                                        |
+//| デフォルトパラメータ設定関数                                     |
+//+------------------------------------------------------------------+
+bool LoadDefaultParameters()
+{
+    g_wfa_params.h4_period = Default_H4_Period;
+    g_wfa_params.h1_period = Default_H1_Period;
+    g_wfa_params.min_break_distance = Default_MinBreakDistance;
+    g_wfa_params.atr_period = Default_ATR_Period;
+    g_wfa_params.atr_multiplier_tp = Default_ATR_MultiplierTP;
+    g_wfa_params.atr_multiplier_sl = Default_ATR_MultiplierSL;
+    g_wfa_params.min_atr_ratio = 1.0;
+    g_wfa_params.min_trend_strength = 0.1;
+    g_wfa_params.min_profit_pips = 4.0;
+    g_wfa_params.cost_ratio = 2.0;
+    g_wfa_params.is_loaded = true;
+    
+    Print("✅ デフォルトパラメータを使用");
+    return true;
+}
+
+//+------------------------------------------------------------------+
+//| WFAパラメータ読み込み関数（安全版 - 無限再帰修正済み）           |
 //+------------------------------------------------------------------+
 bool LoadWFAParameters()
 {
+    // WFA使用しない場合はデフォルト設定
     if(!UseWFAParameters)
     {
-        // デフォルトパラメータ使用
-        g_wfa_params.h4_period = Default_H4_Period;
-        g_wfa_params.h1_period = Default_H1_Period;
-        g_wfa_params.min_break_distance = Default_MinBreakDistance;
-        g_wfa_params.atr_period = Default_ATR_Period;
-        g_wfa_params.atr_multiplier_tp = Default_ATR_MultiplierTP;
-        g_wfa_params.atr_multiplier_sl = Default_ATR_MultiplierSL;
-        g_wfa_params.min_atr_ratio = 1.0;
-        g_wfa_params.min_trend_strength = 0.1;
-        g_wfa_params.min_profit_pips = 4.0;
-        g_wfa_params.cost_ratio = 2.0;
-        g_wfa_params.is_loaded = true;
-        
-        Print("✅ デフォルトパラメータを使用");
-        return true;
+        return LoadDefaultParameters();
     }
     
+    // ファイル読み込み試行
     string filepath = WFAParameterFile;
     int handle = FileOpen(filepath, FILE_READ|FILE_TXT|FILE_COMMON);
     
     if(handle == INVALID_HANDLE)
     {
-        Print("⚠️ WFAファイル読み込み失敗、デフォルト使用: ", filepath);
-        return LoadWFAParameters(); // デフォルトパラメータで再試行
+        // エラーログ強化: 詳細なエラー情報を出力
+        int error_code = GetLastError();
+        Print("❌ WFAファイル読み込み失敗 - エラーコード: ", error_code);
+        Print("   ファイルパス: ", filepath);
+        
+        // 主要エラーコードの説明
+        string error_desc = "";
+        switch(error_code) {
+            case 0: error_desc = "不明なエラー"; break;
+            case 4103: error_desc = "ファイルが見つかりません"; break;
+            case 4104: error_desc = "ファイルオープンエラー"; break;
+            case 4105: error_desc = "ファイルアクセス権限エラー"; break;
+            case 4106: error_desc = "ディスク容量不足"; break;
+            default: error_desc = "その他のファイルエラー"; break;
+        }
+        Print("   エラー詳細: ", error_desc);
+        Print("   → デフォルトパラメータで動作継続");
+        
+        // 無限再帰を回避: デフォルト設定を直接実行
+        return LoadDefaultParameters();
     }
     
+    // ファイル読み込み処理
+    Print("📁 WFAパラメータファイル読み込み開始: ", filepath);
+    
     string line;
+    int lines_read = 0;
+    
     while(!FileIsEnding(handle))
     {
         line = FileReadString(handle);
+        lines_read++;
+        
+        // 空行やコメント行をスキップ
+        if(StringLen(line) == 0 || StringFind(line, "#") == 0 || StringFind(line, "//") == 0)
+            continue;
+            
+        // パラメータ解析
         if(StringFind(line, "h4_period=") == 0)
             g_wfa_params.h4_period = (int)StringToInteger(StringSubstr(line, 10));
         else if(StringFind(line, "h1_period=") == 0)
@@ -166,17 +205,25 @@ bool LoadWFAParameters()
             g_wfa_params.min_profit_pips = StringToDouble(StringSubstr(line, 16));
         else if(StringFind(line, "cost_ratio=") == 0)
             g_wfa_params.cost_ratio = StringToDouble(StringSubstr(line, 11));
+        else if(EnableDebugPrint)
+            Print("⚠️ 未知のパラメータ行: ", line);
     }
     
+    // ファイルクローズ（必須）
     FileClose(handle);
     g_wfa_params.is_loaded = true;
     
-    Print("✅ WFAパラメータ読み込み成功");
+    // 読み込み結果報告
+    Print("✅ WFAパラメータ読み込み成功 (", lines_read, "行処理)");
     Print("  H4期間: ", g_wfa_params.h4_period);
     Print("  H1期間: ", g_wfa_params.h1_period);
     Print("  ATR期間: ", g_wfa_params.atr_period);
     Print("  TP倍率: ", g_wfa_params.atr_multiplier_tp);
     Print("  SL倍率: ", g_wfa_params.atr_multiplier_sl);
+    Print("  最小ATR比率: ", g_wfa_params.min_atr_ratio);
+    Print("  最小トレンド強度: ", g_wfa_params.min_trend_strength);
+    Print("  最小利益pips: ", g_wfa_params.min_profit_pips);
+    Print("  コスト比率: ", g_wfa_params.cost_ratio);
     
     return true;
 }
