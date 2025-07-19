@@ -22,6 +22,16 @@ import csv
 import sys
 from pathlib import Path
 
+# 既存システム統合
+sys.path.append(str(Path(__file__).parent))
+from realtime_signal_generator import SystemConstants, get_config_value, CONFIG
+from database_manager import DatabaseManager
+from position_management import PositionTracker
+from risk_management import RiskManager
+
+# ログ設定
+logger = logging.getLogger(__name__)
+
 # matplotlib/pandas はオプショナル
 try:
     import matplotlib
@@ -33,16 +43,6 @@ try:
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
     logger.warning("matplotlib/pandas not available - charts will be disabled")
-
-# 既存システム統合
-sys.path.append(str(Path(__file__).parent))
-from realtime_signal_generator import SystemConstants, get_config_value, CONFIG
-from database_manager import DatabaseManager
-from position_management import PositionTracker
-from risk_management import RiskManager
-
-# ログ設定
-logger = logging.getLogger(__name__)
 
 class ReportType(Enum):
     """レポート種別"""
@@ -166,7 +166,8 @@ class PerformanceReporter:
         
         # チャート設定
         self.chart_style = 'seaborn-v0_8'
-        plt.style.use('default')  # seabornテーマが利用できない場合のフォールバック
+        if MATPLOTLIB_AVAILABLE:
+            plt.style.use('default')  # seabornテーマが利用できない場合のフォールバック
         
         # パフォーマンス履歴キャッシュ
         self.performance_cache = {}
@@ -635,6 +636,10 @@ class PerformanceReporter:
                                          strategy_perfs: List[StrategyPerformance],
                                          period_type: str) -> List[str]:
         """パフォーマンスチャート生成"""
+        if not MATPLOTLIB_AVAILABLE:
+            logger.warning("Charts disabled - matplotlib not available")
+            return []
+        
         try:
             charts = []
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -643,23 +648,16 @@ class PerformanceReporter:
             fig, ax = plt.subplots(figsize=(12, 6))
             
             # サンプルデータでP&L推移を描画
-            dates = pd.date_range(start=trading_perf.period_start, 
-                                 end=trading_perf.period_end, freq='H')[:24]
-            cumulative_pnl = [i * trading_perf.total_pnl / len(dates) for i in range(len(dates))]
+            hours = list(range(24))
+            cumulative_pnl = [i * trading_perf.total_pnl / 24 for i in hours]
             
-            ax.plot(dates, cumulative_pnl, linewidth=2, color='blue', label='累積P&L')
+            ax.plot(hours, cumulative_pnl, linewidth=2, color='blue', label='累積P&L')
             ax.axhline(y=0, color='red', linestyle='--', alpha=0.7)
             ax.set_title(f'累積P&L推移 ({period_type.upper()})', fontsize=14, fontweight='bold')
             ax.set_xlabel('時刻')
             ax.set_ylabel('P&L')
             ax.legend()
             ax.grid(True, alpha=0.3)
-            
-            # 日本語フォント対応（フォールバック）
-            try:
-                plt.rcParams['font.family'] = ['DejaVu Sans', 'Liberation Sans', 'Arial']
-            except:
-                pass
             
             chart_path = self.charts_dir / f"pnl_trend_{period_type}_{timestamp}.png"
             plt.tight_layout()
@@ -828,14 +826,31 @@ class PerformanceReporter:
                 f.write(html_content)
             
             # JSONレポート生成
-            json_data = asdict(report)
-            # datetime オブジェクトを文字列に変換
-            def serialize_datetime(obj):
-                if isinstance(obj, datetime):
-                    return obj.isoformat()
-                return obj
-            
-            json_content = json.dumps(json_data, indent=2, default=serialize_datetime, ensure_ascii=False)
+            try:
+                json_data = asdict(report)
+                # datetime オブジェクトを文字列に変換
+                def serialize_datetime(obj):
+                    if isinstance(obj, datetime):
+                        return obj.isoformat()
+                    elif hasattr(obj, '__dict__'):
+                        return obj.__dict__
+                    return str(obj)
+                
+                json_content = json.dumps(json_data, indent=2, default=serialize_datetime, ensure_ascii=False)
+            except Exception as e:
+                # 循環参照エラー時のフォールバック
+                logger.warning(f"JSON serialization issue: {e}, using simplified data")
+                simplified_data = {
+                    "report_id": report.report_id,
+                    "report_type": report.report_type.value,
+                    "generated_at": report.generated_at.isoformat(),
+                    "period_start": report.period_start.isoformat(),
+                    "period_end": report.period_end.isoformat(),
+                    "summary": report.summary,
+                    "recommendations_count": len(report.recommendations),
+                    "charts_count": len(report.charts)
+                }
+                json_content = json.dumps(simplified_data, indent=2, ensure_ascii=False)
             json_path = self.reports_dir / f"{report.report_id}.json"
             
             with open(json_path, 'w', encoding='utf-8') as f:
