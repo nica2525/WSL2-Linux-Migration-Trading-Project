@@ -45,6 +45,13 @@ input int    MaxDailyTrades = 5;                         // 最大日次取引�
 input double MinAccountBalance = 1000.0;                 // 最小口座残高
 input bool   UseNewsFiter = false;                       // ニュースフィルター使用
 
+//--- パフォーマンス最適化設定（Gemini改善案）
+input string Section4b = "=== パフォーマンス最適化設定 ===";
+input int    RiskUpdateIntervalSec = 60;                 // リスク統計更新間隔（秒）
+input int    RiskCheckIntervalSec = 30;                  // リスク制限チェック間隔（秒）
+input int    AtrUpdateIntervalSec = 300;                 // ATR計算更新間隔（秒）
+input int    LogTickInterval = 100;                      // ログ出力Tick間隔
+
 //--- セッション管理
 input string Section5 = "=== セッション設定 ===";
 input bool   UseLondonSession = true;                    // ロンドンセッション
@@ -71,6 +78,23 @@ struct WFAParameters
     double min_profit_pips;
     double cost_ratio;
     bool is_loaded;
+};
+
+//--- パフォーマンスキャッシュ構造体（Gemini改善案）
+struct PerformanceCache
+{
+    // Risk Statistics Cache
+    datetime last_risk_update;
+    
+    // Risk Limit Check Cache
+    bool     limits_ok;
+    datetime last_risk_check;
+
+    // ATR & Quality Cache
+    double   atr_value;
+    bool     atr_quality_ok;
+    bool     trend_strength_ok;
+    datetime last_atr_update;
 };
 
 //--- グローバル変数
