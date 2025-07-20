@@ -142,7 +142,7 @@ static int g_previous_history_total = 0;
 bool LoadDefaultParameters()
 {
     g_wfa_params.h1_period = Default_H1_Period;
-    g_wfa_params.min_break_distance = Default_MinBreakDistance;
+    g_wfa_params.min_break_distance = 0.0;  // 検証用: 最小ブレイク距離を無効化
     g_wfa_params.atr_period = Default_ATR_Period;
     g_wfa_params.atr_multiplier_tp = Default_ATR_MultiplierTP;
     g_wfa_params.atr_multiplier_sl = Default_ATR_MultiplierSL;
