@@ -27,8 +27,7 @@ input int    HeartbeatInterval = 5;                      // ハートビート�
 
 //--- ブレイクアウトパラメータ（WFAで上書き可能）
 input string Section3 = "=== ブレイクアウト設定（デフォルト） ===";
-input int    Default_H4_Period = 24;                     // H4レンジ期間
-input int    Default_H1_Period = 24;                     // H1レンジ期間
+input int    Default_H1_Period = 24;                     // H1レンジ期間（単独使用）
 input double Default_MinBreakDistance = 5.0;             // 最小ブレイク幅（pips）
 input int    Default_ATR_Period = 14;                    // ATR期間
 input double Default_ATR_MultiplierTP = 2.5;             // 利確ATR倍率
@@ -67,7 +66,6 @@ input int    TokyoEnd = 8;                               // 東京終了（GMT�
 //--- WFAパラメータ構造体
 struct WFAParameters
 {
-    int h4_period;
     int h1_period;
     double min_break_distance;
     int atr_period;
@@ -110,12 +108,9 @@ datetime g_last_heartbeat = 0;
 PerformanceCache g_cache;
 int g_tick_count = 0;                 // Tick計数（デバッグ用）
 
-// ブレイクアウト計算
-double g_h4_range_high = 0.0;
-double g_h4_range_low = 0.0;
+// ブレイクアウト計算（H1単独）
 double g_h1_range_high = 0.0;
 double g_h1_range_low = 0.0;
-datetime g_last_h4_time = 0;
 datetime g_last_h1_time = 0;
 
 // リスク管理
@@ -146,7 +141,6 @@ static int g_previous_history_total = 0;
 //+------------------------------------------------------------------+
 bool LoadDefaultParameters()
 {
-    g_wfa_params.h4_period = Default_H4_Period;
     g_wfa_params.h1_period = Default_H1_Period;
     g_wfa_params.min_break_distance = Default_MinBreakDistance;
     g_wfa_params.atr_period = Default_ATR_Period;
@@ -217,9 +211,7 @@ bool LoadWFAParameters()
             continue;
             
         // パラメータ解析
-        if(StringFind(line, "h4_period=") == 0)
-            g_wfa_params.h4_period = (int)StringToInteger(StringSubstr(line, 10));
-        else if(StringFind(line, "h1_period=") == 0)
+        if(StringFind(line, "h1_period=") == 0)
             g_wfa_params.h1_period = (int)StringToInteger(StringSubstr(line, 10));
         else if(StringFind(line, "min_break_distance=") == 0)
             g_wfa_params.min_break_distance = StringToDouble(StringSubstr(line, 19));
@@ -247,7 +239,6 @@ bool LoadWFAParameters()
     
     // 読み込み結果報告
     Print("✅ WFAパラメータ読み込み成功 (", lines_read, "行処理)");
-    Print("  H4期間: ", g_wfa_params.h4_period);
     Print("  H1期間: ", g_wfa_params.h1_period);
     Print("  ATR期間: ", g_wfa_params.atr_period);
     Print("  TP倍率: ", g_wfa_params.atr_multiplier_tp);
@@ -586,13 +577,10 @@ string GenerateSignalJSON(int direction, double lot_size, double sl_distance, do
     json += "\"sl_distance\": " + DoubleToString(sl_distance, Digits) + ",";
     json += "\"tp_distance\": " + DoubleToString(tp_distance, Digits) + ",";
     json += "\"current_price\": " + DoubleToString(Bid, Digits) + ",";
-    json += "\"h4_range_high\": " + DoubleToString(g_h4_range_high, Digits) + ",";
-    json += "\"h4_range_low\": " + DoubleToString(g_h4_range_low, Digits) + ",";
     json += "\"h1_range_high\": " + DoubleToString(g_h1_range_high, Digits) + ",";
     json += "\"h1_range_low\": " + DoubleToString(g_h1_range_low, Digits) + ",";
     json += "\"atr\": " + DoubleToString(atr, Digits) + ",";
     json += "\"wfa_params\": {";
-    json += "\"h4_period\": " + IntegerToString(g_wfa_params.h4_period) + ",";
     json += "\"h1_period\": " + IntegerToString(g_wfa_params.h1_period) + ",";
     json += "\"atr_period\": " + IntegerToString(g_wfa_params.atr_period) + ",";
     json += "\"tp_multiplier\": " + DoubleToString(g_wfa_params.atr_multiplier_tp, 2) + ",";
@@ -719,11 +707,9 @@ int OnInit()
     if(EnableDebugPrint)
         Print("📊 初期履歴総数: ", g_previous_history_total, "件");
     
-    // レンジ計算
-    CalculateRange(PERIOD_H4, g_wfa_params.h4_period, g_h4_range_high, g_h4_range_low);
+    // レンジ計算（H1単独）
     CalculateRange(PERIOD_H1, g_wfa_params.h1_period, g_h1_range_high, g_h1_range_low);
     
-    Print("初期H4レンジ: High=", g_h4_range_high, " Low=", g_h4_range_low);
     Print("初期H1レンジ: High=", g_h1_range_high, " Low=", g_h1_range_low);
     
     PrintStatistics();
@@ -771,14 +757,7 @@ void OnTick()
         }
     }
     
-    // レンジ更新
-    datetime current_h4_time = iTime(Symbol(), PERIOD_H4, 0);
-    if(current_h4_time != g_last_h4_time)
-    {
-        CalculateRange(PERIOD_H4, g_wfa_params.h4_period, g_h4_range_high, g_h4_range_low);
-        g_last_h4_time = current_h4_time;
-    }
-    
+    // レンジ更新（H1単独）
     datetime current_h1_time = iTime(Symbol(), PERIOD_H1, 0);
     if(current_h1_time != g_last_h1_time)
     {
@@ -851,15 +830,15 @@ void OnTick()
         
         if(EnableDebugPrint)
         {
-            Print("🎯 高品質ブレイクアウトシグナル検出");
-            Print("  方向: ", (h4_direction > 0 ? "BUY" : "SELL"));
+            Print("🎯 H1ブレイクアウトシグナル検出（Python仕様準拠）");
+            Print("  方向: ", (h1_direction > 0 ? "BUY" : "SELL"));
             Print("  ロット: ", lot_size);
             Print("  TP(pips): ", tp_pips);
             Print("  SL/TP ATR倍率: ", g_wfa_params.atr_multiplier_sl, "/", g_wfa_params.atr_multiplier_tp);
         }
         
         // シグナル生成とPython送信
-        string signal_json = GenerateSignalJSON(h4_direction, lot_size, sl_distance, tp_distance);
+        string signal_json = GenerateSignalJSON(h1_direction, lot_size, sl_distance, tp_distance);
         
         // パフォーマンスログ
         if(EnableDebugPrint && (g_tick_count % 1000 == 0))  // 1000tick毎に統計表示
@@ -868,9 +847,9 @@ void OnTick()
                   " 取引数=", g_total_trades);
         
         // 取引実行
-        if(ExecuteTrade(h4_direction, lot_size, sl_distance, tp_distance))
+        if(ExecuteTrade(h1_direction, lot_size, sl_distance, tp_distance))
         {
-            Print("📤 シグナル完了: ", signal_json);
+            Print("📤 H1シグナル完了: ", signal_json);
         }
     }
 }
