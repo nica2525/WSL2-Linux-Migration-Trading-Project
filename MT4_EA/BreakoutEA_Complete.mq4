@@ -147,7 +147,7 @@ bool LoadDefaultParameters()
     g_wfa_params.atr_multiplier_tp = Default_ATR_MultiplierTP;
     g_wfa_params.atr_multiplier_sl = Default_ATR_MultiplierSL;
     g_wfa_params.min_atr_ratio = 1.0;
-    g_wfa_params.min_trend_strength = 0.0005;  // 最終調整: 実測値に基づく最適化（0.001→0.0005）
+    g_wfa_params.min_trend_strength = 0.0003;  // 最終調整: ログ分析に基づく最適化（0.0005→0.0003）
     g_wfa_params.min_profit_pips = 4.0;
     g_wfa_params.cost_ratio = 2.0;
     g_wfa_params.is_loaded = true;
@@ -458,7 +458,8 @@ void CalculateRange(int timeframe, int period, double &range_high, double &range
     range_high = 0.0;
     range_low = 999999.0;
     
-    for(int i = 1; i <= period; i++)
+    // Python仕様準拠: i=0から開始（現在バーを含む）
+    for(int i = 0; i < period; i++)
     {
         double high = iHigh(Symbol(), timeframe, i);
         double low = iLow(Symbol(), timeframe, i);
@@ -797,6 +798,16 @@ void OnTick()
     int h1_direction = 0;
     
     bool h1_breakout = CheckBreakout(current_price, g_h1_range_high, g_h1_range_low, h1_direction);
+    
+    // デバッグログ（1時間ごと）
+    if(g_tick_count % 3600 == 0 && EnableDebugPrint)
+    {
+        Print("🔍 ブレイクアウト状況:");
+        Print("  現在価格: ", current_price);
+        Print("  H1レンジ: High=", g_h1_range_high, " Low=", g_h1_range_low);
+        Print("  上抜けまで: ", (g_h1_range_high + g_wfa_params.min_break_distance * MarketInfo(Symbol(), MODE_POINT) * 10) - current_price, "pips");
+        Print("  下抜けまで: ", current_price - (g_h1_range_low - g_wfa_params.min_break_distance * MarketInfo(Symbol(), MODE_POINT) * 10), "pips");
+    }
     
     // H1単一時間軸ブレイクアウト確認（kiro緊急修正指示）
     if(h1_breakout)
