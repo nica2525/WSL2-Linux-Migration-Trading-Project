@@ -1,0 +1,338 @@
+2025.07.20 20:51:39.524	EURUSD.oj1m,H1: 61417 tick events (6216 bars, 62432 bar states) processed in 0:00:03.282 (total time 0:00:07.407)
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: === 終了完了 ===
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ========================
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 連続損失: 0
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 月次DD: 0.0%
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 週次損失: 0.0%
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 日次損失: 0.0%
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 現在残高: 100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 初期残高: 100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 勝率: 0.0%
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 総取引数: 0
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 総シグナル数: 0
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: WFAパラメータ使用: 有効
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: === ブレイクアウトEA統計 ===
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: === BreakoutEA_Complete 終了処理 ===
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 23:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 23:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 22:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 22:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 21:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 21:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00205 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 20:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0005974773498493812 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 20:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00203 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 20:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0005984377272032573 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 20:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00203 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 20:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0005941160436285854 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 20:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00201 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 20:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0006070812063491497 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 20:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00199 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 20:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0006205269151747599 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 20:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00197 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 20:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0006334927623450777 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 20:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 20:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 20:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 19:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00196 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 19:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0006425079209855376 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 19:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 19:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 19:27:31  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00195 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 19:27:31  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0006362660110150393 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 19:27:31  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 19:27:31  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 18:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00192 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 18:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0004557920129888491 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 18:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 18:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 18:27:31  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00188 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 18:27:31  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0004289127493598053 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 18:27:31  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 18:27:31  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00182 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 17:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002302520492436815 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 17:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00173 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 17:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001707601127400585 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 17:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00173 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 17:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001669221663044761 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 17:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00173 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 17:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001789158467159458 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 17:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00173 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 17:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001904300505339327 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 17:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00172 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 17:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002024242947529735 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 17:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 17:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 17:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00162 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 16:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 2.973407188942212e-05 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 16:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00148 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 16:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001477286244354536 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 16:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00148 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 16:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001515663131399384 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 16:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00145 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 16:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001357360370545152 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 16:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:12:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00144 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 16:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001237437372719453 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 16:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:10:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:07:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00142 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 16:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001160688163381342 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 16:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:05:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 16:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 16:02:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 15:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00145 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 15:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 6.281885966010641e-05 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 15:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 15:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 15:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 15:27:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 15:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00142 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 15:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 6.761386822741881e-05 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 15:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 15:25:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 15:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 15:22:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 15:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00142 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 15:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 5.946232630026793e-05 < 0.1
+2025.07.20 20:51:39.524	2024.12.30 15:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 15:20:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 15:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.20 20:51:39.524	2024.12.30 15:17:30  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
+2025.07.20 20:51:39.524	2024.12.30 15:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00137 品質:OK トレンド:NG
+2025.07.20 20:51:39.524	2024.12.30 15:15:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 9.206769660975278e-05 < 0.1
+2025.07.20 20:51:36.267	2024.01.02 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ? WFAファイル読み込み失敗 - エラーコード: 5004
+2025.07.20 20:51:36.267	2024.01.02 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: === BreakoutEA_Complete 初期化開始 ===
+2025.07.20 20:51:36.249	2024.01.01 00:00:00  BreakoutEA_Complete inputs: UseWFAParameters=1; AutoExecuteTrades=1; MagicNumber=20250720; EnableDebugPrint=1; UsePythonCommunication=0; PythonServerPort=8888; HeartbeatInterval=5; Default_H4_Period=24; Default_H1_Period=24; Default_MinBreakDistance=5; Default_ATR_Period=14; Default_ATR_MultiplierTP=2.5; Default_ATR_MultiplierSL=1.3; RiskPercent=1.5; MaxDailyLoss=2; MaxWeeklyLoss=5; MaxMonthlyDrawdown=12; MaxConsecutiveLosses=4; MaxDailyTrades=5; MinAccountBalance=1000; UseNewsFiter=0;
+2025.07.20 20:51:36.241	TestGenerator: 82583 generating errors, logged 100 first error records
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2550 at 2024.01.02 07:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (high value 1.10335 at 2024.01.02 07:00 and price 1.10377 mismatched)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (low value 1.10164 at 2024.01.02 06:00 is not reached from the least timeframe, low price 1.10300 mismatches)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1581 at 2024.01.02 06:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (high value 1.10248 at 2024.01.02 06:00 and price 1.10342 mismatched)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (low value 1.10175 at 2024.01.02 05:00 is not reached from the least timeframe, low price 1.10208 mismatches)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1973 at 2024.01.02 05:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1973 at 2024.01.02 05:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1973 at 2024.01.02 05:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1973 at 2024.01.02 05:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1973 at 2024.01.02 05:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1973 at 2024.01.02 05:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1973 at 2024.01.02 05:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1973 at 2024.01.02 05:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1973 at 2024.01.02 05:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (high value 1.10246 at 2024.01.02 05:00 and price 1.10281 mismatched)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (low value 1.10180 at 2024.01.02 04:00 is not reached from the least timeframe, low price 1.10192 mismatches)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (high value 1.10357 at 2024.01.02 04:00 is not reached from the least timeframe, high price 1.10250 mismatches)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2928 at 2024.01.02 04:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2928 at 2024.01.02 04:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2928 at 2024.01.02 04:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2928 at 2024.01.02 04:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2928 at 2024.01.02 04:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2928 at 2024.01.02 04:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2928 at 2024.01.02 04:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2928 at 2024.01.02 04:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 2928 at 2024.01.02 04:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (high value 1.10431 at 2024.01.02 03:00 is not reached from the least timeframe, high price 1.10240 mismatches)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 3645 at 2024.01.02 03:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (low value 1.10340 at 2024.01.02 03:00 and price 1.10176 mismatched)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (high value 1.10382 at 2024.01.02 02:00 is not reached from the least timeframe, high price 1.10359 mismatches)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1901 at 2024.01.02 02:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1901 at 2024.01.02 02:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1901 at 2024.01.02 02:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1901 at 2024.01.02 02:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1901 at 2024.01.02 02:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1901 at 2024.01.02 02:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1901 at 2024.01.02 02:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1901 at 2024.01.02 02:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1901 at 2024.01.02 02:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (low value 1.10340 at 2024.01.02 02:00 and price 1.10262 mismatched)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (low value 1.10353 at 2024.01.02 01:00 is not reached from the least timeframe, low price 1.10375 mismatches)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (high value 1.10444 at 2024.01.02 01:00 is not reached from the least timeframe, high price 1.10432 mismatches)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 1604 at 2024.01.02 01:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (high value 1.10449 at 2024.01.02 00:00 is not reached from the least timeframe, high price 1.10380 mismatches)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (volume limit 377 at 2024.01.02 00:00 exceeded)
+2025.07.20 20:51:36.172	TestGenerator: unmatched data error (low value 1.10401 at 2024.01.02 00:00 and price 1.10342 mismatched)
+2025.07.20 20:51:34.119	TestGenerator: spread set to 2
+2025.07.20 20:51:32.070	Expert BreakoutEA_Complete EURUSD.oj1m,H1: loaded successfully
+2025.07.20 20:51:32.048	Expert BreakoutEA_Complete EURUSD.oj1m,H1: removed
