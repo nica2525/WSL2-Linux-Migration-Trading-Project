@@ -147,7 +147,7 @@ bool LoadDefaultParameters()
     g_wfa_params.atr_multiplier_tp = Default_ATR_MultiplierTP;
     g_wfa_params.atr_multiplier_sl = Default_ATR_MultiplierSL;
     g_wfa_params.min_atr_ratio = 1.0;
-    g_wfa_params.min_trend_strength = 0.001;  // kiro承認: クイック修正（0.1→0.001）
+    g_wfa_params.min_trend_strength = 0.0005;  // 最終調整: 実測値に基づく最適化（0.001→0.0005）
     g_wfa_params.min_profit_pips = 4.0;
     g_wfa_params.cost_ratio = 2.0;
     g_wfa_params.is_loaded = true;
