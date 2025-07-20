@@ -767,8 +767,18 @@ void OnTick()
     }
     
     // 基本条件チェック（高速）
-    if(!IsInTradingSession() || OrdersTotal() > 0)
+    bool in_session = IsInTradingSession();
+    int orders_count = OrdersTotal();
+    
+    if(!in_session || orders_count > 0)
+    {
+        if(EnableDebugPrint && (g_tick_count % LogTickInterval == 0))
+        {
+            Print("🚫 基本条件チェック失敗: セッション=", (in_session ? "OK" : "NG"), 
+                  " オープンポジション=", orders_count);
+        }
         return;
+    }
     
     // リスク制限チェック（キャッシュ利用・Gemini改善案）
     if(current_time - g_cache.last_risk_check >= RiskCheckIntervalSec)
