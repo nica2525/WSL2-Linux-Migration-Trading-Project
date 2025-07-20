@@ -147,7 +147,7 @@ bool LoadDefaultParameters()
     g_wfa_params.atr_multiplier_tp = Default_ATR_MultiplierTP;
     g_wfa_params.atr_multiplier_sl = Default_ATR_MultiplierSL;
     g_wfa_params.min_atr_ratio = 1.0;
-    // g_wfa_params.min_trend_strength は設定ファイルから読み込み
+    g_wfa_params.min_trend_strength = 0.0002;  // デフォルト値（質と量のバランス）
     g_wfa_params.min_profit_pips = 4.0;
     g_wfa_params.cost_ratio = 2.0;
     g_wfa_params.is_loaded = true;
