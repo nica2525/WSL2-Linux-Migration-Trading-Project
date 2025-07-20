@@ -68,6 +68,7 @@ struct WFAParameters
 {
     int h1_period;
     double min_break_distance;
+    double retrace_wait_pips;
     int atr_period;
     double atr_multiplier_tp;
     double atr_multiplier_sl;
@@ -143,6 +144,7 @@ bool LoadDefaultParameters()
 {
     g_wfa_params.h1_period = Default_H1_Period;
     g_wfa_params.min_break_distance = 0.0;  // 検証用: 最小ブレイク距離を無効化
+    g_wfa_params.retrace_wait_pips = 1.0;  // デフォルト: エントリー精度向上
     g_wfa_params.atr_period = Default_ATR_Period;
     g_wfa_params.atr_multiplier_tp = Default_ATR_MultiplierTP;
     g_wfa_params.atr_multiplier_sl = Default_ATR_MultiplierSL;
@@ -215,6 +217,8 @@ bool LoadWFAParameters()
             g_wfa_params.h1_period = (int)StringToInteger(StringSubstr(line, 10));
         else if(StringFind(line, "min_break_distance=") == 0)
             g_wfa_params.min_break_distance = StringToDouble(StringSubstr(line, 19));
+        else if(StringFind(line, "retrace_wait_pips=") == 0)
+            g_wfa_params.retrace_wait_pips = StringToDouble(StringSubstr(line, 18));
         else if(StringFind(line, "atr_period=") == 0)
             g_wfa_params.atr_period = (int)StringToInteger(StringSubstr(line, 11));
         else if(StringFind(line, "atr_multiplier_tp=") == 0)
@@ -518,20 +522,31 @@ bool CheckBreakout(double current_price, double range_high, double range_low, in
         Print("  下抜けまで: ", NormalizeDouble(distance_to_lower, 1), "pips");
     }
     
+    // エントリー精度向上: リトレース待ち機能
+    double retrace_distance = g_wfa_params.retrace_wait_pips * pip_size;
+    
     if(current_price > range_high + break_distance)
     {
-        direction = 1;
-        if(EnableDebugPrint)
-            Print("🚀 上方ブレイクアウト検出: ", NormalizeDouble(current_price, Digits), " > ", NormalizeDouble(range_high + break_distance, Digits));
-        return true;
+        // 上方ブレイクアウト: リトレースからの再上昇を待つ
+        if(current_price <= range_high + break_distance + retrace_distance)
+        {
+            direction = 1;
+            if(EnableDebugPrint)
+                Print("🚀 上方ブレイクアウト検出（リトレース圏内）: ", NormalizeDouble(current_price, Digits));
+            return true;
+        }
     }
     
     if(current_price < range_low - break_distance)
     {
-        direction = -1;
-        if(EnableDebugPrint)
-            Print("📉 下方ブレイクアウト検出: ", NormalizeDouble(current_price, Digits), " < ", NormalizeDouble(range_low - break_distance, Digits));
-        return true;
+        // 下方ブレイクアウト: リトレースからの再下落を待つ
+        if(current_price >= range_low - break_distance - retrace_distance)
+        {
+            direction = -1;
+            if(EnableDebugPrint)
+                Print("📉 下方ブレイクアウト検出（リトレース圏内）: ", NormalizeDouble(current_price, Digits));
+            return true;
+        }
     }
     
     direction = 0;
