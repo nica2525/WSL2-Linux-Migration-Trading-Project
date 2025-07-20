@@ -134,42 +134,43 @@ class CSVCommunicationPrototype:
             logger.error(f"価格データ処理エラー: {e}")
     
     def _check_breakout_signal(self, current_tick: Dict):
-        """ブレイクアウトシグナル判定"""
-        if len(self.price_buffer) < 50:
+        """ブレイクアウトシグナル判定（Look-ahead bias修正版）"""
+        if len(self.price_buffer) < 51:  # 確定足判定のため+1
             return
         
         try:
-            # 過去50ティックのデータでブレイクアウト判定
-            recent_data = self.price_buffer[-50:]
-            prices = [tick['bid'] for tick in recent_data]
+            # Look-ahead bias回避：最新ティックは除外し、確定した足のみ使用
+            confirmed_data = self.price_buffer[-51:-1]  # 最新を除く50足
+            prices = [tick['bid'] for tick in confirmed_data]
             
-            # 移動平均とレンジ計算
+            # 移動平均とレンジ計算（確定足のみ）
             ma_20 = np.mean(prices[-20:])
             high_20 = max(prices[-20:])
             low_20 = min(prices[-20:])
-            current_price = current_tick['bid']
+            # 確定した最新足の価格で判定
+            confirmed_price = confirmed_data[-1]['bid']
             
             # ブレイクアウト条件判定
             signal = None
             confidence = 0.0
             
             # 上方ブレイクアウト
-            if current_price > high_20 * 1.0005:  # 0.05% above high
+            if confirmed_price > high_20 * 1.0005:  # 0.05% above high
                 volatility = np.std(prices[-20:])
                 if volatility > 0.0001:  # 最小ボラティリティ要件
                     signal = "BUY"
-                    confidence = min(0.9, (current_price - high_20) / (ma_20 * 0.01))
+                    confidence = min(0.9, (confirmed_price - high_20) / (ma_20 * 0.01))
             
             # 下方ブレイクアウト  
-            elif current_price < low_20 * 0.9995:  # 0.05% below low
+            elif confirmed_price < low_20 * 0.9995:  # 0.05% below low
                 volatility = np.std(prices[-20:])
                 if volatility > 0.0001:
                     signal = "SELL"
-                    confidence = min(0.9, (low_20 - current_price) / (ma_20 * 0.01))
+                    confidence = min(0.9, (low_20 - confirmed_price) / (ma_20 * 0.01))
             
-            # シグナル送信
+            # シグナル送信（確定足データを使用）
             if signal and confidence > 0.3:
-                self._send_trading_signal(signal, confidence, current_tick)
+                self._send_trading_signal(signal, confidence, confirmed_data[-1])
                 
         except Exception as e:
             logger.error(f"ブレイクアウト判定エラー: {e}")

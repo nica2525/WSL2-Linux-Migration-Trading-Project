@@ -13,6 +13,8 @@ input int    UpdateIntervalMs = 100;               // 更新間隔（ミリ秒�
 input bool   EnablePythonSignals = true;           // Pythonシグナル受信有効
 input double DefaultLotSize = 0.1;                 // デフォルトロットサイズ
 input int    MaxSpreadPips = 3;                    // 最大スプレッド（pips）
+input int    MagicNumber = 20250720;               // ユニークなマジックナンバー
+input int    MaxRetries = 3;                       // 注文失敗時の最大リトライ回数
 
 // グローバル変数
 string g_PriceDataFile;
@@ -281,24 +283,65 @@ void ExecuteOrder(string action, double lotSize, double stopLoss, double takePro
     // 注文コメント作成
     string comment = StringFormat("Python_%s_%.2f", action, confidence);
     
-    // 注文送信
-    int ticket = OrderSend(Symbol(), orderType, lotSize, openPrice, 3, 
-                          stopLoss, takeProfit, comment, 0, 0, orderColor);
+    // 注文送信（リトライ機能付き）
+    int ticket = -1;
+    int attempts = 0;
     
-    if(ticket > 0)
+    while(attempts < MaxRetries && ticket <= 0)
     {
-        Print("✅ 注文成功 - Ticket: ", ticket, " Action: ", action, 
-              " Lots: ", lotSize, " Price: ", openPrice, " Confidence: ", confidence);
+        attempts++;
         
-        WriteConnectionStatus("ORDER_EXECUTED");
-    }
-    else
-    {
-        int error = GetLastError();
-        Print("❌ 注文失敗 - Error: ", error, " Action: ", action, 
-              " Lots: ", lotSize, " Price: ", openPrice);
+        ticket = OrderSend(Symbol(), orderType, lotSize, openPrice, 3, 
+                          stopLoss, takeProfit, comment, MagicNumber, 0, orderColor);
         
-        WriteConnectionStatus("ORDER_FAILED");
+        if(ticket > 0)
+        {
+            Print("✅ 注文成功 - Ticket: ", ticket, " Action: ", action, 
+                  " Lots: ", lotSize, " Price: ", openPrice, " Confidence: ", confidence,
+                  " Attempts: ", attempts);
+            
+            WriteConnectionStatus("ORDER_EXECUTED");
+            break;
+        }
+        else
+        {
+            int error = GetLastError();
+            string errorMsg = "";
+            
+            // エラー種別による詳細分析
+            switch(error)
+            {
+                case ERR_SERVER_BUSY:
+                    errorMsg = "Server Busy - Retrying";
+                    Sleep(1000); // 1秒待機
+                    break;
+                case ERR_TRADE_TIMEOUT:
+                    errorMsg = "Trade Timeout - Retrying";
+                    Sleep(500);
+                    break;
+                case ERR_INVALID_PRICE:
+                    errorMsg = "Invalid Price - Cannot retry";
+                    attempts = MaxRetries; // リトライ停止
+                    break;
+                case ERR_INSUFFICIENT_MONEY:
+                    errorMsg = "Insufficient Money - Cannot retry";
+                    attempts = MaxRetries;
+                    break;
+                default:
+                    errorMsg = "Unknown Error: " + IntegerToString(error);
+                    Sleep(300);
+                    break;
+            }
+            
+            Print("❌ 注文失敗 (", attempts, "/", MaxRetries, ") - ", errorMsg,
+                  " Action: ", action, " Lots: ", lotSize, " Price: ", openPrice,
+                  " Spread: ", DoubleToString((Ask - Bid) / Point, 1), " pips");
+            
+            if(attempts >= MaxRetries)
+            {
+                WriteConnectionStatus("ORDER_FAILED_FINAL");
+            }
+        }
     }
 }
 
