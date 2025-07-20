@@ -1,253 +1,217 @@
-2025.07.21 07:11:53.762	EURUSD.oj1m,H1: 1537 tick events (1536 bars, 4073 bar states) processed in 0:00:00.016 (total time 0:00:02.031)
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: === 終了完了 ===
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ========================
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 連続損失: 0
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 月次DD: 0.0%
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 週次損失: 0.0%
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 日次損失: 0.0%
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 現在残高: 100000.0
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 初期残高: 100000.0
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 勝率: 0.0%
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 総取引数: 0
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 総シグナル数: 0
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: WFAパラメータ使用: 有効
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: === ブレイクアウトEA統計 ===
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: === BreakoutEA_Complete 終了処理 ===
-2025.07.21 07:11:53.762	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00083 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00082 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0008 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002040057455437346 < 0.0003
-2025.07.21 07:11:53.762	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00082 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 5.842139818163326e-05 < 0.0003
-2025.07.21 07:11:53.762	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0008 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 8.531758543833118e-05 < 0.0003
-2025.07.21 07:11:53.762	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00065 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00065 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0006400000000000001 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00059 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00055 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00055 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00058 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0006400000000000001 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00072 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.29 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.29 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい日開始: 残高=100000.0
-2025.07.21 07:11:53.762	2024.03.28 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00131 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00124 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00121 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.28 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00109 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.28 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00107 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.28 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00091 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.28 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00094 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.28 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00084 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.28 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00074 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.28 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0007 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.28 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002352505094396688 < 0.0003
-2025.07.21 07:11:53.762	2024.03.28 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00061 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.28 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001182991174698073 < 0.0003
-2025.07.21 07:11:53.762	2024.03.28 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0005999999999999999 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.28 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 3.604286328172875e-05 < 0.0003
-2025.07.21 07:11:53.762	2024.03.28 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00061 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.28 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 5.082761214601771e-05 < 0.0003
-2025.07.21 07:11:53.762	2024.03.28 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00065 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.28 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 4.666849336119653e-05 < 0.0003
-2025.07.21 07:11:53.762	2024.03.28 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.28 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい日開始: 残高=100000.0
-2025.07.21 07:11:53.762	2024.03.27 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00081 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002674254961341834 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00079 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002882028060975843 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00076 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002489403868597557 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00078 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001944266515065215 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00075 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001376112896669001 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00073 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001131296414900858 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00062 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 4.478609100985788e-05 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00058 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001334408863797209 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00051 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001759089668783622 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00049 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002640673574886312 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00045 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.27 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002977252406841138 < 0.0003
-2025.07.21 07:11:53.762	2024.03.27 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00046 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.27 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00048 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.27 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00059 品質:OK トレンド:OK
-2025.07.21 07:11:53.762	2024.03.27 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.27 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい日開始: 残高=100000.0
-2025.07.21 07:11:53.762	2024.03.26 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.26 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.26 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.26 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00101 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.26 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001337269516985995 < 0.0003
-2025.07.21 07:11:53.762	2024.03.26 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.762	2024.03.26 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00101 品質:OK トレンド:NG
-2025.07.21 07:11:53.762	2024.03.26 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002291726130889341 < 0.0003
-2025.07.21 07:11:53.761	2024.03.26 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00091 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.26 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00083 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.26 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0008 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.26 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00074 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.26 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00071 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.26 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00066 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.26 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00063 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.26 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00056 品質:OK トレンド:NG
-2025.07.21 07:11:53.761	2024.03.26 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002495535942872122 < 0.0003
-2025.07.21 07:11:53.761	2024.03.26 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00048 品質:OK トレンド:NG
-2025.07.21 07:11:53.761	2024.03.26 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002933801265411798 < 0.0003
-2025.07.21 07:11:53.761	2024.03.26 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00048 品質:OK トレンド:NG
-2025.07.21 07:11:53.761	2024.03.26 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002412832393037356 < 0.0003
-2025.07.21 07:11:53.761	2024.03.26 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00045 品質:OK トレンド:NG
-2025.07.21 07:11:53.761	2024.03.26 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.000245476223874408 < 0.0003
-2025.07.21 07:11:53.761	2024.03.26 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00047 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.26 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.26 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい日開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00079 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.25 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00082 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.25 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00082 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.25 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00088 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.25 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00087 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.25 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00085 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.25 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00079 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.25 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00077 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.25 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00074 品質:OK トレンド:OK
-2025.07.21 07:11:53.761	2024.03.25 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00065 品質:OK トレンド:NG
-2025.07.21 07:11:53.761	2024.03.25 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001872897325915685 < 0.0003
-2025.07.21 07:11:53.761	2024.03.25 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00062 品質:OK トレンド:NG
-2025.07.21 07:11:53.761	2024.03.25 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 9.618123504134504e-05 < 0.0003
-2025.07.21 07:11:53.761	2024.03.25 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00061 品質:OK トレンド:NG
-2025.07.21 07:11:53.761	2024.03.25 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 2.219527961892925e-05 < 0.0003
-2025.07.21 07:11:53.761	2024.03.25 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00062 品質:OK トレンド:NG
-2025.07.21 07:11:53.761	2024.03.25 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0001401173563780135 < 0.0003
-2025.07.21 07:11:53.761	2024.03.25 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00068 品質:OK トレンド:NG
-2025.07.21 07:11:53.761	2024.03.25 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.000221040053566597 < 0.0003
-2025.07.21 07:11:53.761	2024.03.25 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:53.761	2024.03.25 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
-2025.07.21 07:11:53.761	2024.03.25 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい週開始: 残高=100000.0
-2025.07.21 07:11:51.723	Expert BreakoutEA_Complete EURUSD.oj1m,H1: loaded successfully
+2025.07.21 07:29:07.899	EURUSD.oj1m,H1: 1537 tick events (1536 bars, 4073 bar states) processed in 0:00:00.032 (total time 0:00:02.047)
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: === 終了完了 ===
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ========================
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 連続損失: 0
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 月次DD: 0.0%
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 週次損失: 0.0%
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 日次損失: 0.0%
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 現在残高: 100000.0
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 初期残高: 100000.0
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 勝率: 0.0%
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 総取引数: 0
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: 総シグナル数: 0
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: WFAパラメータ使用: 有効
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: === ブレイクアウトEA統計 ===
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: === BreakoutEA_Complete 終了処理 ===
+2025.07.21 07:29:07.899	2024.03.29 23:59:59  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=23 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=37.2pips
+2025.07.21 07:29:07.899	2024.03.29 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08049 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=22 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=37.2pips
+2025.07.21 07:29:07.899	2024.03.29 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08049 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=21 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=37.2pips
+2025.07.21 07:29:07.899	2024.03.29 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08049 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00083 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=20 ロンドン=NG NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=37.2pips
+2025.07.21 07:29:07.899	2024.03.29 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08049 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00082 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=19 ロンドン=NG NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=37.5pips
+2025.07.21 07:29:07.899	2024.03.29 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08052 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0008 品質:OK トレンド:NG
+2025.07.21 07:29:07.899	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 0.0002040057455437346 < 0.0003
+2025.07.21 07:29:07.899	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=18 ロンドン=NG NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=39.5pips
+2025.07.21 07:29:07.899	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08072 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 18:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00082 品質:OK トレンド:NG
+2025.07.21 07:29:07.899	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 5.842139818163326e-05 < 0.0003
+2025.07.21 07:29:07.899	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=17 ロンドン=NG NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=50.8pips
+2025.07.21 07:29:07.899	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08185 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 17:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0008 品質:OK トレンド:NG
+2025.07.21 07:29:07.899	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? トレンド強度不足: 8.531758543833118e-05 < 0.0003
+2025.07.21 07:29:07.899	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=16 ロンドン=NG NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=50.8pips
+2025.07.21 07:29:07.899	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08185 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 16:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00065 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=15 ロンドン=OK NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=50.8pips
+2025.07.21 07:29:07.899	2024.03.29 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08185 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 15:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00065 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=14 ロンドン=OK NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=50.8pips
+2025.07.21 07:29:07.899	2024.03.29 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08185 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 14:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0006400000000000001 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=13 ロンドン=OK NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=50.8pips
+2025.07.21 07:29:07.899	2024.03.29 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08185 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 13:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00059 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=12 ロンドン=OK NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=50.8pips
+2025.07.21 07:29:07.899	2024.03.29 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08185 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 12:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00055 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=11 ロンドン=OK NY=NG 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=50.8pips
+2025.07.21 07:29:07.899	2024.03.29 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08185 Low=1.07677
+2025.07.21 07:29:07.899	2024.03.29 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 11:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00055 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=10 ロンドン=OK NY=NG 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=45.1pips
+2025.07.21 07:29:07.899	2024.03.29 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08185 Low=1.07734
+2025.07.21 07:29:07.899	2024.03.29 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 10:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00058 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=9 ロンドン=OK NY=NG 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=50.5pips
+2025.07.21 07:29:07.899	2024.03.29 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08239 Low=1.07734
+2025.07.21 07:29:07.899	2024.03.29 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 09:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.0006400000000000001 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=8 ロンドン=OK NY=NG 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=53.1pips
+2025.07.21 07:29:07.899	2024.03.29 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08265 Low=1.07734
+2025.07.21 07:29:07.899	2024.03.29 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 08:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00072 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.29 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=7 ロンドン=OK NY=NG 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.29 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=53.1pips
+2025.07.21 07:29:07.899	2024.03.29 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08265 Low=1.07734
+2025.07.21 07:29:07.899	2024.03.29 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 07:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=6 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=53.1pips
+2025.07.21 07:29:07.899	2024.03.29 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08265 Low=1.07734
+2025.07.21 07:29:07.899	2024.03.29 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 06:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=5 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=51.7pips
+2025.07.21 07:29:07.899	2024.03.29 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08265 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.29 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 05:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=4 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=51.7pips
+2025.07.21 07:29:07.899	2024.03.29 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08265 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.29 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 04:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=3 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=51.7pips
+2025.07.21 07:29:07.899	2024.03.29 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08265 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.29 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 03:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=2 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=51.7pips
+2025.07.21 07:29:07.899	2024.03.29 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08265 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.29 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 02:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=1 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=51.7pips
+2025.07.21 07:29:07.899	2024.03.29 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08265 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.29 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 01:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=0 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.29 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.29 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=51.7pips
+2025.07.21 07:29:07.899	2024.03.29 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08265 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.29 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.29 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.29 00:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? 新しい日開始: 残高=100000.0
+2025.07.21 07:29:07.899	2024.03.28 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=23 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.28 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.28 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=54.1pips
+2025.07.21 07:29:07.899	2024.03.28 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08289 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.28 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.28 23:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.28 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=22 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.28 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.28 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=54.1pips
+2025.07.21 07:29:07.899	2024.03.28 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08289 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.28 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.28 22:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.28 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=21 ロンドン=NG NY=NG 東京=NG 結果=取引不可
+2025.07.21 07:29:07.899	2024.03.28 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.28 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=54.1pips
+2025.07.21 07:29:07.899	2024.03.28 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08289 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.28 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.28 21:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00131 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=20 ロンドン=NG NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=54.1pips
+2025.07.21 07:29:07.899	2024.03.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08289 Low=1.07748
+2025.07.21 07:29:07.899	2024.03.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.899	2024.03.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.899	2024.03.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00124 品質:OK トレンド:OK
+2025.07.21 07:29:07.899	2024.03.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=19 ロンドン=NG NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.899	2024.03.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.899	2024.03.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=54.1pips
+2025.07.21 07:29:07.899	2024.03.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08289 Low=1.07748
+2025.07.21 07:29:07.894	2024.02.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:07.894	2024.02.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   レンジ幅=60.0pips
+2025.07.21 07:29:07.894	2024.02.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   High=1.08564 Low=1.07964
+2025.07.21 07:29:07.894	2024.02.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? レンジ計算完了: TF=60 期間=24バー
+2025.07.21 07:29:07.894	2024.02.28 20:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? リスク情報更新完了。制限: OK
+2025.07.21 07:29:07.894	2024.02.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? ATR更新: 0.00113 品質:OK トレンド:OK
+2025.07.21 07:29:07.894	2024.02.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1: ?? セッション詳細: GMT時刻=19 ロンドン=NG NY=OK 東京=NG 結果=取引可能
+2025.07.21 07:29:07.894	2024.02.28 19:00:00  BreakoutEA_Complete EURUSD.oj1m,H1:   参照期間: 24バー前まで（current=i0は除外）
+2025.07.21 07:29:05.855	Expert BreakoutEA_Complete EURUSD.oj1m,H1: loaded successfully
