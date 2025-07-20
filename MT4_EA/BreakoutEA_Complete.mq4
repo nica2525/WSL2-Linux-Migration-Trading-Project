@@ -49,7 +49,7 @@ input string Section4b = "=== パフォーマンス最適化設定 ===";
 input int    RiskUpdateIntervalSec = 60;                 // リスク統計更新間隔（秒）
 input int    RiskCheckIntervalSec = 30;                  // リスク制限チェック間隔（秒）
 input int    AtrUpdateIntervalSec = 300;                 // ATR計算更新間隔（秒）
-input int    LogTickInterval = 100;                      // ログ出力Tick間隔
+input int    LogTickInterval = 10;                       // ログ出力Tick間隔（デバッグ用に短縮）
 
 //--- セッション管理
 input string Section5 = "=== セッション設定 ===";
@@ -470,6 +470,20 @@ void CalculateRange(int timeframe, int period, double &range_high, double &range
     
     range_high = NormalizeDouble(range_high, Digits);
     range_low = NormalizeDouble(range_low, Digits);
+    
+    // デバッグ: レンジ計算詳細
+    if(EnableDebugPrint)
+    {
+        double range_pips = (range_high - range_low);
+        double pip_size = MarketInfo(Symbol(), MODE_POINT);
+        if(Digits == 3 || Digits == 5) pip_size *= 10;
+        range_pips = range_pips / pip_size;
+        
+        Print("📏 レンジ計算完了: TF=", timeframe, " 期間=", period, "バー");
+        Print("  High=", NormalizeDouble(range_high, Digits), " Low=", NormalizeDouble(range_low, Digits));
+        Print("  レンジ幅=", NormalizeDouble(range_pips, 1), "pips");
+        Print("  参照期間: ", period, "バー前まで（current=i0は除外）");
+    }
 }
 
 //+------------------------------------------------------------------+
@@ -482,15 +496,41 @@ bool CheckBreakout(double current_price, double range_high, double range_low, in
     
     double break_distance = g_wfa_params.min_break_distance * pip_size;
     
+    // デバッグ情報（詳細計算値）
+    static int last_debug_tick = 0;
+    if(EnableDebugPrint && (g_tick_count - last_debug_tick) >= 1000)
+    {
+        last_debug_tick = g_tick_count;
+        double break_pips = g_wfa_params.min_break_distance;
+        double upper_threshold = range_high + break_distance;
+        double lower_threshold = range_low - break_distance;
+        double distance_to_upper = (upper_threshold - current_price) / pip_size;
+        double distance_to_lower = (current_price - lower_threshold) / pip_size;
+        
+        Print("📊 ブレイクアウト計算詳細:");
+        Print("  現在価格: ", NormalizeDouble(current_price, Digits));
+        Print("  レンジHigh: ", NormalizeDouble(range_high, Digits));
+        Print("  レンジLow: ", NormalizeDouble(range_low, Digits));
+        Print("  ブレイク距離: ", break_pips, "pips");
+        Print("  上抜け閾値: ", NormalizeDouble(upper_threshold, Digits));
+        Print("  下抜け閾値: ", NormalizeDouble(lower_threshold, Digits));
+        Print("  上抜けまで: ", NormalizeDouble(distance_to_upper, 1), "pips");
+        Print("  下抜けまで: ", NormalizeDouble(distance_to_lower, 1), "pips");
+    }
+    
     if(current_price > range_high + break_distance)
     {
         direction = 1;
+        if(EnableDebugPrint)
+            Print("🚀 上方ブレイクアウト検出: ", NormalizeDouble(current_price, Digits), " > ", NormalizeDouble(range_high + break_distance, Digits));
         return true;
     }
     
     if(current_price < range_low - break_distance)
     {
         direction = -1;
+        if(EnableDebugPrint)
+            Print("📉 下方ブレイクアウト検出: ", NormalizeDouble(current_price, Digits), " < ", NormalizeDouble(range_low - break_distance, Digits));
         return true;
     }
     
@@ -506,27 +546,43 @@ bool IsInTradingSession()
     datetime current_gmt = TimeGMT();
     int current_hour = TimeHour(current_gmt);
     
+    bool london_ok = false, newyork_ok = false, tokyo_ok = false;
+    
     if(UseLondonSession && current_hour >= LondonStart && current_hour < LondonEnd)
-        return true;
+        london_ok = true;
     
     if(UseNewYorkSession && current_hour >= NewYorkStart && current_hour < NewYorkEnd)
-        return true;
+        newyork_ok = true;
     
     if(UseTokyoSession)
     {
         if(TokyoStart > TokyoEnd)
         {
             if(current_hour >= TokyoStart || current_hour < TokyoEnd)
-                return true;
+                tokyo_ok = true;
         }
         else
         {
             if(current_hour >= TokyoStart && current_hour < TokyoEnd)
-                return true;
+                tokyo_ok = true;
         }
     }
     
-    return false;
+    bool result = london_ok || newyork_ok || tokyo_ok;
+    
+    // 詳細デバッグ出力（1時間ごと）
+    static int last_debug_hour = -1;
+    if(EnableDebugPrint && current_hour != last_debug_hour)
+    {
+        last_debug_hour = current_hour;
+        Print("🕐 セッション詳細: GMT時刻=", current_hour, 
+              " ロンドン=", (london_ok ? "OK" : "NG"), 
+              " NY=", (newyork_ok ? "OK" : "NG"), 
+              " 東京=", (tokyo_ok ? "OK" : "NG"),
+              " 結果=", (result ? "取引可能" : "取引不可"));
+    }
+    
+    return result;
 }
 
 //+------------------------------------------------------------------+
@@ -791,7 +847,13 @@ void OnTick()
     }
     
     if(!g_cache.limits_ok)
+    {
+        if(EnableDebugPrint && (g_tick_count % LogTickInterval == 0))
+        {
+            Print("🚫 リスク制限により停止");
+        }
         return;
+    }
     
     // ATR計算と品質チェック（キャッシュ付き）
     if(current_time - g_cache.last_atr_update >= AtrUpdateIntervalSec || g_cache.atr_value == 0.0)
@@ -801,7 +863,14 @@ void OnTick()
     
     // キャッシュされた結果を使用
     if(!g_cache.atr_quality_ok || !g_cache.trend_strength_ok)
+    {
+        if(EnableDebugPrint && (g_tick_count % LogTickInterval == 0))
+        {
+            Print("🚫 品質フィルター失敗: ATR品質=", (g_cache.atr_quality_ok ? "OK" : "NG"), 
+                  " トレンド強度=", (g_cache.trend_strength_ok ? "OK" : "NG"));
+        }
         return;
+    }
     
     // ブレイクアウトチェック（Python仕様準拠: H1単独）
     double current_price = Bid;
