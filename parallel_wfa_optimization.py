@@ -268,14 +268,16 @@ def calculate_simple_sharpe(data: pd.DataFrame, signals: pd.Series, cost_scenari
         return np.nan
 
 def calculate_simple_return(data: pd.DataFrame, signals: pd.Series, cost_scenario: Dict) -> float:
-    """シンプルなリターン計算"""
+    """シンプルなリターン計算（Look-ahead bias修正版）"""
     try:
-        entry_prices = data['Close'][signals].values
+        # シグナル発生の次足Open価格でエントリー（Look-ahead bias修正）
+        entry_prices = data['Open'].shift(-1)[signals].values
         if len(entry_prices) == 0:
             return 0.0
             
-        exit_signals = signals.shift(-1).fillna(False)
-        exit_prices = data['Close'][exit_signals].values
+        # エントリーの次足Open価格で決済
+        exit_signals = signals.shift(-2).fillna(False)  # 2期間後
+        exit_prices = data['Open'].shift(-1)[exit_signals].values
         
         if len(entry_prices) == len(exit_prices):
             returns = (exit_prices - entry_prices) / entry_prices
@@ -287,15 +289,16 @@ def calculate_simple_return(data: pd.DataFrame, signals: pd.Series, cost_scenari
         return 0.0
 
 def calculate_simple_drawdown(data: pd.DataFrame, signals: pd.Series, cost_scenario: Dict) -> float:
-    """実際の最大ドローダウン計算"""
+    """実際の最大ドローダウン計算（Look-ahead bias修正版）"""
     try:
-        # シグナル位置での売買実行
-        entry_prices = data['Close'][signals].values
+        # シグナル発生の次足Open価格でエントリー（Look-ahead bias修正）
+        entry_prices = data['Open'].shift(-1)[signals].values
         if len(entry_prices) == 0:
             return 0.0
             
-        exit_signals = signals.shift(-1).fillna(False)
-        exit_prices = data['Close'][exit_signals].values
+        # エントリーの次足Open価格で決済
+        exit_signals = signals.shift(-2).fillna(False)  # 2期間後
+        exit_prices = data['Open'].shift(-1)[exit_signals].values
         
         if len(entry_prices) != len(exit_prices):
             return 0.0
