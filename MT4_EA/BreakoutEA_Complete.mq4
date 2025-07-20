@@ -458,8 +458,8 @@ void CalculateRange(int timeframe, int period, double &range_high, double &range
     range_high = 0.0;
     range_low = 999999.0;
     
-    // Python仕様準拠: i=0から開始（現在バーを含む）
-    for(int i = 0; i < period; i++)
+    // Python仕様準拠: shift(1)相当 = i=1から開始（前のバーまでの最高値）
+    for(int i = 1; i <= period; i++)
     {
         double high = iHigh(Symbol(), timeframe, i);
         double low = iLow(Symbol(), timeframe, i);
