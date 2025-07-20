@@ -65,6 +65,16 @@
   - 経済指標統合
   - キャッシュシステム
 
+#### **4. Jupyter MCP統合**
+- **場所**: `/home/trader/mcp-servers/jupyter-notebook-mcp/`
+- **ステータス**: **✅ 実装完了・動作準備完了**
+- **機能**:
+  - **Jupyterノートブック連携**: NotebookRead・NotebookEdit・executeCode
+  - **バックテスト分析**: リアルタイム分析・可視化
+  - **データ科学統合**: pandas・numpy・matplotlib活用
+- **設定状況**: settings.json設定済み・依存関係インストール完了
+- **テストノートブック**: `jupyter_test_notebook.ipynb`作成済み
+
 ### **⚡ 開発効率向上システム**
 
 #### **4. 自動品質保証**
