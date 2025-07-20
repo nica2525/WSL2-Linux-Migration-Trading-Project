@@ -813,15 +813,14 @@ void OnTick()
     if(!g_cache.atr_quality_ok || !g_cache.trend_strength_ok)
         return;
     
-    // ブレイクアウトチェック
+    // ブレイクアウトチェック（Python仕様準拠: H1単独）
     double current_price = Bid;
-    int h4_direction = 0, h1_direction = 0;
+    int h1_direction = 0;
     
-    bool h4_breakout = CheckBreakout(current_price, g_h4_range_high, g_h4_range_low, h4_direction);
     bool h1_breakout = CheckBreakout(current_price, g_h1_range_high, g_h1_range_low, h1_direction);
     
-    // 両時間軸でブレイクアウト確認
-    if(h4_breakout && h1_breakout && h4_direction == h1_direction)
+    // H1単一時間軸ブレイクアウト確認（kiro緊急修正指示）
+    if(h1_breakout)
     {
         double sl_distance = g_cache.atr_value * g_wfa_params.atr_multiplier_sl;
         double tp_distance = g_cache.atr_value * g_wfa_params.atr_multiplier_tp;
