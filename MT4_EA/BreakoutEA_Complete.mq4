@@ -171,7 +171,7 @@ bool LoadWFAParameters()
     
     // ファイル読み込み試行
     string filepath = WFAParameterFile;
-    int handle = FileOpen(filepath, FILE_READ|FILE_TXT|FILE_COMMON);
+    int handle = FileOpen(filepath, FILE_READ|FILE_TXT);
     
     if(handle == INVALID_HANDLE)
     {
