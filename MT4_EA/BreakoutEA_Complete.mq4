@@ -142,8 +142,8 @@ static int g_previous_history_total = 0;
 //+------------------------------------------------------------------+
 bool LoadDefaultParameters()
 {
-    g_wfa_params.h1_period = Default_H1_Period;
-    g_wfa_params.min_break_distance = 0.0;  // 検証用: 最小ブレイク距離を無効化
+    g_wfa_params.h1_period = 20;  // 強制的に20期間設定
+    g_wfa_params.min_break_distance = 2.0;  // 2pips: 実用的なフィルター
     g_wfa_params.retrace_wait_pips = 1.0;  // デフォルト: エントリー精度向上
     g_wfa_params.atr_period = Default_ATR_Period;
     g_wfa_params.atr_multiplier_tp = Default_ATR_MultiplierTP;
@@ -750,6 +750,10 @@ int OnInit()
         Print("❌ パラメータ読み込み失敗");
         return(INIT_FAILED);
     }
+    
+    // 強制的に20期間設定（Python実装統一）
+    g_wfa_params.h1_period = 20;
+    Print("🔧 強制設定: H1期間=", g_wfa_params.h1_period, "期間（Python統一）");
     
     // 初期設定
     g_initial_balance = AccountBalance();
