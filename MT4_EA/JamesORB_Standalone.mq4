@@ -32,9 +32,9 @@ int deinit()
 //+------------------------------------------------------------------+
 //| Convert relative distance to points                             |
 //+------------------------------------------------------------------+
-double RelDistToPoints(double price)
+double RelDistToPoints(double diff)
 {
-   return(MathAbs(price - Bid) / Point);
+   return(diff / Point);
 }
 
 //+------------------------------------------------------------------+
