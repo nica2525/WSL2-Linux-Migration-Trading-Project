@@ -145,16 +145,19 @@ bool LoadDefaultParameters()
     g_wfa_params.h1_period = 20;  // 強制的に20期間設定
     g_wfa_params.min_break_distance = 2.0;  // 2pips: 実用的なフィルター
     g_wfa_params.retrace_wait_pips = 1.0;  // デフォルト: エントリー精度向上
-    g_wfa_params.atr_period = Default_ATR_Period;
-    g_wfa_params.atr_multiplier_tp = Default_ATR_MultiplierTP;
-    g_wfa_params.atr_multiplier_sl = Default_ATR_MultiplierSL;
-    g_wfa_params.min_atr_ratio = 1.0;
-    g_wfa_params.min_trend_strength = 0.0002;  // デフォルト値（質と量のバランス）
-    g_wfa_params.min_profit_pips = 4.0;
-    g_wfa_params.cost_ratio = 2.0;
+    g_wfa_params.atr_period = 14;  // atr_period=14
+    g_wfa_params.atr_multiplier_tp = 3.0;  // atr_multiplier_tp=3.0
+    g_wfa_params.atr_multiplier_sl = 1.2;  // atr_multiplier_sl=1.2
+    g_wfa_params.min_atr_ratio = 1.0;  // min_atr_ratio=1.0
+    g_wfa_params.min_trend_strength = 0.0001;  // min_trend_strength=0.0001
+    g_wfa_params.min_profit_pips = 4.0;  // min_profit_pips=4.0
+    g_wfa_params.cost_ratio = 2.0;  // cost_ratio=2.0
     g_wfa_params.is_loaded = true;
     
-    Print("✅ デフォルトパラメータを使用");
+    Print("✅ デフォルトパラメータ使用（wfa_params.ini完全反映）");
+    Print("  トレンド強度: ", g_wfa_params.min_trend_strength);
+    Print("  TP倍率: ", g_wfa_params.atr_multiplier_tp);
+    Print("  SL倍率: ", g_wfa_params.atr_multiplier_sl);
     return true;
 }
 
@@ -169,9 +172,15 @@ bool LoadWFAParameters()
         return LoadDefaultParameters();
     }
     
-    // ファイル読み込み試行
+    // ファイル読み込み試行（複数パス試行）
     string filepath = WFAParameterFile;
-    int handle = FileOpen(filepath, FILE_READ|FILE_TXT);
+    int handle = FileOpen(filepath, FILE_READ|FILE_TXT|FILE_COMMON);
+    
+    // FILE_COMMON失敗時は通常パスで再試行
+    if(handle == INVALID_HANDLE)
+    {
+        handle = FileOpen(filepath, FILE_READ|FILE_TXT);
+    }
     
     if(handle == INVALID_HANDLE)
     {
