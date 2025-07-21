@@ -12,7 +12,7 @@
 //--- 基本設定
 input string Section1 = "=== 基本設定 ===";
 input bool   UseWFAParameters = true;                    // WFA最適化パラメータ使用
-input string WFAParameterFile = "..\\MT4_EA\\wfa_params.ini";        // WFAパラメータファイル
+input string WFAParameterFile = "wfa_params.ini";        // WFAパラメータファイル
 input bool   AutoExecuteTrades = true;                   // 自動取引実行
 input int    MagicNumber = 20250720;                     // マジックナンバー
 input bool   EnableDebugPrint = true;                    // デバッグ出力
