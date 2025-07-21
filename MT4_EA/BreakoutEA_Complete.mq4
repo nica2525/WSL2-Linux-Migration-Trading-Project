@@ -561,6 +561,9 @@ bool IsInTradingSession()
     datetime current_gmt = TimeGMT();
     int current_hour = TimeHour(current_gmt);
     
+    // 高ボラティリティセッション限定フィルター（欧州・米国重複）
+    bool high_volatility_session = (current_hour >= 12 && current_hour <= 16);
+    
     bool london_ok = false, newyork_ok = false, tokyo_ok = false;
     
     if(UseLondonSession && current_hour >= LondonStart && current_hour < LondonEnd)
@@ -583,7 +586,8 @@ bool IsInTradingSession()
         }
     }
     
-    bool result = london_ok || newyork_ok || tokyo_ok;
+    // 高ボラティリティセッションフィルター適用
+    bool result = high_volatility_session && (london_ok || newyork_ok || tokyo_ok);
     
     // 詳細デバッグ出力（1時間ごと）
     static int last_debug_hour = -1;
