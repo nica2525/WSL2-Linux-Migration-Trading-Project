@@ -27,7 +27,7 @@ input int    HeartbeatInterval = 5;                      // ハートビート�
 
 //--- ブレイクアウトパラメータ（WFAで上書き可能）
 input string Section3 = "=== ブレイクアウト設定（デフォルト） ===";
-input int    Default_H1_Period = 24;                     // H1レンジ期間（単独使用）
+input int    Default_H1_Period = 20;                     // H1レンジ期間（単独使用）
 input double Default_MinBreakDistance = 5.0;             // 最小ブレイク幅（pips）
 input int    Default_ATR_Period = 14;                    // ATR期間
 input double Default_ATR_MultiplierTP = 2.5;             // 利確ATR倍率
