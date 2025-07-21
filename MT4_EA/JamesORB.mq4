@@ -180,7 +180,7 @@ int start()
    processedClose = false; 
    
    // check for first bar of the hour ...
-   if (Time0 == Time[0]) return;
+   if (Time0 == Time[0]) return(0);
    Time0 = Time[0];
    int currHour = TimeHour(Time[0]); 
   
