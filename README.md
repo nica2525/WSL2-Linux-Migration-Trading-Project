@@ -25,9 +25,41 @@
 ## プロジェクト番号
 **2** （開発順序: 1.黄金WW手法 → 2.ブレイクアウト手法）
 
-## 関連ファイル
-- `CLAUDE_PROJECT.md`: プロジェクト詳細仕様
-- `PROJECT_MASTER_ARCHIVE.md`: 開発過程記録
+## プロジェクト構造（2025-07-21更新）
+
+### **現在のディレクトリ構成**
+```
+/
+├── core/                    # 核心システム（27ファイル）
+│   ├── phase3_integrated_system.py    # 統合取引システム
+│   ├── realtime_signal_generator.py   # リアルタイムシグナル
+│   ├── risk_management.py             # リスク管理
+│   └── automation_compatibility.py    # 自動化互換性
+├── strategies/              # 戦略実装（4ファイル）
+│   ├── cost_resistant_strategy.py     # コスト耐性戦略
+│   └── multi_timeframe_breakout_strategy.py
+├── wfa/                     # Walk Forward Analysis（7ファイル）
+│   ├── enhanced_parallel_wfa_with_slippage.py
+│   └── unified_wfa_framework.py
+├── tests/                   # テスト関連（8ファイル）
+├── utilities/               # ユーティリティ（5ファイル）
+├── MT4_EA/                  # MT4実装
+│   ├── BreakoutEA_Complete.mq4        # 修正済みEA
+│   └── JamesORB_Standalone.mq4        # シンプル参考EA
+├── Scripts/                 # 自動化スクリプト
+│   ├── cron_git_auto_save.py          # Git自動保存
+│   └── cron_system_monitor.py         # システム監視
+└── 文書/                    # ドキュメント
+    ├── 記録/                # セッション記録
+    ├── 技術/                # 技術仕様
+    └── 管理/                # 管理情報
+```
+
+### **現在の開発状況**
+- **Phase3統合システム**: 完成（2025-07-19）
+- **MT4 EA修正**: 完了（0シグナル→67シグナル復旧）
+- **JamesORB分析**: シンプル戦略研究中
+- **プロジェクト整理**: 66→27ファイル（59%削減完了）
 - `DIRECTORY_MAP.md`: ファイル構造図
 - `PROJECT_FINAL_SUMMARY.md`: 完了時の成果報告
 
