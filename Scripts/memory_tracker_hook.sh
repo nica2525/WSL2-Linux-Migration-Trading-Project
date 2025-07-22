@@ -24,6 +24,7 @@ if [ $((ACTION_COUNT % 30)) -eq 0 ]; then
     echo "🧠 [記憶追跡] $CURRENT_TIME - 第$(((ACTION_COUNT / 30)))回目実行 (30アクション達成)"
     echo "📋 必須確認: ESSENTIAL_REFERENCES.md → 参照マップ読み込み"
     echo "🔄 記憶システムの手動更新が必要です"
+    echo "🚨 セッション記録重複防止: 作成前に ls -la 文書/記録/セッション記録*\$(date +%Y-%m-%d)* 実行"
     
     # Git管理対象ファイルに記録（フォルダ存在確認付き）
     mkdir -p "$PROJECT_DIR/docs"
