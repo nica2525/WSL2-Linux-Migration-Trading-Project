@@ -3,7 +3,7 @@
 .env
 
 # Claude設定
-.claude/
+.claude/settings.local.json
 .clauderc.local
 
 # バックテスト結果
