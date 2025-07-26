@@ -7,7 +7,7 @@
 
 #property copyright "Copyright 2012,Clifford H. James"
 #property link      ""
-#property version   "2.01-tested"
+#property version   "2.01"
 
 #include <Trade\Trade.mqh>
 
