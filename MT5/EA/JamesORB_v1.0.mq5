@@ -2,11 +2,12 @@
 //|                                          JamesORB_Standalone.mq5 |
 //|                                 Copyright 2012,Clifford H. James |
 //|                            Modified for MT5 standalone operation |
+//|                                    v2.01 - Added Magic Number   |
 //+------------------------------------------------------------------+
 
 #property copyright "Copyright 2012,Clifford H. James"
 #property link      ""
-#property version   "2.00"
+#property version   "2.01"
 
 #include <Trade\Trade.mqh>
 
@@ -15,6 +16,7 @@ input double OBR_PIP_OFFSET = 0.0002;
 input int EET_START = 10;
 input double OBR_RATIO = 1.9;
 input double ATR_PERIOD = 72;
+input int MAGIC_NUMBER = 20250727;  // JamesORB専用マジックナンバー
 
 // Global variables
 CTrade trade;
@@ -24,6 +26,9 @@ CTrade trade;
 //+------------------------------------------------------------------+
 int OnInit()
 {
+   // マジックナンバーを設定
+   trade.SetExpertMagicNumber(MAGIC_NUMBER);
+   Print("JamesORB EA initialized with Magic Number: ", MAGIC_NUMBER);
    return(INIT_SUCCEEDED);
 }
 
