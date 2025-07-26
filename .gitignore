@@ -15,6 +15,7 @@
 # ログファイル
 *.log
 logs/
+MT5/Logs/
 
 # 一時ファイル
 temp/

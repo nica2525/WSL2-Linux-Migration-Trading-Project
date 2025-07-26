@@ -1,0 +1,78 @@
+#!/bin/bash
+# Claude安全制限システム v1.0
+# 作成日: 2025-07-22 22:55 JST
+# 目的: Claudeの危険操作を制限、重要ファイル保護
+
+# =============================================================================
+# 重要ファイルの読み取り専用保護
+# =============================================================================
+
+echo "🛡️ Claude安全制限システム起動中..."
+
+# 保護対象ファイルリスト
+PROTECTED_FILES=(
+    "CLAUDE.md"
+    ".claude/settings.json"
+    "Scripts/cron_git_auto_save.py"
+    "Scripts/cron_system_monitor.py"
+    ".cron_git_auto_save.log"
+    ".cron_monitor.log"
+)
+
+# ファイル保護実行
+for file in "${PROTECTED_FILES[@]}"; do
+    if [[ -f "$file" ]]; then
+        chmod 444 "$file" 2>/dev/null
+        echo "✅ Protected: $file (read-only)"
+    fi
+done
+
+# =============================================================================
+# 危険コマンドの制限
+# =============================================================================
+
+# rm コマンド制限
+alias rm='echo "⚠️ [Claude Protection] rm command disabled. Use /bin/rm if absolutely needed."'
+
+# git reset 制限
+alias git='claude_safe_git'
+
+claude_safe_git() {
+    if [[ "$1" == "reset" ]]; then
+        echo "⚠️ [Claude Protection] git reset disabled. Use /usr/bin/git reset if needed."
+        return 1
+    else
+        /usr/bin/git "$@"
+    fi
+}
+
+# 重要ディレクトリへのアクセス制限
+alias cd='claude_safe_cd'
+
+claude_safe_cd() {
+    local target_dir="$1"
+
+    # 危険なディレクトリリスト
+    local dangerous_dirs=(
+        "/home/trader/.claude"
+        "/etc"
+        "/usr/bin"
+        "/bin"
+    )
+
+    for danger in "${dangerous_dirs[@]}"; do
+        if [[ "$target_dir" == "$danger"* ]]; then
+            echo "⚠️ [Claude Protection] Access to $danger restricted."
+            return 1
+        fi
+    done
+
+    /bin/cd "$@"
+}
+
+echo "✅ Claude安全制限システム有効化完了"
+echo "📋 保護状況:"
+echo "   - 重要ファイル: 読み取り専用"
+echo "   - rm コマンド: 無効化"
+echo "   - git reset: 制限"
+echo "   - システムディレクトリ: アクセス制限"

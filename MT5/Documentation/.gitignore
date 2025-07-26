@@ -1,0 +1,73 @@
+# MT5 Git管理除外ファイル設定
+
+# コンパイル済みファイル
+*.ex5
+*.ex4
+
+# MT5システムファイル
+Logs/
+logs/
+Config/
+config/
+Terminal.exe
+*.dll
+
+# バックテスト・最適化データ
+Tester/
+tester/
+history/
+History/
+bases/
+Bases/
+
+# キャッシュ・一時ファイル
+*.tmp
+*.cache
+*.log
+*.bak
+
+# 個人設定・プロファイル
+Profiles/
+profiles/
+templates/
+Templates/
+sounds/
+Sounds/
+
+# ニュース・メール
+news/
+News/
+mail/
+Mail/
+
+# WebRequest証明書
+WebRequest/
+
+# 自動生成ファイル
+*.mqproj
+*.user
+
+# 大容量データファイル
+*.hst
+*.fxt
+*.csv
+
+# --- 管理対象ファイル ---
+# 以下は必ずコミット対象
+!MQL5/
+!MQL5/Experts/
+!MQL5/Experts/*.mq5
+!MQL5/Include/
+!MQL5/Include/*.mqh
+!MQL5/Scripts/
+!MQL5/Scripts/*.mq5
+!MQL5/Indicators/
+!MQL5/Indicators/*.mq5
+!Files/
+!Files/*.txt
+!Files/*.json
+!Files/*.csv
+
+# プロジェクト文書
+!README.md
+!*.md
