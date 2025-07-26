@@ -1,0 +1,75 @@
+# EA設定ファイル
+# EAの動作・監視に関する設定
+
+ea:
+  # 基本設定
+  name: "JamesORB_v1.0"
+  filename: "JamesORB_v1.0.mq5"
+  magic_number: 20250727
+  version: "2.01-tested"
+  
+  # 取引設定
+  symbol: "EURUSD"
+  timeframe: "M5"
+  lot_size: 0.01
+  
+  # パラメータ (現在値)
+  parameters:
+    obr_pip_offset: 0.0002
+    eet_start: 10
+    obr_ratio: 1.9
+    atr_period: 72
+  
+  # 最適化パラメータ (推奨値)
+  optimized_parameters:
+    obr_pip_offset: 0.0015    # 15 pips
+    london_start: 8           # 08:00 JST
+    ny_start: 22              # 22:00 JST
+    obr_ratio: 1.5            # 1:1.5 RR
+    atr_period: 14            # 標準ATR
+    range_period: 30          # 30分ORB
+    min_range_size: 0.001     # 10 pips
+    max_range_size: 0.005     # 50 pips
+    volume_filter: true
+    retest_confirmation: true
+
+monitoring:
+  # 監視設定
+  check_interval: 60        # 秒
+  summary_interval: 900     # 15分
+  position_check: true
+  deal_history_days: 2
+  
+  # ログ設定
+  log_trades: true
+  log_positions: true
+  log_errors: true
+  log_performance: true
+
+risk_management:
+  # リスク管理
+  risk_percent: 0.01        # 1%
+  max_daily_risk: 0.03      # 3%
+  max_drawdown: 0.20        # 20%
+  max_positions: 1
+  correlation_check: true
+
+sessions:
+  # 取引セッション
+  london:
+    start: 8    # JST
+    end: 17
+    orb_period: 30
+    priority: "HIGH"
+  
+  new_york:
+    start: 22   # JST
+    end: 5      # 翌日
+    orb_period: 30
+    priority: "HIGH"
+  
+  tokyo:
+    start: 9    # JST
+    end: 17
+    orb_period: 15
+    priority: "MEDIUM"

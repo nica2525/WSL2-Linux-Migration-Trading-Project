@@ -1,0 +1,65 @@
+# 取引設定ファイル
+# デモ・ライブ取引の設定
+
+demo_account:
+  # デモ口座設定
+  broker: "MetaQuotes-Demo"
+  login: "94931878"
+  currency: "JPY"
+  initial_balance: 3000000   # 300万円
+  current_balance: 3000000
+  leverage: "1:100"
+  
+  # 口座情報
+  server: "MetaQuotes-Demo"
+  company: "MetaQuotes Ltd."
+  trade_allowed: true
+  expert_allowed: true
+
+trading_schedule:
+  # 市場スケジュール (JST)
+  sydney_open: "06:00"
+  tokyo_open: "09:00"
+  london_open: "17:00"      # 夏時間
+  ny_open: "23:00"          # 夏時間
+  
+  # 推奨取引開始
+  recommended_start: "09:00"  # 東京市場
+  optimal_start: "08:00"      # London Open
+  
+  # 取引禁止時間
+  avoid_hours:
+    - "00:00-02:00"  # 流動性低下
+    - "05:00-07:00"  # アジア早朝
+
+position_management:
+  # ポジション管理
+  max_positions: 1
+  position_timeout: 86400    # 24時間
+  partial_close: false
+  trailing_stop: false
+  
+  # 注文設定
+  slippage: 3
+  order_timeout: 30
+  retry_attempts: 3
+
+performance_targets:
+  # パフォーマンス目標
+  target_return_monthly: 0.05   # 5%/月
+  max_drawdown: 0.20           # 20%
+  target_win_rate: 0.60        # 60%
+  target_profit_factor: 1.5
+  target_sharpe_ratio: 1.0
+
+alerts:
+  # アラート設定
+  enable_notifications: true
+  trade_alerts: true
+  error_alerts: true
+  performance_alerts: true
+  
+  # 通知条件
+  drawdown_alert: 0.10      # 10%DD時
+  profit_alert: 0.05        # 5%利益時
+  error_count_alert: 5      # 5回エラー時

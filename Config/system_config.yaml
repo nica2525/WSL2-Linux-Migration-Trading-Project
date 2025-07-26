@@ -1,0 +1,110 @@
+# システム設定ファイル
+# 全体システムの動作設定
+
+logging:
+  # ログ設定
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # ファイル設定
+  max_size: 5242880      # 5MB
+  backup_count: 5
+  encoding: "utf-8"
+  
+  # ディレクトリ
+  log_dir: "MT5/Logs"
+  
+  # 個別ログファイル
+  files:
+    auto_start: "mt5_auto_start.log"
+    trading_monitor: "trading_monitor.log"
+    version_control: "ea_version_control.log"
+    sync: "ea_sync.log"
+
+cron:
+  # cron自動化設定
+  auto_start:
+    reboot: true
+    reboot_delay: 60
+    
+  periodic_check:
+    enabled: true
+    interval: 30           # 30分毎
+    
+  monday_check:
+    enabled: true
+    time: "0 21 * * 0"     # 日曜21:00 (月曜6:00 JST)
+  
+  # ログローテーション
+  log_retention: 7         # 7日
+
+hooks:
+  # Hook設定
+  enabled: true
+  
+  # EA編集時Hook
+  ea_edit:
+    pre_edit: "ea_version_control_rules_safe.sh"
+    post_edit: "ea_post_edit_sync_safe.sh"
+    
+  # タイムアウト設定
+  timeout: 30
+
+error_handling:
+  # エラーハンドリング
+  max_retries: 3
+  retry_delay: 5
+  
+  # フェイルセーフ
+  auto_recovery: true
+  backup_before_action: true
+  safe_mode: true
+  
+  # 通知
+  error_notifications: true
+  critical_errors:
+    - "MT5 connection failed"
+    - "EA load failed"
+    - "File corruption detected"
+
+backup:
+  # バックアップ設定
+  enabled: true
+  
+  # 保持期間
+  retention:
+    ea_backups: 30         # 30日
+    log_backups: 7         # 7日
+    config_backups: 90     # 90日
+  
+  # 自動バックアップ
+  auto_backup:
+    before_edit: true
+    before_sync: true
+    before_delete: true
+
+security:
+  # セキュリティ設定
+  file_operations:
+    confirm_delete: false    # Hookでは自動実行
+    use_trash: true
+    max_operations: 100
+  
+  # アクセス制御
+  allowed_extensions: [".mq5", ".ex5", ".log", ".md", ".yaml", ".json"]
+  protected_files:
+    - "JamesORB_v1.0.mq5"
+    - "VERSION_HISTORY.md"
+  
+performance:
+  # パフォーマンス設定
+  cache_enabled: true
+  cache_ttl: 300           # 5分
+  
+  # 同期設定
+  sync_verification: true
+  checksum_validation: true
+  
+  # リソース制限
+  max_memory_mb: 512
+  max_cpu_percent: 80

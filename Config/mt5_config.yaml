@@ -1,0 +1,48 @@
+# MT5システム設定ファイル
+# 全MT5関連スクリプトで共通利用
+
+system:
+  project_root: "/home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト"
+  wine_prefix: "/home/trader/.wine"
+  
+mt5:
+  # MT5パス設定
+  terminal_path: "/home/trader/.wine/drive_c/Program Files/MetaTrader 5/terminal64.exe"
+  experts_dir: "/home/trader/.wine/drive_c/Program Files/MetaTrader 5/MQL5/Experts"
+  logs_dir: "/home/trader/.wine/drive_c/Program Files/MetaTrader 5/MQL5/Logs"
+  profiles_dir: "/home/trader/.wine/drive_c/Program Files/MetaTrader 5/profiles"
+  
+  # 起動設定
+  startup_timeout: 30
+  process_name: "terminal64.exe"
+  auto_login: true
+  
+  # ログ設定
+  log_encoding: ["utf-16-le", "utf-8-sig", "utf-8", "cp1252"]
+  log_max_size: 5242880  # 5MB
+  log_backup_count: 5
+
+wine:
+  # Wine環境設定
+  lang: "ja_JP.UTF-8"
+  lc_all: "ja_JP.UTF-8"
+  winedebug: "-all"
+  
+  # 日本語化設定
+  fonts_installed: true
+  japanese_ui: true
+
+rpyc:
+  # RPYC通信設定
+  host: "localhost"
+  port: 18812
+  connection_timeout: 10
+  retry_attempts: 3
+  retry_delay: 5
+
+security:
+  # セキュリティ設定
+  max_file_operations: 100
+  backup_before_delete: true
+  trash_dir: ".ea_trash"
+  backup_retention_days: 30
