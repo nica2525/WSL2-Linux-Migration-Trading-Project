@@ -1,0 +1,22 @@
+# MT5 Wine環境 完全日本語化 手動実行コマンド
+# ターミナルで以下のコマンドを順番に実行してください
+
+# 1. 日本語フォントのインストール
+sudo apt-get update
+sudo apt-get install -y fonts-takao fonts-ipafont fonts-ipaexfont fonts-noto-cjk
+
+# 2. 日本語ロケールの生成
+sudo locale-gen ja_JP.UTF-8
+sudo update-locale
+
+# 3. フォントキャッシュの更新
+fc-cache -fv
+
+# 4. 確認コマンド
+echo "=== インストール確認 ==="
+fc-list :lang=ja | head -5
+locale -a | grep ja
+
+# 5. 完了後、以下のスクリプトを実行
+echo "フォントインストール完了後、以下を実行："
+echo "./Scripts/setup_wine_japanese_fonts.sh"
