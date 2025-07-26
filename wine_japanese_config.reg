@@ -1,0 +1,11 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Control Panel\International]
+"Locale"="00000411"
+"LocaleName"="ja-JP"
+"sCountry"="Japan"
+"sLanguage"="JPN"
+
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\Language]
+"Default"="0411"
+"InstallLanguage"="0411"
