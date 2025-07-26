@@ -1,0 +1,12 @@
+*/3 * * * * /usr/bin/python3 /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/cron_git_auto_save.py >> /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/.cron_git_auto_save.log 2>&1
+*/5 * * * * /usr/bin/python3 /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/cron_system_monitor.py >> /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/.cron_monitor.log 2>&1
+*/15 9-21 * * * /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/smart_logrotate.sh
+
+# MT5自動起動（システム起動時）
+@reboot sleep 60 && /usr/bin/python3 /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/mt5_auto_start.py >> /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/MT5/Logs/mt5_cron.log 2>&1
+
+# MT5定期チェック（30分毎）- 停止時の自動再起動
+*/30 * * * * /usr/bin/python3 /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/mt5_auto_start.py >> /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/MT5/Logs/mt5_cron.log 2>&1
+
+# 月曜日朝の確認（日本時間6:00 = UTC 21:00 日曜日）
+0 21 * * 0 /usr/bin/python3 /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/Scripts/mt5_auto_start.py >> /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/MT5/Logs/mt5_monday_check.log 2>&1
