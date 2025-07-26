@@ -10,13 +10,14 @@
 echo "🛡️ Claude安全制限システム起動中..."
 
 # 保護対象ファイルリスト
+# 自動化システムのログファイルは除外（cron書き込み許可）
 PROTECTED_FILES=(
     "CLAUDE.md"
     ".claude/settings.json"
     "Scripts/cron_git_auto_save.py"
     "Scripts/cron_system_monitor.py"
-    ".cron_git_auto_save.log"
-    ".cron_monitor.log"
+    # ".cron_git_auto_save.log"  # cron書き込み許可のためコメントアウト
+    # ".cron_monitor.log"         # cron書き込み許可のためコメントアウト
 )
 
 # ファイル保護実行
