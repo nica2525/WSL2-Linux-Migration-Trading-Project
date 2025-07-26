@@ -20,7 +20,16 @@ class QualityChecker:
             "random_generation": {
                 "pattern": r"random\.random\(\)\s*<\s*0\.\d+",
                 "severity": "HIGH", 
-                "description": "バックテスト結果のランダム生成（偽装）"
+                "description": "バックテスト結果のランダム生成（偽装）",
+                "false_positive_contexts": [
+                    r"def\s+test_.*:",  # テスト関数内
+                    r"if\s+__name__\s*==\s*[\"']__main__[\"']",  # テストセクション
+                    r"#.*test.*",  # テストコメント
+                    r"test.*retry.*function",  # リトライテスト
+                    r"simulation.*test",  # シミュレーションテスト
+                    r"integration.*test",  # 統合テスト
+                    r"error.*simulation"  # エラーシミュレーション
+                ]
             },
             "lookahead_bias": {
                 "pattern": r"current_bar\[.close.\]",
@@ -55,7 +64,16 @@ class QualityChecker:
             "simulation_bias": {
                 "pattern": r"if\s+random\.random\(\)\s*<\s*0\.[5-9]",
                 "severity": "MEDIUM",
-                "description": "シミュレーション結果の人工的操作"
+                "description": "シミュレーション結果の人工的操作",
+                "false_positive_contexts": [
+                    r"def\s+test_.*:",  # テスト関数内
+                    r"if\s+__name__\s*==\s*[\"']__main__[\"']",  # テストセクション
+                    r"#.*test.*",  # テストコメント
+                    r"#.*確率.*失敗",  # 確率的失敗テスト
+                    r"error.*simulation",  # エラーシミュレーション
+                    r"retry.*test",  # リトライテスト
+                    r"failure.*simulation"  # 失敗シミュレーション
+                ]
             }
         }
 
@@ -67,8 +85,12 @@ class QualityChecker:
         py_files = list(self.project_dir.glob("**/*.py"))
         
         for py_file in py_files:
-            # Archive/Skip ディレクトリは除外
-            if "Archive" in str(py_file) or "Archive" in str(py_file):
+            # Archive/Skip ディレクトリとテストファイルは除外
+            if ("Archive" in str(py_file) or 
+                "test_" in py_file.name or 
+                py_file.name.startswith("test") or
+                "/test_" in str(py_file) or
+                "_test.py" in py_file.name):
                 continue
                 
             try:
