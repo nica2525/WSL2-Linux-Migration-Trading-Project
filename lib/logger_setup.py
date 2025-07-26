@@ -10,7 +10,11 @@ import logging.handlers
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-from .config_manager import config_manager
+try:
+    from .config_manager import config_manager
+except ImportError:
+    # 単体テスト用
+    from config_manager import config_manager
 
 
 class LoggerSetup:

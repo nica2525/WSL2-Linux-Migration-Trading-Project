@@ -6,12 +6,22 @@ Wine環境でのMT5・RPYC接続管理
 
 import os
 import time
-import rpyc
-import psutil
 import subprocess
 from pathlib import Path
 from typing import Optional, Dict, Any, Tuple
 from contextlib import contextmanager
+
+try:
+    import rpyc
+    RPYC_AVAILABLE = True
+except ImportError:
+    RPYC_AVAILABLE = False
+
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
 
 from .config_manager import config_manager
 from .logger_setup import get_logger
@@ -33,6 +43,12 @@ class MT5Connection:
     def is_mt5_running(self) -> bool:
         """MT5プロセス確認"""
         try:
+            if not PSUTIL_AVAILABLE:
+                # psutilが無い場合はpsコマンドで代替
+                result = subprocess.run(['pgrep', '-f', 'terminal64.exe'], 
+                                      capture_output=True, text=True)
+                return result.returncode == 0
+            
             process_name = self.mt5_config.get('mt5', {}).get('process_name', 'terminal64.exe')
             
             for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
@@ -107,6 +123,10 @@ class MT5Connection:
     
     def connect_rpyc(self, retries: int = None) -> bool:
         """RPYC接続"""
+        if not RPYC_AVAILABLE:
+            self.logger.error("RPYCモジュールが利用できません")
+            raise RPYCConnectionError("RPYCモジュールが未インストール")
+        
         if retries is None:
             retries = self.rpyc_config.get('retry_attempts', 3)
         
