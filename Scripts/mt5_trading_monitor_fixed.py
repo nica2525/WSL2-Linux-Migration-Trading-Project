@@ -62,10 +62,9 @@ class MT5TradingMonitor:
         self.use_rpyc = False
         
     def _get_ea_magic(self):
-        """EAのマジックナンバーを取得（設定ファイルから読み込み可能）"""
-        # TODO: 実際のJamesORB EAのマジックナンバーを確認して設定
-        # 現在は仮の値
-        return 12345
+        """EAのマジックナンバーを取得"""
+        # JamesORB EA v1.0のマジックナンバー
+        return 20250727
     
     def load_trades(self):
         """既存の取引記録を読み込み（ファイルロック対応）"""
