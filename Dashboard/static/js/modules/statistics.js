@@ -230,4 +230,59 @@ export class StatisticsManager {
         // モーダルやツールチップとして表示
         return container;
     }
+    
+    /**
+     * 統計信頼性インジケーターを更新
+     * @param {number} totalTrades - 取引数
+     */
+    updateReliabilityIndicator(totalTrades) {
+        let reliabilityContainer = document.getElementById('statisticsReliability');
+        
+        if (!reliabilityContainer) {
+            // 初回作成
+            reliabilityContainer = document.createElement('div');
+            reliabilityContainer.id = 'statisticsReliability';
+            reliabilityContainer.style.cssText = `
+                margin-top: 8px;
+                padding: 6px 10px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 4px;
+                font-size: 11px;
+                text-align: center;
+                border-left: 3px solid;
+            `;
+            
+            const statsCard = document.querySelector('.card .account-grid').parentNode;
+            if (statsCard) {
+                statsCard.appendChild(reliabilityContainer);
+            }
+        }
+        
+        // 信頼性レベルの判定
+        let level, message, color;
+        
+        if (totalTrades === 0) {
+            level = 'なし';
+            message = 'ポジション未保有 - 統計なし';
+            color = '#9E9E9E';
+        } else if (totalTrades < 5) {
+            level = '低';
+            message = `サンプル数${totalTrades}件 - 参考程度`;
+            color = '#FF9800';
+        } else if (totalTrades < 20) {
+            level = '中';
+            message = `サンプル数${totalTrades}件 - 暫定統計`;
+            color = '#2196F3';
+        } else {
+            level = '高';
+            message = `サンプル数${totalTrades}件 - 信頼性良好`;
+            color = '#4CAF50';
+        }
+        
+        reliabilityContainer.innerHTML = `
+            <span style="font-weight: 600;">統計信頼性: ${level}</span> - ${message}
+        `;
+        reliabilityContainer.style.borderLeftColor = color;
+        reliabilityContainer.style.color = '#ffffff';
+    }
 }
