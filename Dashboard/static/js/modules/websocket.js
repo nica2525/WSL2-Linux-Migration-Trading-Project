@@ -243,10 +243,66 @@ export class WebSocketManager {
     }
     
     /**
+     * ハートビートを開始
+     */
+    startHeartbeat() {
+        // 既存のハートビートをクリア
+        this.stopHeartbeat();
+        
+        this.heartbeatInterval = setInterval(() => {
+            if (this.isConnected && this.socket) {
+                console.log('Ping送信中...');
+                this.socket.emit('ping', { timestamp: Date.now() });
+                
+                // Pong応答のタイムアウト設定
+                this.heartbeatTimeout = setTimeout(() => {
+                    console.warn('Pong応答タイムアウト - 接続に問題あり');
+                    this.handleHeartbeatFailure();
+                }, this.pongTimeout);
+            }
+        }, this.pingInterval);
+        
+        console.log(`ハートビート開始 - ${this.pingInterval}ms間隔`);
+    }
+    
+    /**
+     * ハートビートを停止
+     */
+    stopHeartbeat() {
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+            this.heartbeatInterval = null;
+        }
+        
+        if (this.heartbeatTimeout) {
+            clearTimeout(this.heartbeatTimeout);
+            this.heartbeatTimeout = null;
+        }
+        
+        console.log('ハートビート停止');
+    }
+    
+    /**
+     * ハートビート失敗処理
+     */
+    handleHeartbeatFailure() {
+        console.error('ハートビート失敗 - 接続をリセット');
+        this.isConnected = false;
+        this.stopHeartbeat();
+        
+        // 強制的に再接続を試行
+        if (this.socket) {
+            this.socket.disconnect();
+        }
+        this.scheduleReconnect();
+    }
+    
+    /**
      * 接続を切断
      */
     disconnect() {
         this.clearReconnectTimer();
+        this.stopHeartbeat();
         if (this.socket) {
             this.socket.disconnect();
             this.isConnected = false;
