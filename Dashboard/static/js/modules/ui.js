@@ -285,6 +285,89 @@ export class UIManager {
                 }));
             });
         }
+        
+        // バイブレーション通知設定
+        const vibrationNotification = document.getElementById('vibrationNotification');
+        if (vibrationNotification) {
+            const saved = localStorage.getItem('vibrationNotification');
+            if (saved !== null) {
+                vibrationNotification.checked = saved === 'true';
+            } else {
+                vibrationNotification.checked = true; // デフォルト有効
+            }
+            
+            vibrationNotification.addEventListener('change', function() {
+                localStorage.setItem('vibrationNotification', this.checked);
+                window.dispatchEvent(new CustomEvent('vibrationNotificationChanged', { 
+                    detail: { enabled: this.checked } 
+                }));
+            });
+        }
+    }
+    
+    /**
+     * アラート設定UIをセットアップ
+     * @param {Function} saveCallback - 保存時のコールバック
+     * @param {Function} resetCallback - リセット時のコールバック
+     * @param {Function} loadCallback - 読み込み時のコールバック
+     */
+    setupAlertSettings(saveCallback, resetCallback, loadCallback) {
+        // アラート設定の表示/非表示切り替え
+        const toggleBtn = document.getElementById('toggleAlertSettings');
+        const container = document.getElementById('alertSettingsContainer');
+        
+        if (toggleBtn && container) {
+            toggleBtn.addEventListener('click', () => {
+                const isVisible = container.style.display !== 'none';
+                container.style.display = isVisible ? 'none' : 'block';
+                toggleBtn.textContent = isVisible ? '設定' : '閉じる';
+                
+                // 初回表示時に設定を読み込み
+                if (!isVisible && loadCallback) {
+                    loadCallback();
+                }
+            });
+        }
+        
+        // 保存ボタン
+        const saveBtn = document.getElementById('saveAlertSettings');
+        if (saveBtn && saveCallback) {
+            saveBtn.addEventListener('click', saveCallback);
+        }
+        
+        // リセットボタン
+        const resetBtn = document.getElementById('resetAlertSettings');
+        if (resetBtn && resetCallback) {
+            resetBtn.addEventListener('click', resetCallback);
+        }
+        
+        // キャッシュクリアボタン
+        const clearCacheBtn = document.getElementById('clearCacheBtn');
+        if (clearCacheBtn) {
+            clearCacheBtn.addEventListener('click', () => {
+                this.clearCache();
+            });
+        }
+    }
+    
+    /**
+     * キャッシュをクリア
+     */
+    clearCache() {
+        try {
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            localStorage.clear();
+            this.showNotification('キャッシュをクリアしました', 'success');
+        } catch (error) {
+            console.error('キャッシュクリアエラー:', error);
+            this.showNotification('キャッシュクリアに失敗しました', 'error');
+        }
     }
     
     /**

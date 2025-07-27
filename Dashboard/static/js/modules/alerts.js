@@ -342,24 +342,120 @@ export class AlertManager {
      * アラート設定を保存
      */
     saveAlertSettings() {
-        const newSettings = {
-            alerts: {
-                marginLevel: {
-                    critical: Number(document.getElementById('marginCritical').value),
-                    warning: Number(document.getElementById('marginWarning').value)
-                },
-                drawdown: {
-                    critical: Number(document.getElementById('ddCritical').value),
-                    warning: Number(document.getElementById('ddWarning').value)
-                },
-                positionLoss: {
-                    critical: Number(document.getElementById('lossCritical').value),
-                    warning: Number(document.getElementById('lossWarning').value)
+        try {
+            const newSettings = {
+                alerts: {
+                    marginLevel: {
+                        critical: Number(document.getElementById('marginCritical').value) || config.alerts.marginLevel.critical,
+                        warning: Number(document.getElementById('marginWarning').value) || config.alerts.marginLevel.warning
+                    },
+                    drawdown: {
+                        critical: Number(document.getElementById('ddCritical').value) || config.alerts.drawdown.critical,
+                        warning: Number(document.getElementById('ddWarning').value) || config.alerts.drawdown.warning
+                    },
+                    positionLoss: {
+                        critical: Number(document.getElementById('lossCritical').value) || config.alerts.positionLoss.critical,
+                        warning: Number(document.getElementById('lossWarning').value) || config.alerts.positionLoss.warning
+                    }
                 }
+            };
+            
+            // 設定値の妥当性チェック
+            if (!this.validateSettings(newSettings.alerts)) {
+                this.showNotification('設定値が無効です。確認してください', 'error');
+                return false;
             }
-        };
+            
+            userSettings.save(newSettings);
+            this.showNotification('アラート設定を保存しました', 'success');
+            
+            // カスタムイベント発火
+            window.dispatchEvent(new CustomEvent('alertSettingsChanged', { 
+                detail: newSettings.alerts 
+            }));
+            
+            return true;
+        } catch (error) {
+            console.error('アラート設定保存エラー:', error);
+            this.showNotification('設定保存に失敗しました', 'error');
+            return false;
+        }
+    }
+    
+    /**
+     * アラート設定をリセット
+     */
+    resetAlertSettings() {
+        try {
+            // デフォルト値を設定
+            document.getElementById('marginCritical').value = config.alerts.marginLevel.critical;
+            document.getElementById('marginWarning').value = config.alerts.marginLevel.warning;
+            document.getElementById('ddCritical').value = config.alerts.drawdown.critical;
+            document.getElementById('ddWarning').value = config.alerts.drawdown.warning;
+            document.getElementById('lossCritical').value = config.alerts.positionLoss.critical;
+            document.getElementById('lossWarning').value = config.alerts.positionLoss.warning;
+            
+            this.showNotification('デフォルト設定に戻しました', 'info');
+        } catch (error) {
+            console.error('設定リセットエラー:', error);
+            this.showNotification('設定リセットに失敗しました', 'error');
+        }
+    }
+    
+    /**
+     * アラート設定を読み込んでUIに反映
+     */
+    loadAlertSettingsToUI() {
+        try {
+            const marginCritical = document.getElementById('marginCritical');
+            const marginWarning = document.getElementById('marginWarning');
+            const ddCritical = document.getElementById('ddCritical');
+            const ddWarning = document.getElementById('ddWarning');
+            const lossCritical = document.getElementById('lossCritical');
+            const lossWarning = document.getElementById('lossWarning');
+            
+            if (marginCritical) marginCritical.value = config.alerts.marginLevel.critical;
+            if (marginWarning) marginWarning.value = config.alerts.marginLevel.warning;
+            if (ddCritical) ddCritical.value = config.alerts.drawdown.critical;
+            if (ddWarning) ddWarning.value = config.alerts.drawdown.warning;
+            if (lossCritical) lossCritical.value = config.alerts.positionLoss.critical;
+            if (lossWarning) lossWarning.value = config.alerts.positionLoss.warning;
+        } catch (error) {
+            console.error('設定UI読み込みエラー:', error);
+        }
+    }
+    
+    /**
+     * 設定値の妥当性をチェック
+     * @param {Object} alertSettings - アラート設定
+     * @returns {boolean} 妥当性
+     */
+    validateSettings(alertSettings) {
+        // 証拠金維持率: 危険レベル < 警告レベル
+        if (alertSettings.marginLevel.critical >= alertSettings.marginLevel.warning) {
+            return false;
+        }
         
-        userSettings.save(newSettings);
-        this.showNotification('アラート設定を保存しました', 'info');
+        // ドローダウン: 警告レベル < 危険レベル
+        if (alertSettings.drawdown.warning >= alertSettings.drawdown.critical) {
+            return false;
+        }
+        
+        // ポジション損失: 危険レベル < 警告レベル (負の値)
+        if (alertSettings.positionLoss.critical >= alertSettings.positionLoss.warning) {
+            return false;
+        }
+        
+        // 範囲チェック
+        if (alertSettings.marginLevel.critical < 0 || alertSettings.marginLevel.warning < 0) {
+            return false;
+        }
+        
+        if (alertSettings.drawdown.critical < 0 || alertSettings.drawdown.warning < 0 ||
+            alertSettings.drawdown.critical > 100 || alertSettings.drawdown.warning > 100) {
+            return false;
+        }
+        
+        return true;
     }
 }

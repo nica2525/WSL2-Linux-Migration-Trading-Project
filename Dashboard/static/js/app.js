@@ -38,6 +38,11 @@ class DashboardApp {
             this.ui.setupTabNavigation();
             this.ui.setupRefreshButton(() => this.refreshData());
             this.ui.setupSettings();
+            this.ui.setupAlertSettings(
+                () => this.alerts.saveAlertSettings(),
+                () => this.alerts.resetAlertSettings(),
+                () => this.alerts.loadAlertSettingsToUI()
+            );
             this.ui.trackActivity();
             
             // チャート初期化
@@ -246,6 +251,18 @@ class DashboardApp {
             this.ui.showNotification('設定を保存しました', 'info');
         });
         
+        // バイブレーション通知設定変更
+        window.addEventListener('vibrationNotificationChanged', (event) => {
+            this.alerts.saveSettings({ vibrationEnabled: event.detail.enabled });
+            this.ui.showNotification('設定を保存しました', 'info');
+        });
+        
+        // アラート設定変更
+        window.addEventListener('alertSettingsChanged', (event) => {
+            console.log('アラート設定が更新されました:', event.detail);
+            // 必要に応じて追加処理
+        });
+        
         // バックグラウンド復帰
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && this.websocket.getConnectionStatus()) {
@@ -254,18 +271,6 @@ class DashboardApp {
             }
         });
         
-        // キャッシュクリア
-        window.clearCache = () => {
-            if ('caches' in window) {
-                caches.keys().then(names => {
-                    names.forEach(name => {
-                        caches.delete(name);
-                    });
-                });
-            }
-            localStorage.clear();
-            this.ui.showNotification('キャッシュをクリアしました', 'success');
-        };
     }
     
     /**
