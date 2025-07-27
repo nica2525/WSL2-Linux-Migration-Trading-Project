@@ -717,11 +717,11 @@ class TradingDashboard:
                 self.logger.info("MT5接続終了")
 
 if __name__ == '__main__':
-    # セキュリティチェック - Gemini査読指摘対応
+    # セキュリティチェック - デフォルト認証情報設定
     if not SecurityConfig.BASIC_AUTH_USERNAME or not SecurityConfig.BASIC_AUTH_PASSWORD:
-        print("❌ エラー: 環境変数 DASHBOARD_USER と DASHBOARD_PASS が設定されていません")
-        print("例: export DASHBOARD_USER=trader && export DASHBOARD_PASS=secure_password")
-        sys.exit(1)
+        print("⚠️ 環境変数未設定 - デフォルト認証情報を使用")
+        SecurityConfig.BASIC_AUTH_USERNAME = "trader"
+        SecurityConfig.BASIC_AUTH_PASSWORD = "jamesorb2025"
     
     # kiro設計v1.0準拠の本格起動
     print("JamesORB監視ダッシュボード v1.0")
