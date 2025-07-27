@@ -242,6 +242,12 @@
         let balanceChart = null;
         let balanceData = [];
         let statisticsData = { trades: [], wins: 0, losses: 0, totalProfit: 0, totalLoss: 0 };
+        let alertSettings = {
+            marginLevel: { critical: 150, warning: 300 },
+            drawdown: { critical: 25, warning: 15 },
+            positionLoss: { critical: -50000, warning: -20000 }
+        };
+        let lastAlertTime = {};
         
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
@@ -546,6 +552,156 @@
             }
         }
         
+        // アラート機能 - Phase 2-A
+        function checkAlerts(accountData, positions) {
+            try {
+                const now = Date.now();
+                const alertCooldown = 60000; // 1分間のクールダウン
+                
+                // 証拠金維持率アラート
+                if (accountData.margin_level) {
+                    const marginLevel = accountData.margin_level;
+                    const alertKey = 'marginLevel';
+                    
+                    if (marginLevel <= alertSettings.marginLevel.critical && 
+                        (!lastAlertTime[alertKey] || now - lastAlertTime[alertKey] > alertCooldown)) {
+                        showAlert(
+                            `🚨 証拠金維持率が危険レベルです: ${marginLevel.toFixed(1)}%`,
+                            'critical'
+                        );
+                        lastAlertTime[alertKey] = now;
+                    } else if (marginLevel <= alertSettings.marginLevel.warning && 
+                               (!lastAlertTime[alertKey + '_warning'] || now - lastAlertTime[alertKey + '_warning'] > alertCooldown)) {
+                        showAlert(
+                            `⚠️ 証拠金維持率が低下しています: ${marginLevel.toFixed(1)}%`,
+                            'warning'
+                        );
+                        lastAlertTime[alertKey + '_warning'] = now;
+                    }
+                }
+                
+                // ドローダウンアラート
+                if (balanceData.length > 1) {
+                    let peak = balanceData[0].balance;
+                    let currentBalance = balanceData[balanceData.length - 1].balance;
+                    
+                    for (const data of balanceData) {
+                        if (data.balance > peak) peak = data.balance;
+                    }
+                    
+                    const drawdown = ((peak - currentBalance) / peak) * 100;
+                    const alertKey = 'drawdown';
+                    
+                    if (drawdown >= alertSettings.drawdown.critical && 
+                        (!lastAlertTime[alertKey] || now - lastAlertTime[alertKey] > alertCooldown)) {
+                        showAlert(
+                            `🚨 ドローダウンが危険レベルです: ${drawdown.toFixed(1)}%`,
+                            'critical'
+                        );
+                        lastAlertTime[alertKey] = now;
+                    } else if (drawdown >= alertSettings.drawdown.warning && 
+                               (!lastAlertTime[alertKey + '_warning'] || now - lastAlertTime[alertKey + '_warning'] > alertCooldown)) {
+                        showAlert(
+                            `⚠️ ドローダウンが増加しています: ${drawdown.toFixed(1)}%`,
+                            'warning'
+                        );
+                        lastAlertTime[alertKey + '_warning'] = now;
+                    }
+                }
+                
+                // 大きな損失ポジションアラート
+                if (positions && positions.length > 0) {
+                    const largeLosingPosition = positions.find(pos => 
+                        pos.profit <= alertSettings.positionLoss.critical
+                    );
+                    
+                    if (largeLosingPosition) {
+                        const alertKey = 'positionLoss_' + largeLosingPosition.ticket;
+                        if (!lastAlertTime[alertKey] || now - lastAlertTime[alertKey] > alertCooldown) {
+                            showAlert(
+                                `🚨 大きな損失ポジション: ${largeLosingPosition.symbol} ${formatCurrency(largeLosingPosition.profit)}`,
+                                'critical'
+                            );
+                            lastAlertTime[alertKey] = now;
+                        }
+                    }
+                    
+                    const warningPosition = positions.find(pos => 
+                        pos.profit <= alertSettings.positionLoss.warning && 
+                        pos.profit > alertSettings.positionLoss.critical
+                    );
+                    
+                    if (warningPosition) {
+                        const alertKey = 'positionWarning_' + warningPosition.ticket;
+                        if (!lastAlertTime[alertKey] || now - lastAlertTime[alertKey] > alertCooldown) {
+                            showAlert(
+                                `⚠️ 損失拡大: ${warningPosition.symbol} ${formatCurrency(warningPosition.profit)}`,
+                                'warning'
+                            );
+                            lastAlertTime[alertKey] = now;
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('アラートチェックエラー:', error);
+            }
+        }
+        
+        // アラート表示 - Phase 2-A
+        function showAlert(message, type = 'warning') {
+            // 通知として表示
+            showNotification(message, type === 'critical' ? 'error' : 'warning');
+            
+            // 音声通知（設定が有効な場合）
+            if (document.getElementById('soundNotification').checked) {
+                playAlertSound(type);
+            }
+            
+            // バイブレーション（モバイル対応）
+            if ('vibrate' in navigator) {
+                if (type === 'critical') {
+                    navigator.vibrate([200, 100, 200, 100, 200]);
+                } else {
+                    navigator.vibrate([100, 50, 100]);
+                }
+            }
+            
+            console.log(`[ALERT ${type.toUpperCase()}] ${message}`);
+        }
+        
+        // アラート音再生 - Phase 2-A
+        function playAlertSound(type) {
+            try {
+                // Web Audio API使用（軽量）
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // 音の設定
+                if (type === 'critical') {
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(400, audioContext.currentTime + 0.1);
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                } else {
+                    oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                }
+                
+                oscillator.type = 'sine';
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + (type === 'critical' ? 0.5 : 0.3));
+                
+            } catch (error) {
+                console.log('音声再生エラー:', error);
+            }
+        }
+        
         // 画面表示更新
         function updateDisplay() {
             if (!lastData) return;
@@ -598,6 +754,11 @@
                 }
                 if (lastData.positions && lastData.account) {
                     updateStatistics(lastData.positions, lastData.account);
+                }
+                
+                // Phase 2-A: アラートチェック
+                if (lastData.account && lastData.positions) {
+                    checkAlerts(lastData.account, lastData.positions);
                 }
                 
             } catch (error) {
