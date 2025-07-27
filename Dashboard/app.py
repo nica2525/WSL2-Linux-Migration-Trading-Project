@@ -193,6 +193,17 @@ class TradingDashboard:
                 )
             ''')
             
+            # 残高履歴 - 統合テスト対応
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS balance_history (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    balance REAL NOT NULL,
+                    equity REAL NOT NULL,
+                    profit REAL NOT NULL
+                )
+            ''')
+            
             # インデックス作成
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_account_timestamp ON account_history(timestamp)')
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_position_timestamp ON position_history(timestamp)')
@@ -294,6 +305,36 @@ class TradingDashboard:
                 return jsonify(history)
             except Exception as e:
                 self.logger.error(f"API history error: {e}")
+                return jsonify({"error": str(e)}), 500
+        
+        @self.app.route('/api/balance_history')
+        @self.auth.login_required
+        def api_balance_history():
+            """残高履歴API - 統合テスト対応"""
+            try:
+                db_path = Path(__file__).parent / 'dashboard.db'
+                with sqlite3.connect(str(db_path)) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        SELECT timestamp, balance, equity, profit 
+                        FROM balance_history 
+                        ORDER BY timestamp DESC 
+                        LIMIT 100
+                    """)
+                    rows = cursor.fetchall()
+                    
+                    history = []
+                    for row in rows:
+                        history.append({
+                            'timestamp': row[0],
+                            'balance': row[1],
+                            'equity': row[2],
+                            'profit': row[3]
+                        })
+                    
+                    return jsonify(history)
+            except Exception as e:
+                self.logger.error(f"API balance_history error: {e}")
                 return jsonify({"error": str(e)}), 500
     
     def setup_websocket_handlers(self):
@@ -583,6 +624,7 @@ class TradingDashboard:
                 'equity': round(equity, 2),
                 'margin': round(account_data.get('margin', 0), 2),
                 'margin_free': round(account_data.get('margin_free', 0), 2),
+                'free_margin': round(account_data.get('margin_free', 0), 2),  # 統合テスト互換性
                 'margin_level': round(margin_level, 2) if margin_level else None,
                 'profit': round(account_data.get('profit', 0), 2),
                 'profit_percent': round(((equity - balance) / balance * 100), 2) if balance > 0 else 0,
