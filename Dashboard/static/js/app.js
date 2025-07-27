@@ -3,7 +3,7 @@
  * モジュール統合とアプリケーション制御
  */
 
-import { config, userSettings } from './modules/config.js';
+import { config, userSettings, loadSettingsToUI } from './modules/config.js';
 import { ChartManager } from './modules/chart.js';
 import { WebSocketManager } from './modules/websocket.js';
 import { StatisticsManager } from './modules/statistics.js';
@@ -41,7 +41,7 @@ class DashboardApp {
             this.ui.setupAlertSettings(
                 () => this.alerts.saveAlertSettings(),
                 () => this.alerts.resetAlertSettings(),
-                () => this.alerts.loadAlertSettingsToUI()
+                () => loadSettingsToUI()
             );
             this.ui.trackActivity();
             

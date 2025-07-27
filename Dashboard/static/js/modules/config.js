@@ -93,3 +93,20 @@ export const userSettings = {
 
 // 初期化時にユーザー設定を読み込み
 userSettings.load();
+
+// アラート設定の初期値をUIに反映する関数
+export function loadSettingsToUI() {
+    const marginCritical = document.getElementById('marginCritical');
+    const marginWarning = document.getElementById('marginWarning');
+    const ddCritical = document.getElementById('ddCritical');
+    const ddWarning = document.getElementById('ddWarning');
+    const lossCritical = document.getElementById('lossCritical');
+    const lossWarning = document.getElementById('lossWarning');
+    
+    if (marginCritical) marginCritical.value = config.alerts.marginLevel.critical;
+    if (marginWarning) marginWarning.value = config.alerts.marginLevel.warning;
+    if (ddCritical) ddCritical.value = config.alerts.drawdown.critical;
+    if (ddWarning) ddWarning.value = config.alerts.drawdown.warning;
+    if (lossCritical) lossCritical.value = config.alerts.positionLoss.critical;
+    if (lossWarning) lossWarning.value = config.alerts.positionLoss.warning;
+}
