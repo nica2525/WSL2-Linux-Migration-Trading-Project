@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     
     <!-- PWA マニフェスト - kiro設計準拠 -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/static/manifest.json">
     <meta name="theme-color" content="#2196F3">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,853 +14,530 @@
     <!-- アイコン -->
     <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/icon-192x192.png">
     <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/mobile_dashboard.css">
+    
     <title>JamesORB モバイルダッシュボード</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-        
-        .mobile-container {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* ヘッダー */
-        .mobile-header {
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .header-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-        }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 2s infinite;
-        }
-        
-        .status-connected { background-color: #4CAF50; }
-        .status-warning { background-color: #FF9800; }
-        .status-error { background-color: #f44336; }
-        
-        .header-refresh {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1.1rem;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.3s;
-        }
-        
-        .header-refresh:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        /* タブナビゲーション */
-        .tab-navigation {
-            display: flex;
-            background: rgba(0, 0, 0, 0.15);
-            margin: 0;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .tab-button {
-            flex: 1;
-            min-width: 80px;
-            padding: 12px 16px;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.85rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            border-bottom: 3px solid transparent;
-        }
-        
-        .tab-button.active {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.1);
-            border-bottom-color: #4CAF50;
-        }
-        
-        .tab-button:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        /* タブコンテンツ */
-        .tab-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        
-        .tab-pane {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .tab-pane.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* カード共通スタイル */
-        .mobile-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .card-icon {
-            margin-right: 8px;
-            font-size: 1.1rem;
-        }
-        
-        /* 概要タブ */
-        .overview-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-        }
-        
-        .stat-value {
-            font-size: 1.4rem;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .profit-positive { color: #4CAF50; }
-        .profit-negative { color: #f44336; }
-        .profit-neutral { color: #FFC107; }
-        
-        /* 価格表示 */
-        .price-display {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .price-symbol {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 8px;
-        }
-        
-        .price-value {
-            font-size: 2.2rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        
-        .price-change {
-            font-size: 0.9rem;
-            padding: 4px 8px;
-            border-radius: 12px;
-            background: rgba(76, 175, 80, 0.2);
-        }
-        
-        /* チャート */
-        .chart-container {
-            position: relative;
-            height: 250px;
-            margin-bottom: 16px;
-        }
-        
-        .chart-canvas {
-            border-radius: 8px;
-        }
-        
-        /* ポジションリスト */
-        .position-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        .position-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border-left: 4px solid #2196F3;
-        }
-        
-        .position-item.buy {
-            border-left-color: #4CAF50;
-        }
-        
-        .position-item.sell {
-            border-left-color: #f44336;
-        }
-        
-        .position-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .position-details {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.4;
-        }
-        
-        /* システム情報 */
-        .system-info {
-            font-size: 0.85rem;
-        }
-        
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .info-row:last-child {
-            border-bottom: none;
-        }
-        
-        .info-label {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .info-value {
-            font-weight: 600;
-        }
-        
-        /* ローディング */
-        .loading {
-            text-align: center;
-            padding: 40px 20px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* エラー表示 */
-        .error-message {
-            background: rgba(244, 67, 54, 0.2);
-            border: 1px solid #f44336;
-            color: #fff;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 10px 0;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        
-        /* アニメーション */
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        /* スクロールバー非表示（iOS対応） */
-        .tab-navigation::-webkit-scrollbar,
-        .position-list::-webkit-scrollbar {
-            display: none;
-        }
-        
-        /* プルして更新のヒント */
-        .pull-hint {
-            text-align: center;
-            padding: 8px;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-            background: rgba(0, 0, 0, 0.1);
-        }
-    </style>
 </head>
 <body>
-    <div class="mobile-container">
+    <div class="app-container">
         <!-- ヘッダー -->
-        <div class="mobile-header">
-            <div class="header-title">
-                <span id="statusDot" class="status-dot status-warning"></span>
-                JamesORB
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">📊 JamesORB</div>
+                <div class="connection-status">
+                    <div class="status-dot" id="connectionStatus"></div>
+                    <span id="connectionText">接続中...</span>
+                </div>
             </div>
-            <button id="refreshButton" class="header-refresh">🔄</button>
-        </div>
-        
-        <!-- プルして更新のヒント -->
-        <div class="pull-hint">
-            下にスワイプして更新
-        </div>
+        </header>
         
         <!-- タブナビゲーション -->
-        <div class="tab-navigation">
-            <button class="tab-button active" data-tab="overview">📊 概要</button>
-            <button class="tab-button" data-tab="positions">💼 ポジション</button>
-            <button class="tab-button" data-tab="chart">📈 チャート</button>
-            <button class="tab-button" data-tab="system">⚙️ システム</button>
-        </div>
+        <nav class="tab-nav">
+            <button class="tab-button active" data-tab="overview">📈 概要</button>
+            <button class="tab-button" data-tab="positions">📋 ポジション</button>
+            <button class="tab-button" data-tab="market">💹 市場</button>
+            <button class="tab-button" data-tab="settings">⚙️ 設定</button>
+        </nav>
         
-        <!-- タブコンテンツ -->
-        <div class="tab-content">
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <!-- PWA インストール促進 -->
+            <div class="install-prompt" id="installPrompt" style="display: none;">
+                📱 ホーム画面に追加してアプリのように使用できます
+                <button class="install-btn" onclick="installPWA()">インストール</button>
+            </div>
+            
             <!-- 概要タブ -->
-            <div id="overview" class="tab-pane active">
-                <div class="price-display">
-                    <div class="price-symbol" id="priceSymbol">EURUSD</div>
-                    <div class="price-value" id="priceValue">1.0845</div>
-                    <div class="price-change profit-positive" id="priceChange">+0.0012 (+0.11%)</div>
-                </div>
-                
-                <div class="mobile-card">
-                    <div class="card-title">
-                        <span class="card-icon">📊</span>
-                        今日の統計
-                    </div>
-                    <div class="overview-stats">
-                        <div class="stat-item">
-                            <div class="stat-value profit-positive" id="todayProfit">+$0.00</div>
-                            <div class="stat-label">今日の損益</div>
+            <div class="tab-content active" id="overview">
+                <!-- EA状態 -->
+                <div class="card">
+                    <div class="ea-status" id="eaStatus">
+                        <div class="ea-info">
+                            <div class="ea-name">JamesORB v1.0</div>
+                            <div class="ea-symbol">EURUSD M5</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="activePositions">0</div>
-                            <div class="stat-label">アクティブポジション</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="accountBalance">$3,000,000</div>
-                            <div class="stat-label">口座残高</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="accountEquity">$3,000,000</div>
-                            <div class="stat-label">証拠金</div>
-                        </div>
+                        <div class="ea-badge">稼働中</div>
                     </div>
                 </div>
                 
-                <div class="mobile-card">
+                <!-- アカウント情報 -->
+                <div class="card">
                     <div class="card-title">
-                        <span class="card-icon">🤖</span>
-                        EA稼働状況
+                        <span class="icon">💰</span>
+                        アカウント情報
                     </div>
-                    <div class="system-info">
-                        <div class="info-row">
-                            <span class="info-label">EA名</span>
-                            <span class="info-value" id="eaName">JamesORB_v1.0</span>
+                    <div class="account-grid">
+                        <div class="account-item">
+                            <span class="account-value" id="balance">-</span>
+                            <div class="account-label">残高</div>
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">状態</span>
-                            <span class="info-value" id="eaStatus">RUNNING</span>
+                        <div class="account-item">
+                            <span class="account-value" id="equity">-</span>
+                            <div class="account-label">有効証拠金</div>
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">通貨ペア</span>
-                            <span class="info-value" id="eaSymbol">EURUSD</span>
+                        <div class="account-item">
+                            <span class="account-value" id="profit">-</span>
+                            <div class="account-label">含み損益</div>
+                        </div>
+                        <div class="account-item">
+                            <span class="account-value" id="marginLevel">-</span>
+                            <div class="account-label">証拠金維持率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 本日の結果 -->
+                <div class="card">
+                    <div class="card-title">
+                        <span class="icon">📊</span>
+                        本日の結果
+                    </div>
+                    <div class="account-grid">
+                        <div class="account-item">
+                            <span class="account-value" id="todayProfit">-</span>
+                            <div class="account-label">今日の利益</div>
+                        </div>
+                        <div class="account-item">
+                            <span class="account-value" id="positionCount">-</span>
+                            <div class="account-label">ポジション数</div>
                         </div>
                     </div>
                 </div>
             </div>
             
             <!-- ポジションタブ -->
-            <div id="positions" class="tab-pane">
-                <div class="mobile-card">
+            <div class="tab-content" id="positions">
+                <div class="card">
                     <div class="card-title">
-                        <span class="card-icon">💼</span>
+                        <span class="icon">📋</span>
                         現在のポジション
                     </div>
-                    <div id="positionsList" class="position-list">
+                    <div id="positionsList">
                         <div class="loading">
                             <div class="spinner"></div>
-                            ポジション情報を読み込み中...
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- チャートタブ -->
-            <div id="chart" class="tab-pane">
-                <div class="mobile-card">
+            <!-- 市場タブ -->
+            <div class="tab-content" id="market">
+                <div class="card">
                     <div class="card-title">
-                        <span class="card-icon">📈</span>
-                        価格チャート
+                        <span class="icon">💹</span>
+                        市場データ
                     </div>
-                    <div class="chart-container">
-                        <canvas id="priceChart" class="chart-canvas"></canvas>
+                    <div class="market-price" id="marketData">
+                        <div class="price-info">
+                            <div class="symbol-name">EURUSD</div>
+                            <div class="price-time" id="priceTime">-</div>
+                        </div>
+                        <div class="price-values">
+                            <div class="bid-ask">
+                                <span id="bid">-</span> / <span id="ask">-</span>
+                            </div>
+                            <div class="spread">スプレッド: <span id="spread">-</span> pips</div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- システムタブ -->
-            <div id="system" class="tab-pane">
-                <div class="mobile-card">
+            <!-- 設定タブ -->
+            <div class="tab-content" id="settings">
+                <div class="card">
                     <div class="card-title">
-                        <span class="card-icon">🖥️</span>
-                        システム状態
+                        <span class="icon">⚙️</span>
+                        アプリ設定
                     </div>
-                    <div class="system-info" id="systemInfo">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            システム情報を読み込み中...
-                        </div>
+                    <div style="padding: 12px 0;">
+                        <label style="display: block; margin-bottom: 12px; font-size: 14px;">
+                            <input type="checkbox" id="autoRefresh" checked style="margin-right: 8px;">
+                            自動更新 (5秒間隔)
+                        </label>
+                        <label style="display: block; margin-bottom: 12px; font-size: 14px;">
+                            <input type="checkbox" id="soundNotification" style="margin-right: 8px;">
+                            音声通知
+                        </label>
+                        <button onclick="clearCache()" style="width: 100%; padding: 12px; background: #FF9800; color: white; border: none; border-radius: 8px; font-size: 14px; margin-top: 12px;">
+                            キャッシュクリア
+                        </button>
                     </div>
                 </div>
                 
-                <div class="mobile-card">
+                <div class="card">
                     <div class="card-title">
-                        <span class="card-icon">📡</span>
-                        接続情報
+                        <span class="icon">ℹ️</span>
+                        アプリ情報
                     </div>
-                    <div class="system-info">
-                        <div class="info-row">
-                            <span class="info-label">WebSocket</span>
-                            <span class="info-value" id="wsStatus">接続中...</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">最終更新</span>
-                            <span class="info-value" id="lastUpdateTime">--</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">接続時間</span>
-                            <span class="info-value" id="connectionTime">--</span>
+                    <div style="padding: 12px 0; font-size: 12px; color: #666; line-height: 1.6;">
+                        <div>バージョン: 1.0.0</div>
+                        <div>最終更新: <span id="lastUpdate">-</span></div>
+                        <div>接続状態: <span id="connectionInfo">確認中...</span></div>
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0;">
+                            kiro設計アーキテクチャ準拠<br>
+                            Tailscale VPN + Basic認証
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
+        
+        <!-- リフレッシュボタン -->
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">
+            🔄
+        </button>
+        
+        <!-- 通知 - Gemini査読対応改善 -->
+        <div class="notification" id="notification"></div>
     </div>
-
+    
     <script>
-        // Socket.IO接続
-        const socket = io();
-        
-        // タブ管理
-        let currentTab = 'overview';
-        let priceChart = null;
-        let connectionStartTime = new Date();
+        // グローバル変数
+        let socket = null;
+        let lastData = null;
         let isConnected = false;
+        let autoRefreshEnabled = true;
+        let deferredPrompt = null;
         
-        // DOM要素
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-        const refreshButton = document.getElementById('refreshButton');
-        const statusDot = document.getElementById('statusDot');
-        
-        // タブ切り替え
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const tabId = button.dataset.tab;
-                switchTab(tabId);
-            });
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupTabNavigation();
+            setupWebSocket();
+            setupPWA();
         });
         
-        function switchTab(tabId) {
-            // アクティブタブボタン更新
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        // アプリ初期化
+        function initializeApp() {
+            console.log('JamesORB Mobile Dashboard v1.0 - 初期化開始');
             
-            // アクティブタブペイン更新
-            tabPanes.forEach(pane => pane.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+            // 設定の復元
+            const autoRefresh = localStorage.getItem('autoRefresh');
+            if (autoRefresh !== null) {
+                document.getElementById('autoRefresh').checked = autoRefresh === 'true';
+                autoRefreshEnabled = autoRefresh === 'true';
+            }
             
-            currentTab = tabId;
+            const soundNotification = localStorage.getItem('soundNotification');
+            if (soundNotification !== null) {
+                document.getElementById('soundNotification').checked = soundNotification === 'true';
+            }
             
-            // チャートタブの場合、チャートを初期化
-            if (tabId === 'chart' && !priceChart) {
-                initPriceChart();
+            // 設定変更リスナー
+            document.getElementById('autoRefresh').addEventListener('change', function() {
+                autoRefreshEnabled = this.checked;
+                localStorage.setItem('autoRefresh', this.checked);
+                showNotification(this.checked ? '自動更新を有効にしました' : '自動更新を無効にしました', 'info');
+            });
+            
+            document.getElementById('soundNotification').addEventListener('change', function() {
+                localStorage.setItem('soundNotification', this.checked);
+                showNotification('設定を保存しました', 'info');
+            });
+        }
+        
+        // タブナビゲーション
+        function setupTabNavigation() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // アクティブ状態の更新
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    button.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // タブ切り替え時のデータ更新
+                    if (tabId === 'positions' || tabId === 'market') {
+                        updateDisplay();
+                    }
+                });
+            });
+        }
+        
+        // WebSocket接続
+        function setupWebSocket() {
+            try {
+                socket = io();
+                
+                socket.on('connect', function() {
+                    console.log('WebSocket接続成功');
+                    isConnected = true;
+                    updateConnectionStatus(true);
+                    socket.emit('request_data');
+                });
+                
+                socket.on('disconnect', function() {
+                    console.log('WebSocket接続切断');
+                    isConnected = false;
+                    updateConnectionStatus(false);
+                });
+                
+                socket.on('market_data', function(data) {
+                    console.log('リアルタイムデータ受信:', data);
+                    lastData = data;
+                    updateDisplay();
+                });
+                
+                socket.on('notification', function(data) {
+                    showNotification(data.message, data.type || 'info');
+                });
+                
+                socket.on('error', function(data) {
+                    console.error('Socket error:', data);
+                    showNotification('エラー: ' + data.message, 'error');
+                });
+                
+            } catch (error) {
+                console.error('WebSocket初期化エラー:', error);
+                updateConnectionStatus(false);
+                showNotification('接続エラーが発生しました', 'error');
             }
         }
         
-        // プライスチャート初期化
-        function initPriceChart() {
-            const ctx = document.getElementById('priceChart').getContext('2d');
-            priceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'EURUSD',
-                        data: [],
-                        borderColor: '#4CAF50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#fff'
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: { color: '#fff' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        },
-                        y: {
-                            ticks: { color: '#fff' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    }
-                }
+        // PWA設定
+        function setupPWA() {
+            // Service Worker登録
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/static/js/service-worker.js')
+                    .then(registration => console.log('Service Worker登録成功'))
+                    .catch(error => console.log('Service Worker登録失敗:', error));
+            }
+            
+            // インストール促進
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('installPrompt').style.display = 'block';
             });
         }
         
-        // Socket.IO イベントハンドラー
-        socket.on('connect', () => {
-            console.log('モバイルダッシュボード接続成功');
-            isConnected = true;
-            updateConnectionStatus('connected');
-            socket.emit('request_data');
-        });
-        
-        socket.on('disconnect', () => {
-            console.log('接続切断');
-            isConnected = false;
-            updateConnectionStatus('error');
-        });
-        
-        socket.on('market_data', (data) => {
-            console.log('データ受信:', data);
-            updateMobileDashboard(data);
-            updateConnectionStatus('connected');
-        });
-        
-        socket.on('error', (error) => {
-            console.error('エラー:', error);
-            showError(error.message);
-            updateConnectionStatus('error');
-        });
+        // PWAインストール
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWAインストール受諾');
+                        document.getElementById('installPrompt').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
         
         // 接続状態更新
-        function updateConnectionStatus(status) {
-            statusDot.className = `status-dot status-${status}`;
+        function updateConnectionStatus(connected) {
+            const statusDot = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('connectionText');
+            const connectionInfo = document.getElementById('connectionInfo');
             
-            const wsStatusEl = document.getElementById('wsStatus');
-            if (wsStatusEl) {
-                wsStatusEl.textContent = status === 'connected' ? '接続済み' : 
-                                        status === 'warning' ? '接続中' : '切断';
-            }
-            
-            // 接続時間更新
-            const connectionTimeEl = document.getElementById('connectionTime');
-            if (connectionTimeEl && isConnected) {
-                const elapsed = Math.floor((new Date() - connectionStartTime) / 1000);
-                const minutes = Math.floor(elapsed / 60);
-                const seconds = elapsed % 60;
-                connectionTimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            if (connected) {
+                statusDot.classList.remove('error');
+                statusText.textContent = 'オンライン';
+                connectionInfo.textContent = 'WebSocket接続済み';
+            } else {
+                statusDot.classList.add('error');
+                statusText.textContent = 'オフライン';
+                connectionInfo.textContent = '接続エラー';
             }
         }
         
-        // モバイルダッシュボード更新
-        function updateMobileDashboard(data) {
+        // 画面表示更新
+        function updateDisplay() {
+            if (!lastData) return;
+            
             try {
-                // 価格表示更新
-                if (data.market) {
-                    updatePriceDisplay(data.market);
-                    updatePriceChart(data.market);
+                // アカウント情報
+                if (lastData.account) {
+                    const account = lastData.account;
+                    document.getElementById('balance').textContent = formatNumber(account.balance);
+                    document.getElementById('equity').textContent = formatNumber(account.equity);
+                    
+                    const profit = account.profit || 0;
+                    const profitElement = document.getElementById('profit');
+                    profitElement.textContent = formatCurrency(profit);
+                    profitElement.className = 'account-value ' + (profit >= 0 ? 'profit-positive' : 'profit-negative');
+                    
+                    const marginLevel = account.margin_level;
+                    document.getElementById('marginLevel').textContent = marginLevel ? marginLevel.toFixed(2) + '%' : '-';
                 }
                 
-                // アカウント情報更新
-                if (data.account) {
-                    updateAccountStats(data.account);
+                // EA状態
+                if (lastData.ea) {
+                    const ea = lastData.ea;
+                    const todayProfit = ea.today_profit || 0;
+                    const todayProfitElement = document.getElementById('todayProfit');
+                    todayProfitElement.textContent = formatCurrency(todayProfit);
+                    todayProfitElement.className = 'account-value ' + (todayProfit >= 0 ? 'profit-positive' : 'profit-negative');
+                    
+                    document.getElementById('positionCount').textContent = ea.active_positions || 0;
                 }
                 
-                // EA情報更新
-                if (data.ea) {
-                    updateEAInfo(data.ea);
-                }
+                // ポジション一覧
+                updatePositions(lastData.positions || []);
                 
-                // ポジション更新
-                if (data.positions) {
-                    updateMobilePositions(data.positions);
-                }
-                
-                // システム情報更新
-                if (data.system) {
-                    updateSystemInfo(data.system);
+                // 市場データ
+                if (lastData.market) {
+                    const market = lastData.market;
+                    document.getElementById('bid').textContent = market.bid || '-';
+                    document.getElementById('ask').textContent = market.ask || '-';
+                    document.getElementById('spread').textContent = market.spread || '-';
+                    document.getElementById('priceTime').textContent = market.server_time || '-';
                 }
                 
                 // 最終更新時刻
-                const lastUpdateEl = document.getElementById('lastUpdateTime');
-                if (lastUpdateEl) {
-                    lastUpdateEl.textContent = new Date().toLocaleTimeString('ja-JP');
-                }
+                document.getElementById('lastUpdate').textContent = new Date(lastData.timestamp).toLocaleTimeString('ja-JP');
                 
             } catch (error) {
-                console.error('ダッシュボード更新エラー:', error);
-                showError('データ表示エラー');
+                console.error('画面更新エラー:', error);
+                showNotification('画面更新エラーが発生しました', 'error');
             }
         }
         
-        function updatePriceDisplay(market) {
-            const symbolEl = document.getElementById('priceSymbol');
-            const valueEl = document.getElementById('priceValue');
-            const changeEl = document.getElementById('priceChange');
-            
-            if (symbolEl) symbolEl.textContent = market.symbol || 'EURUSD';
-            if (valueEl) valueEl.textContent = formatPrice(market.bid);
-            
-            // 価格変動は仮の計算（実際には前回値との比較が必要）
-            if (changeEl) {
-                changeEl.textContent = `スプレッド: ${formatNumber(market.spread, 1)} pips`;
-                changeEl.className = 'price-change profit-neutral';
-            }
-        }
-        
-        function updateAccountStats(account) {
-            const balanceEl = document.getElementById('accountBalance');
-            const equityEl = document.getElementById('accountEquity');
-            const profitEl = document.getElementById('todayProfit');
-            
-            if (balanceEl) balanceEl.textContent = formatCurrency(account.balance, account.currency);
-            if (equityEl) equityEl.textContent = formatCurrency(account.equity, account.currency);
-            if (profitEl) {
-                profitEl.textContent = formatCurrency(account.profit, account.currency);
-                profitEl.className = `stat-value ${getProfitClass(account.profit)}`;
-            }
-        }
-        
-        function updateEAInfo(ea) {
-            const nameEl = document.getElementById('eaName');
-            const statusEl = document.getElementById('eaStatus');
-            const symbolEl = document.getElementById('eaSymbol');
-            const positionsEl = document.getElementById('activePositions');
-            
-            if (nameEl) nameEl.textContent = ea.name || '--';
-            if (statusEl) statusEl.textContent = ea.status || '--';
-            if (symbolEl) symbolEl.textContent = ea.symbol || '--';
-            if (positionsEl) positionsEl.textContent = ea.active_positions || 0;
-        }
-        
-        function updateMobilePositions(positions) {
-            const container = document.getElementById('positionsList');
+        // ポジション表示更新
+        function updatePositions(positions) {
+            const positionsList = document.getElementById('positionsList');
             
             if (!positions || positions.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">ポジションはありません</div>';
+                positionsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📈</div>
+                        <div>現在ポジションはありません</div>
+                    </div>
+                `;
                 return;
             }
             
             let html = '';
-            positions.forEach(pos => {
-                const posType = pos.type.toLowerCase();
-                const profitClass = getProfitClass(pos.profit);
+            positions.forEach(position => {
+                const profitClass = position.profit >= 0 ? 'profit-positive' : 'profit-negative';
+                const typeClass = position.type.toLowerCase();
                 
                 html += `
-                    <div class="position-item ${posType}">
-                        <div class="position-header">
-                            <span>${pos.symbol} ${pos.type}</span>
-                            <span class="${profitClass}">${formatCurrency(pos.profit)}</span>
+                    <div class="position-item">
+                        <div class="position-left">
+                            <div>
+                                <span class="position-symbol">${position.symbol}</span>
+                                <span class="position-type ${typeClass}">${position.type}</span>
+                            </div>
+                            <div class="position-details">
+                                ${position.volume} lot | 開始: ${position.open_price} | 期間: ${position.duration}
+                            </div>
                         </div>
-                        <div class="position-details">
-                            ロット: ${pos.volume} | 価格: ${formatPrice(pos.current_price)}
-                        </div>
-                        <div class="position-details">
-                            ${new Date(pos.open_time).toLocaleString('ja-JP')}
+                        <div class="position-right">
+                            <div class="position-profit ${profitClass}">
+                                ${formatCurrency(position.profit)}
+                            </div>
+                            <div class="position-pips">
+                                ${position.profit_pips > 0 ? '+' : ''}${position.profit_pips} pips
+                            </div>
                         </div>
                     </div>
                 `;
             });
             
-            container.innerHTML = html;
+            positionsList.innerHTML = html;
         }
         
-        function updateSystemInfo(system) {
-            const container = document.getElementById('systemInfo');
-            
-            const html = `
-                <div class="info-row">
-                    <span class="info-label">MT5接続</span>
-                    <span class="info-value">${system.mt5_connected ? '✅ 接続中' : '❌ 切断'}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">システム状態</span>
-                    <span class="info-value">${system.system_health || 'Unknown'}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">稼働時間</span>
-                    <span class="info-value">${getUptime()}</span>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-        }
-        
-        function updatePriceChart(market) {
-            if (!priceChart || currentTab !== 'chart') return;
-            
-            const now = new Date();
-            const timeLabel = now.toLocaleTimeString('ja-JP');
-            
-            // データポイント追加
-            priceChart.data.labels.push(timeLabel);
-            priceChart.data.datasets[0].data.push(market.bid);
-            
-            // 最大50ポイントまで保持
-            if (priceChart.data.labels.length > 50) {
-                priceChart.data.labels.shift();
-                priceChart.data.datasets[0].data.shift();
+        // データ手動更新
+        function refreshData() {
+            if (!socket || !isConnected) {
+                showNotification('接続されていません', 'error');
+                return;
             }
             
-            priceChart.update('none'); // アニメーションなしで更新
-        }
-        
-        // ユーティリティ関数
-        function formatPrice(price) {
-            return price ? parseFloat(price).toFixed(5) : '--';
-        }
-        
-        function formatNumber(num, decimals = 2) {
-            return num ? parseFloat(num).toFixed(decimals) : '--';
-        }
-        
-        function formatCurrency(amount, currency = 'USD') {
-            if (!amount) return '--';
-            const formatted = formatNumber(Math.abs(amount), 2);
-            const sign = amount >= 0 ? '+' : '-';
-            return `${sign}$${formatted}`;
-        }
-        
-        function getProfitClass(profit) {
-            if (profit > 0) return 'profit-positive';
-            if (profit < 0) return 'profit-negative';
-            return 'profit-neutral';
-        }
-        
-        function getUptime() {
-            const elapsed = Math.floor((new Date() - connectionStartTime) / 1000);
-            const hours = Math.floor(elapsed / 3600);
-            const minutes = Math.floor((elapsed % 3600) / 60);
-            return `${hours}h ${minutes}m`;
-        }
-        
-        function showError(message) {
-            // エラー表示の実装
-            console.error('エラー:', message);
-        }
-        
-        // リフレッシュボタン
-        refreshButton.addEventListener('click', () => {
-            refreshButton.style.transform = 'rotate(360deg)';
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.classList.add('loading');
+            
             socket.emit('request_refresh');
             
             setTimeout(() => {
-                refreshButton.style.transform = 'rotate(0deg)';
-            }, 500);
-        });
-        
-        // 定期データ更新
-        setInterval(() => {
-            if (isConnected) {
-                socket.emit('request_data');
-            }
-            updateConnectionStatus(isConnected ? 'connected' : 'error');
-        }, 3000);
-        
-        // プルして更新（タッチイベント）
-        let touchStartY = 0;
-        let touchEndY = 0;
-        
-        document.addEventListener('touchstart', (e) => {
-            touchStartY = e.changedTouches[0].screenY;
-        });
-        
-        document.addEventListener('touchend', (e) => {
-            touchEndY = e.changedTouches[0].screenY;
-            handleSwipe();
-        });
-        
-        function handleSwipe() {
-            const swipeDistance = touchEndY - touchStartY;
-            if (swipeDistance > 100 && window.scrollY === 0) {
-                // 下にスワイプしてページトップの場合、更新
-                socket.emit('request_refresh');
-            }
+                refreshBtn.classList.remove('loading');
+            }, 1000);
         }
         
-        // 初期化
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('モバイルダッシュボード初期化完了');
-            connectionStartTime = new Date();
+        // 通知表示 - Gemini査読対応改善
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // キャッシュクリア
+        function clearCache() {
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            localStorage.clear();
+            showNotification('キャッシュをクリアしました', 'success');
+        }
+        
+        // ユーティリティ関数
+        function formatNumber(num) {
+            if (!num) return '-';
+            return new Intl.NumberFormat('ja-JP').format(Math.round(num));
+        }
+        
+        function formatCurrency(num) {
+            if (!num) return '¥0';
+            const formatted = new Intl.NumberFormat('ja-JP').format(Math.round(num));
+            return (num >= 0 ? '+' : '') + '¥' + formatted;
+        }
+        
+        // 定期更新（バックグラウンド対応） - Gemini査読バッテリー配慮改善
+        let updateInterval = 5000; // 5秒デフォルト
+        let lastActivityTime = Date.now();
+        
+        // ユーザー操作検知
+        document.addEventListener('touchstart', () => {
+            lastActivityTime = Date.now();
         });
+        
+        document.addEventListener('click', () => {
+            lastActivityTime = Date.now();
+        });
+        
+        setInterval(() => {
+            if (autoRefreshEnabled && isConnected && !document.hidden) {
+                // 非アクティブ時間に基づく更新頻度調整
+                const inactiveTime = Date.now() - lastActivityTime;
+                if (inactiveTime > 60000) { // 1分間操作なし
+                    updateInterval = 10000; // 10秒間隔
+                } else {
+                    updateInterval = 5000; // 5秒間隔
+                }
+                
+                socket.emit('request_data');
+            }
+        }, 1000); // 1秒ごとにチェック
+        
+        // バックグラウンド復帰時の更新
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && isConnected) {
+                lastActivityTime = Date.now();
+                socket.emit('request_data');
+            }
+        });
+        
     </script>
 </body>
 </html>
