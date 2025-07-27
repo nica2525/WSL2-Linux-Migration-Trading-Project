@@ -191,7 +191,15 @@ def main():
             
     except BlockingIOError:
         # 他のプロセスが実行中
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] 他プロセス実行中 - スキップ")
+        user_info = f"user={os.getenv('USER', 'unknown')}, uid={os.getuid()}"
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] 他プロセス実行中 - スキップ ({user_info})")
+        
+        # ログファイルにも記録
+        try:
+            with open(project_root / ".cron_git_auto_save.log", 'a') as f:
+                f.write(f"{datetime.now().isoformat()} - WARNING - 排他制御によりスキップ - {user_info}\n")
+        except:
+            pass
         exit(0)
     except Exception as e:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ロック取得エラー: {e}")
