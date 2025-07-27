@@ -135,7 +135,7 @@ body {
 .card-title {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: #ffffff;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
@@ -232,7 +232,7 @@ body {
 .position-symbol {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: #ffffff;
 }
 
 .position-type {
