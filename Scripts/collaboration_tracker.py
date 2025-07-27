@@ -12,14 +12,14 @@ import sys
 
 # プロジェクト共通ライブラリ
 sys.path.append(str(Path(__file__).parent.parent))
-from lib.logger_setup import setup_logger
+from lib.logger_setup import get_logger
 
 class CollaborationTracker:
     def __init__(self):
         self.project_root = Path(__file__).parent.parent
         self.learning_dir = self.project_root / "文書" / "学習"
         self.data_file = self.learning_dir / "collaboration_data.json"
-        self.logger = setup_logger(__name__)
+        self.logger = get_logger(__name__)
         
         # データファイル初期化
         self.ensure_data_file()
