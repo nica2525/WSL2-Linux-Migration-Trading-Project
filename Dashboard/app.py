@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-JamesORB監視ダッシュボード - kiro設計v1.0準拠
-標準MT5 API + ハイブリッド通信 + Tailscale VPN + Basic認証
+JamesORB監視ダッシュボード - kiro設計v1.0準拠 + Phase 3拡張
+標準MT5 API + ハイブリッド通信 + Tailscale VPN + Basic認証 + 実データ統合
 """
 
 import os
@@ -22,6 +22,10 @@ from lib.error_handler import ErrorHandler
 # Web フレームワーク・セキュリティ
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from flask_socketio import SocketIO, emit
+
+# Phase 3 実データ統合
+from real_data_integration import RealDataIntegrationManager
+
 # MT5インポート（Wine環境対応）
 try:
     import MetaTrader5 as mt5
@@ -112,7 +116,7 @@ class MT5ConnectionManager:
 
 class TradingDashboard:
     def __init__(self):
-        """ダッシュボード初期化 - kiro設計v1.0準拠"""
+        """ダッシュボード初期化 - kiro設計v1.0準拠 + Phase 3拡張"""
         self.config = ConfigManager()
         self.logger = get_logger(__name__)
         self.error_handler = ErrorHandler()
@@ -132,6 +136,9 @@ class TradingDashboard:
         # SQLiteデータベース初期化
         self.init_database()
         
+        # Phase 3: 実データ統合マネージャー初期化
+        self.real_data_manager = RealDataIntegrationManager(self.socketio)
+        
         # バックグラウンドタスク
         self.last_data_update = None
         self.background_thread = None
@@ -141,7 +148,7 @@ class TradingDashboard:
         self.setup_routes()
         self.setup_websocket_handlers()
         
-        self.logger.info("=== JamesORB監視ダッシュボード v1.0 初期化完了 ===")
+        self.logger.info("=== JamesORB監視ダッシュボード v3.0 (Phase 3拡張) 初期化完了 ===")
     
     def init_database(self):
         """SQLiteデータベース初期化 - kiro設計準拠"""
@@ -726,19 +733,26 @@ class TradingDashboard:
             }
     
     def run(self, host='0.0.0.0', port=5000, debug=False):
-        """ダッシュボードサーバー起動 - kiro設計準拠"""
+        """ダッシュボードサーバー起動 - kiro設計準拠 + Phase 3拡張"""
         try:
             # MT5初期接続
             self.mt5_manager.connect_with_retry()
             
+            # Phase 3: 実データ統合システム開始
+            if self.real_data_manager.initialize():
+                self.logger.info("✅ Phase 3実データ統合システム起動完了")
+            else:
+                self.logger.warning("⚠️ Phase 3実データ統合システム起動失敗 - 従来機能で継続")
+            
             # バックグラウンド更新開始
             self.start_background_update()
             
-            self.logger.info(f"=== JamesORB監視ダッシュボード v1.0 起動 ===")
+            self.logger.info(f"=== JamesORB監視ダッシュボード v3.0 (Phase 3拡張) 起動 ===")
             self.logger.info(f"URL: http://{host}:{port}")
             self.logger.info(f"Mobile: http://{host}:{port}/mobile")
             self.logger.info(f"認証: Basic ({SecurityConfig.BASIC_AUTH_USERNAME})")
             self.logger.info(f"VPN: Tailscale推奨")
+            self.logger.info(f"新機能: 実データ統合・高度統計分析・PWA対応")
             
             # Flask-SocketIO サーバー起動
             self.socketio.run(
@@ -753,6 +767,10 @@ class TradingDashboard:
             self.logger.error(f"Dashboard startup error: {e}")
             raise
         finally:
+            # Phase 3: 実データ統合システム停止
+            if hasattr(self, 'real_data_manager'):
+                self.real_data_manager.stop()
+            
             # MT5接続終了
             if self.mt5_manager.connected:
                 mt5.shutdown()
