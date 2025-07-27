@@ -107,6 +107,43 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- 口座推移チャート - Phase 2-A -->
+                <div class="card">
+                    <div class="card-title">
+                        <span class="icon">📈</span>
+                        口座推移（24時間）
+                    </div>
+                    <div style="position: relative; height: 200px; padding: 10px;">
+                        <canvas id="balanceChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 基本統計 - Phase 2-A -->
+                <div class="card">
+                    <div class="card-title">
+                        <span class="icon">📋</span>
+                        基本統計
+                    </div>
+                    <div class="account-grid">
+                        <div class="account-item">
+                            <span class="account-value" id="winRate">-</span>
+                            <div class="account-label">勝率</div>
+                        </div>
+                        <div class="account-item">
+                            <span class="account-value" id="profitFactor">-</span>
+                            <div class="account-label">プロフィットファクター</div>
+                        </div>
+                        <div class="account-item">
+                            <span class="account-value" id="maxDrawdown">-</span>
+                            <div class="account-label">最大ドローダウン</div>
+                        </div>
+                        <div class="account-item">
+                            <span class="account-value" id="totalTrades">-</span>
+                            <div class="account-label">総取引数</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- ポジションタブ -->
@@ -202,6 +239,9 @@
         let isConnected = false;
         let autoRefreshEnabled = true;
         let deferredPrompt = null;
+        let balanceChart = null;
+        let balanceData = [];
+        let statisticsData = { trades: [], wins: 0, losses: 0, totalProfit: 0, totalLoss: 0 };
         
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
@@ -209,6 +249,7 @@
             setupTabNavigation();
             setupWebSocket();
             setupPWA();
+            initializeChart();
         });
         
         // アプリ初期化
@@ -352,6 +393,159 @@
             }
         }
         
+        // Chart.js初期化 - Phase 2-A
+        function initializeChart() {
+            const ctx = document.getElementById('balanceChart');
+            if (!ctx) return;
+            
+            balanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: '残高',
+                            data: [],
+                            borderColor: '#2196F3',
+                            backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: '有効証拠金',
+                            data: [],
+                            borderColor: '#FF9800',
+                            backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { 
+                                font: { size: 10 },
+                                usePointStyle: true,
+                                padding: 10
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            ticks: { 
+                                font: { size: 9 },
+                                maxTicksLimit: 6
+                            }
+                        },
+                        y: {
+                            display: true,
+                            ticks: { 
+                                font: { size: 9 },
+                                callback: function(value) {
+                                    return '¥' + new Intl.NumberFormat('ja-JP').format(value);
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        point: { radius: 2, hoverRadius: 4 }
+                    }
+                }
+            });
+        }
+        
+        // チャートデータ更新 - Phase 2-A
+        function updateChart(accountData) {
+            if (!balanceChart || !accountData) return;
+            
+            const now = new Date();
+            const timeLabel = now.toLocaleTimeString('ja-JP', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            // データ追加
+            balanceData.push({
+                time: timeLabel,
+                balance: accountData.balance || 0,
+                equity: accountData.equity || 0,
+                timestamp: now
+            });
+            
+            // 24時間（最大144ポイント = 10分間隔）のデータのみ保持
+            if (balanceData.length > 144) {
+                balanceData.shift();
+            }
+            
+            // チャート更新
+            const labels = balanceData.map(d => d.time);
+            const balanceValues = balanceData.map(d => d.balance);
+            const equityValues = balanceData.map(d => d.equity);
+            
+            balanceChart.data.labels = labels;
+            balanceChart.data.datasets[0].data = balanceValues;
+            balanceChart.data.datasets[1].data = equityValues;
+            balanceChart.update('none'); // アニメーションなしで更新
+        }
+        
+        // 統計データ更新 - Phase 2-A
+        function updateStatistics(positions, accountData) {
+            try {
+                // 現在のポジションから統計計算
+                const currentProfit = positions.reduce((sum, pos) => sum + (pos.profit || 0), 0);
+                
+                // 簡易統計（実際の取引履歴が必要だが、デモ用に近似値）
+                const totalPositions = positions.length;
+                const profitablePositions = positions.filter(pos => (pos.profit || 0) > 0).length;
+                const winRate = totalPositions > 0 ? (profitablePositions / totalPositions * 100) : 0;
+                
+                // プロフィットファクター近似
+                const totalProfit = positions.filter(pos => (pos.profit || 0) > 0)
+                    .reduce((sum, pos) => sum + pos.profit, 0);
+                const totalLoss = Math.abs(positions.filter(pos => (pos.profit || 0) < 0)
+                    .reduce((sum, pos) => sum + pos.profit, 0));
+                const profitFactor = totalLoss > 0 ? (totalProfit / totalLoss) : (totalProfit > 0 ? 999 : 0);
+                
+                // ドローダウン計算（残高履歴から）
+                let maxDrawdown = 0;
+                if (balanceData.length > 1) {
+                    let peak = balanceData[0].balance;
+                    for (const data of balanceData) {
+                        if (data.balance > peak) peak = data.balance;
+                        const drawdown = ((peak - data.balance) / peak) * 100;
+                        if (drawdown > maxDrawdown) maxDrawdown = drawdown;
+                    }
+                }
+                
+                // 表示更新
+                document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
+                document.getElementById('profitFactor').textContent = profitFactor.toFixed(2);
+                document.getElementById('maxDrawdown').textContent = `${maxDrawdown.toFixed(1)}%`;
+                document.getElementById('totalTrades').textContent = totalPositions.toString();
+                
+                // 色分け
+                const winRateElement = document.getElementById('winRate');
+                winRateElement.className = 'account-value ' + (winRate >= 60 ? 'profit-positive' : winRate >= 40 ? '' : 'profit-negative');
+                
+                const pfElement = document.getElementById('profitFactor');
+                pfElement.className = 'account-value ' + (profitFactor >= 1.5 ? 'profit-positive' : profitFactor >= 1.0 ? '' : 'profit-negative');
+                
+                const ddElement = document.getElementById('maxDrawdown');
+                ddElement.className = 'account-value ' + (maxDrawdown <= 10 ? 'profit-positive' : maxDrawdown <= 25 ? '' : 'profit-negative');
+                
+            } catch (error) {
+                console.error('統計更新エラー:', error);
+            }
+        }
+        
         // 画面表示更新
         function updateDisplay() {
             if (!lastData) return;
@@ -397,6 +591,14 @@
                 
                 // 最終更新時刻
                 document.getElementById('lastUpdate').textContent = new Date(lastData.timestamp).toLocaleTimeString('ja-JP');
+                
+                // Phase 2-A: チャートと統計更新
+                if (lastData.account) {
+                    updateChart(lastData.account);
+                }
+                if (lastData.positions && lastData.account) {
+                    updateStatistics(lastData.positions, lastData.account);
+                }
                 
             } catch (error) {
                 console.error('画面更新エラー:', error);
