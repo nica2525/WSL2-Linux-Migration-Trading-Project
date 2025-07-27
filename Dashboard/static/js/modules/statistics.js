@@ -136,6 +136,9 @@ export class StatisticsManager {
             tradesEl.textContent = stats.totalTrades.toString();
             tradesEl.setAttribute('title', this.annotations.totalTrades);
         }
+        
+        // 統計信頼性表示を更新
+        this.updateReliabilityIndicator(stats.totalTrades);
     }
     
     /**

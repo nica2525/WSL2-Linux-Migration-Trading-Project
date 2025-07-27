@@ -34,6 +34,47 @@
         color: #2196F3 !important;
         background-color: rgba(33, 150, 243, 0.1) !important;
     }
+    
+    /* ツールチップ */
+    .info-icon {
+        font-size: 12px;
+        margin-left: 4px;
+        opacity: 0.7;
+        cursor: help;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .info-icon:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        white-space: nowrap;
+        z-index: 1000;
+        pointer-events: none;
+        max-width: 200px;
+        white-space: normal;
+        text-align: left;
+        line-height: 1.3;
+    }
+    
+    .info-icon:hover::before {
+        content: '';
+        position: absolute;
+        bottom: 94%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 4px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+    }
     </style>
     
     <title>JamesORB モバイルダッシュボード</title>
@@ -147,19 +188,31 @@
                     <div class="account-grid">
                         <div class="account-item">
                             <span class="account-value" id="winRate">-</span>
-                            <div class="account-label">勝率</div>
+                            <div class="account-label">
+                                勝率
+                                <span class="info-icon" data-tooltip="利益ポジション数 ÷ 総ポジション数 × 100。60%以上が良好とされます。">ℹ️</span>
+                            </div>
                         </div>
                         <div class="account-item">
                             <span class="account-value" id="profitFactor">-</span>
-                            <div class="account-label">プロフィットファクター</div>
+                            <div class="account-label">
+                                プロフィットファクター
+                                <span class="info-icon" data-tooltip="総利益 ÷ 総損失。1.0以上で利益、1.5以上が理想的です。">ℹ️</span>
+                            </div>
                         </div>
                         <div class="account-item">
                             <span class="account-value" id="maxDrawdown">-</span>
-                            <div class="account-label">最大ドローダウン</div>
+                            <div class="account-label">
+                                最大ドローダウン
+                                <span class="info-icon" data-tooltip="口座残高の最大下落率。10%以下が良好、25%超は危険です。">ℹ️</span>
+                            </div>
                         </div>
                         <div class="account-item">
                             <span class="account-value" id="totalTrades">-</span>
-                            <div class="account-label">総取引数</div>
+                            <div class="account-label">
+                                総取引数
+                                <span class="info-icon" data-tooltip="現在保有中のポジション数。リアルタイム簡易統計です。">ℹ️</span>
+                            </div>
                         </div>
                     </div>
                 </div>
