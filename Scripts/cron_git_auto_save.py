@@ -173,14 +173,29 @@ def main():
     if not auto_saver.verify_git_health():
         auto_saver.log_with_print("WARNING", "Git健全性に問題あり")
     
-    # 自動保存実行
-    success = auto_saver.run_auto_save_cycle()
+    # flock排他制御
+    import fcntl
+    lock_file = project_dir / ".cron_git_auto_save.lock"
     
-    # 終了コード設定（cron監視用）
-    exit_code = 0 if success else 1
-    auto_saver.log_with_print("INFO", f"処理終了 (exit={exit_code})")
-    
-    exit(exit_code)
+    try:
+        with open(lock_file, 'w') as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            
+            # 自動保存実行
+            success = auto_saver.run_auto_save_cycle()
+            
+            # 終了コード設定（cron監視用）
+            exit_code = 0 if success else 1
+            auto_saver.log_with_print("INFO", f"処理終了 (exit={exit_code})")
+            exit(exit_code)
+            
+    except BlockingIOError:
+        # 他のプロセスが実行中
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] 他プロセス実行中 - スキップ")
+        exit(0)
+    except Exception as e:
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] ロック取得エラー: {e}")
+        exit(1)
 
 
 if __name__ == "__main__":
