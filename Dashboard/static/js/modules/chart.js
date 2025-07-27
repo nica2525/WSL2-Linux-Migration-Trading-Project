@@ -57,7 +57,8 @@ export class ChartManager {
                         labels: { 
                             font: { size: 10 },
                             usePointStyle: true,
-                            padding: 10
+                            padding: 10,
+                            color: '#ffffff'
                         }
                     },
                     tooltip: {
@@ -75,13 +76,15 @@ export class ChartManager {
                         display: true,
                         ticks: { 
                             font: { size: 9 },
-                            maxTicksLimit: 6
+                            maxTicksLimit: 6,
+                            color: '#ffffff'
                         }
                     },
                     y: {
                         display: true,
                         ticks: { 
                             font: { size: 9 },
+                            color: '#ffffff',
                             callback: function(value) {
                                 return '¥' + new Intl.NumberFormat('ja-JP').format(value);
                             }
