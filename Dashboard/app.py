@@ -22,10 +22,17 @@ from lib.error_handler import ErrorHandler
 # Web フレームワーク・セキュリティ
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from flask_socketio import SocketIO, emit
-from flask_httpauth import HTTPBasicAuth
-import MetaTrader5 as mt5
+# MT5インポート（Wine環境対応）
+try:
+    import MetaTrader5 as mt5
+    MT5_AVAILABLE = True
+    print("✅ MetaTrader5パッケージが利用可能")
+except ImportError:
+    print("⚠️ MetaTrader5パッケージが利用できません - モックを使用")
+    import mt5_mock as mt5
+    MT5_AVAILABLE = False
 
-# セキュリティライブラリーのインポートエラーをサポート
+# セキュリティライブラリー
 try:
     from flask_httpauth import HTTPBasicAuth
 except ImportError:
