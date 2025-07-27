@@ -12,6 +12,18 @@ export class WebSocketManager {
         this.reconnectAttempts = 0;
         this.handlers = new Map();
         this.reconnectTimer = null;
+        
+        // 指数バックオフ設定
+        this.baseDelay = 1000;           // 初期遅延: 1秒
+        this.maxDelay = 30000;           // 最大遅延: 30秒
+        this.maxReconnectAttempts = 10;  // 最大再接続試行回数
+        
+        // ハートビート設定
+        this.heartbeatInterval = null;
+        this.heartbeatTimeout = null;
+        this.pingInterval = 25000;       // 25秒間隔でping
+        this.pongTimeout = 5000;         // pong応答待ち: 5秒
+        this.lastPongTime = null;
     }
     
     /**
@@ -38,7 +50,11 @@ export class WebSocketManager {
             this.isConnected = true;
             this.reconnectAttempts = 0;
             this.clearReconnectTimer();
+            this.lastPongTime = Date.now();
             this.emit('connected', { timestamp: new Date().toISOString() });
+            
+            // ハートビート開始
+            this.startHeartbeat();
             
             // 初期データ要求
             this.socket.emit('request_data');
@@ -47,6 +63,7 @@ export class WebSocketManager {
         this.socket.on('disconnect', () => {
             console.log('WebSocket接続切断');
             this.isConnected = false;
+            this.stopHeartbeat();
             this.emit('disconnected', { timestamp: new Date().toISOString() });
             this.scheduleReconnect();
         });
@@ -69,6 +86,18 @@ export class WebSocketManager {
         
         this.socket.on('reconnect_error', (error) => {
             console.error('再接続エラー:', error);
+        });
+        
+        // ハートビート関連のイベント
+        this.socket.on('pong', (data) => {
+            this.lastPongTime = Date.now();
+            console.log('Pong受信 - 接続健全');
+            
+            // タイムアウトをクリア
+            if (this.heartbeatTimeout) {
+                clearTimeout(this.heartbeatTimeout);
+                this.heartbeatTimeout = null;
+            }
         });
     }
     
@@ -167,25 +196,29 @@ export class WebSocketManager {
     }
     
     /**
-     * 再接続をスケジュール
+     * 再接続をスケジュール（指数バックオフ）
      */
     scheduleReconnect() {
         if (this.reconnectTimer) return;
         
-        if (this.reconnectAttempts >= config.socket.maxReconnectAttempts) {
+        if (this.reconnectAttempts >= this.maxReconnectAttempts) {
             console.error('最大再接続試行回数に到達');
             this.emit('reconnect_failed', { attempts: this.reconnectAttempts });
             return;
         }
         
         this.reconnectAttempts++;
-        const delay = config.socket.reconnectDelay * Math.min(this.reconnectAttempts, 5);
         
-        console.log(`${delay}ms後に再接続を試行 (${this.reconnectAttempts}回目)`);
+        // 指数バックオフによる遅延計算
+        const exponentialDelay = this.baseDelay * Math.pow(2, this.reconnectAttempts - 1);
+        const delay = Math.min(exponentialDelay, this.maxDelay);
+        
+        console.log(`${delay}ms後に再接続を試行 (${this.reconnectAttempts}/${this.maxReconnectAttempts}回目) - 指数バックオフ`);
         
         this.reconnectTimer = setTimeout(() => {
             this.reconnectTimer = null;
             if (!this.isConnected && this.socket) {
+                console.log('再接続実行中...');
                 this.socket.connect();
             }
         }, delay);
