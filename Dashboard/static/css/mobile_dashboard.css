@@ -85,7 +85,7 @@ body {
     border: none;
     font-size: 11px;
     font-weight: 600;
-    color: #666;
+    color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -166,7 +166,7 @@ body {
 
 .account-label {
     font-size: 11px;
-    color: #666;
+    color: #ffffff;
     margin-top: 4px;
 }
 
@@ -253,7 +253,7 @@ body {
 
 .position-details {
     font-size: 11px;
-    color: #666;
+    color: #ffffff;
     margin-top: 4px;
 }
 
@@ -268,7 +268,7 @@ body {
 
 .position-pips {
     font-size: 11px;
-    color: #666;
+    color: #ffffff;
 }
 
 /* 市場データ */
@@ -314,7 +314,7 @@ body {
 .empty-state {
     text-align: center;
     padding: 30px 20px;
-    color: #666;
+    color: #ffffff;
 }
 
 .empty-icon {
