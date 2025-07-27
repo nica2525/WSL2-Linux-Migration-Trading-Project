@@ -45,8 +45,8 @@ except ImportError:
 
 class SecurityConfig:
     """セキュリティ設定 - kiro設計準拠"""
-    BASIC_AUTH_USERNAME = os.getenv('DASHBOARD_USER', 'trader')
-    BASIC_AUTH_PASSWORD = os.getenv('DASHBOARD_PASS', 'jamesorb2025')
+    BASIC_AUTH_USERNAME = os.getenv('DASHBOARD_USER')
+    BASIC_AUTH_PASSWORD = os.getenv('DASHBOARD_PASS')
     SESSION_TIMEOUT = 3600  # 1時間
     
     @staticmethod
@@ -717,10 +717,16 @@ class TradingDashboard:
                 self.logger.info("MT5接続終了")
 
 if __name__ == '__main__':
+    # セキュリティチェック - Gemini査読指摘対応
+    if not SecurityConfig.BASIC_AUTH_USERNAME or not SecurityConfig.BASIC_AUTH_PASSWORD:
+        print("❌ エラー: 環境変数 DASHBOARD_USER と DASHBOARD_PASS が設定されていません")
+        print("例: export DASHBOARD_USER=trader && export DASHBOARD_PASS=secure_password")
+        sys.exit(1)
+    
     # kiro設計v1.0準拠の本格起動
     print("JamesORB監視ダッシュボード v1.0")
     print("kiro設計アーキテクチャ準拠")
-    print("認証情報: trader / jamesorb2025")
+    print(f"認証情報: {SecurityConfig.BASIC_AUTH_USERNAME} / ********")
     print("Tailscale VPN推奨")
     
     dashboard = TradingDashboard()
