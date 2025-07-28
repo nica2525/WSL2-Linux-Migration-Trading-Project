@@ -644,11 +644,15 @@
             }, 2000);
         });
         
-        // Phase 3: チャート期間選択イベント
-        chartPeriod.addEventListener('change', function() {
-            const selectedPeriod = this.value;
-            updateBalanceChart(selectedPeriod);
-        });
+        // Phase 3: チャート期間選択イベント（Gemini致命的エラー修正）
+        if (chartPeriod) {
+            chartPeriod.addEventListener('change', function() {
+                const selectedPeriod = this.value;
+                updateBalanceChart(selectedPeriod);
+            });
+        } else {
+            console.error('❌ 要素 #chartPeriod が見つかりません');
+        }
         
         // 定期データ更新
         setInterval(function() {
@@ -738,30 +742,43 @@
             });
         }
         
-        // Phase 3: 履歴データ更新
+        // Phase 3: 履歴データ更新（Gemini指摘による改良版）
         function updateBalanceChart(period) {
             if (!balanceChart) return;
             
-            // API経由で履歴データ取得
+            // API経由で履歴データ取得（HTTPエラーハンドリング強化）
             fetch(`/api/balance_history?period=${period}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    if (data && data.length > 0) {
-                        const labels = data.map(item => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        // パフォーマンス改善：3回のmapを1回のforEachに統合
+                        const labels = [];
+                        const balanceData = [];
+                        const equityData = [];
+                        
+                        data.forEach(item => {
                             const date = new Date(item.timestamp);
-                            return date.toLocaleDateString('ja-JP') + ' ' + date.toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
+                            labels.push(date.toLocaleDateString('ja-JP') + ' ' + date.toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'}));
+                            balanceData.push(item.balance);
+                            equityData.push(item.equity);
                         });
-                        const balanceData = data.map(item => item.balance);
-                        const equityData = data.map(item => item.equity);
                         
                         balanceChart.data.labels = labels;
                         balanceChart.data.datasets[0].data = balanceData;
                         balanceChart.data.datasets[1].data = equityData;
                         balanceChart.update();
+                    } else {
+                        console.log('指定期間のデータがありません');
                     }
                 })
                 .catch(error => {
                     console.error('履歴データ取得エラー:', error);
+                    // ユーザーへのエラー表示（将来的に実装）
                 });
         }
         
