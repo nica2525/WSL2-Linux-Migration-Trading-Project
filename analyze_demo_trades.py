@@ -5,23 +5,21 @@ HTMLレポートから詳細な取引データを抽出・分析
 """
 
 import re
-from bs4 import BeautifulSoup
 import html
 
 def analyze_demo_trades():
-    # HTMLファイルを読み込み、文字化け修正
+    # HTMLファイルを読み込み、UTF-16エンコーディングで処理
     try:
-        with open('MT5/Results/Live/Demo/ReportHistory-400078005.html', 'r', encoding='shift_jis', errors='ignore') as f:
+        with open('MT5/Results/Live/Demo/ReportHistory-400078005.html', 'r', encoding='utf-16-le', errors='ignore') as f:
             content = f.read()
     except FileNotFoundError:
         print("❌ HTMLファイルが見つかりません")
         return
 
-    # BeautifulSoupで解析
-    soup = BeautifulSoup(content, 'html.parser')
-
-    # テーブル行を抽出
-    rows = soup.find_all('tr', bgcolor=['#FFFFFF', '#F7F7F7'])
+    # 正規表現で取引行を抽出
+    # bgcolor="#FFFFFF"または"#F7F7F7"の行を探す
+    trade_pattern = r'<tr\s+bgcolor="#(?:FFFFFF|F7F7F7)"[^>]*>(.*?)</tr>'
+    rows = re.findall(trade_pattern, content, re.DOTALL | re.IGNORECASE)
 
     print('🏆 JamesORB デモ運用 - 取引履歴分析')
     print('=' * 60)
@@ -30,22 +28,32 @@ def analyze_demo_trades():
     total_profit = 0
 
     for i, row in enumerate(rows):
-        cells = row.find_all('td')
+        # 正規表現でTDセルを抽出
+        cell_pattern = r'<td[^>]*>(.*?)</td>'
+        cells = re.findall(cell_pattern, row, re.DOTALL | re.IGNORECASE)
+        
         if len(cells) >= 10:
             try:
-                date = cells[0].text.strip()
-                ticket = cells[1].text.strip()
-                symbol = cells[2].text.strip()
-                type_trade = cells[3].text.strip()
-                volume = float(cells[4].text.strip())
-                open_price = float(cells[5].text.strip())
-                sl = float(cells[6].text.strip()) if cells[6].text.strip() != '0' else None
-                tp = float(cells[7].text.strip()) if cells[7].text.strip() != '0' else None
-                close_time = cells[8].text.strip()
-                close_price = float(cells[9].text.strip())
+                # HTMLタグを除去し、テキストのみ抽出
+                def clean_text(text):
+                    text = re.sub(r'<[^>]+>', '', text)
+                    return text.strip()
+                
+                date = clean_text(cells[0])
+                ticket = clean_text(cells[1])
+                symbol = clean_text(cells[2])
+                type_trade = clean_text(cells[3])
+                volume = float(clean_text(cells[4]))
+                open_price = float(clean_text(cells[5]))
+                sl_text = clean_text(cells[6])
+                sl = float(sl_text) if sl_text != '0' and sl_text else None
+                tp_text = clean_text(cells[7])
+                tp = float(tp_text) if tp_text != '0' and tp_text else None
+                close_time = clean_text(cells[8])
+                close_price = float(clean_text(cells[9]))
                 
                 # 損益は最後のセルから取得
-                profit_text = cells[-1].text.strip()
+                profit_text = clean_text(cells[-1])
                 profit = float(profit_text) if profit_text.replace('-', '').replace('.', '').isdigit() else 0
                 
                 total_profit += profit
@@ -68,10 +76,13 @@ def analyze_demo_trades():
                     'open': open_price,
                     'close': close_price,
                     'volume': volume,
-                    'date': date
+                    'date': date,
+                    'sl': sl,
+                    'tp': tp
                 })
                 
             except (ValueError, IndexError) as e:
+                print(f"行解析エラー: {e}")
                 continue
 
     print(f'📊 JamesORB デモ運用 集計結果:')
