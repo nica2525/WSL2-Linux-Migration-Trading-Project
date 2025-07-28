@@ -17,7 +17,7 @@ except ImportError:
     import mt5_mock as mt5
     MT5_AVAILABLE = False
 from flask_socketio import emit
-# import numpy as np  # テスト時は無効化
+import numpy as np
 
 # ロギング設定
 logging.basicConfig(
@@ -353,52 +353,51 @@ class RealDataIntegrationManager:
             'profit_factor': gross_profit / gross_loss if gross_loss > 0 else 0,
             'expected_payoff': net_profit / len(trades) if trades else 0,
             'sharpe_ratio': self._calculate_sharpe_ratio(net_profits),
+            'sortino_ratio': self._calculate_sortino_ratio(net_profits),
+            'calmar_ratio': self._calculate_calmar_ratio(net_profits),
             'max_drawdown': self._calculate_max_drawdown(net_profits),
-            'consecutive_stats': self._calculate_consecutive_stats(net_profits)
+            'consecutive_stats': self._calculate_consecutive_stats(net_profits),
+            'volatility': self._calculate_volatility(net_profits),
+            'skewness': self._calculate_skewness(net_profits),
+            'kurtosis': self._calculate_kurtosis(net_profits)
         }
         
         return statistics
     
     def _calculate_sharpe_ratio(self, returns: List[float]) -> float:
-        """シャープレシオ計算"""
+        """シャープレシオ計算（NumPy高精度版）"""
         if len(returns) < 2:
             return 0
         
-        # 標準ライブラリで統計計算
-        mean_return = sum(returns) / len(returns)
-        variance = sum((x - mean_return) ** 2 for x in returns) / (len(returns) - 1)
-        std_return = variance ** 0.5
+        # NumPy配列に変換して高精度計算
+        returns_array = np.array(returns)
+        mean_return = np.mean(returns_array)
+        std_return = np.std(returns_array, ddof=1)
         
         if std_return == 0:
             return 0
         
         # 年率換算（252営業日）
-        sharpe = (mean_return / std_return) * (252 ** 0.5)
-        return round(sharpe, 3)
+        sharpe = (mean_return / std_return) * np.sqrt(252)
+        return round(float(sharpe), 3)
     
     def _calculate_max_drawdown(self, profits: List[float]) -> float:
-        """最大ドローダウン計算"""
+        """最大ドローダウン計算（NumPy高効率版）"""
         if not profits:
             return 0
         
-        cumulative = []
-        running_sum = 0
+        # NumPy配列で累積利益計算
+        profits_array = np.array(profits)
+        cumulative = np.cumsum(profits_array)
         
-        for profit in profits:
-            running_sum += profit
-            cumulative.append(running_sum)
+        # Rolling maximum計算
+        running_max = np.maximum.accumulate(cumulative)
         
-        peak = cumulative[0]
-        max_dd = 0
+        # ドローダウン = peak - current_value
+        drawdown = running_max - cumulative
+        max_dd = np.max(drawdown)
         
-        for value in cumulative:
-            if value > peak:
-                peak = value
-            drawdown = peak - value
-            if drawdown > max_dd:
-                max_dd = drawdown
-        
-        return round(max_dd, 2)
+        return round(float(max_dd), 2)
     
     def _calculate_consecutive_stats(self, profits: List[float]) -> Dict:
         """連勝・連敗統計"""
@@ -422,6 +421,82 @@ class RealDataIntegrationManager:
             'max_consecutive_wins': max_wins,
             'max_consecutive_losses': max_losses
         }
+    
+    def _calculate_sortino_ratio(self, returns: List[float]) -> float:
+        """ソルティノレシオ計算（下振れリスクのみ考慮）"""
+        if len(returns) < 2:
+            return 0
+        
+        returns_array = np.array(returns)
+        mean_return = np.mean(returns_array)
+        
+        # 負のリターンのみで下振れ偏差計算
+        negative_returns = returns_array[returns_array < 0]
+        if len(negative_returns) < 2:
+            return 0
+        
+        downside_deviation = np.std(negative_returns, ddof=1)
+        if downside_deviation == 0:
+            return 0
+        
+        sortino = (mean_return / downside_deviation) * np.sqrt(252)
+        return round(float(sortino), 3)
+    
+    def _calculate_calmar_ratio(self, returns: List[float]) -> float:
+        """カルマーレシオ計算（年率リターン/最大ドローダウン）"""
+        if len(returns) < 2:
+            return 0
+        
+        returns_array = np.array(returns)
+        annual_return = np.mean(returns_array) * 252
+        max_drawdown = self._calculate_max_drawdown(returns)
+        
+        if max_drawdown == 0:
+            return 0
+        
+        calmar = annual_return / max_drawdown
+        return round(float(calmar), 3)
+    
+    def _calculate_volatility(self, returns: List[float]) -> float:
+        """ボラティリティ計算（年率標準偏差）"""
+        if len(returns) < 2:
+            return 0
+        
+        returns_array = np.array(returns)
+        volatility = np.std(returns_array, ddof=1) * np.sqrt(252)
+        return round(float(volatility), 3)
+    
+    def _calculate_skewness(self, returns: List[float]) -> float:
+        """歪度計算（分布の非対称性）"""
+        if len(returns) < 3:
+            return 0
+        
+        returns_array = np.array(returns)
+        mean = np.mean(returns_array)
+        std = np.std(returns_array, ddof=1)
+        
+        if std == 0:
+            return 0
+        
+        # 歪度 = E[((X-μ)/σ)³]
+        skewness = np.mean(((returns_array - mean) / std) ** 3)
+        return round(float(skewness), 3)
+    
+    def _calculate_kurtosis(self, returns: List[float]) -> float:
+        """尖度計算（分布の尖り具合）"""
+        if len(returns) < 4:
+            return 0
+        
+        returns_array = np.array(returns)
+        mean = np.mean(returns_array)
+        std = np.std(returns_array, ddof=1)
+        
+        if std == 0:
+            return 0
+        
+        # 尖度 = E[((X-μ)/σ)⁴] - 3 (excess kurtosis)
+        kurtosis = np.mean(((returns_array - mean) / std) ** 4) - 3
+        return round(float(kurtosis), 3)
     
     def _cache_statistics(self, period_type: str, stats: Dict):
         """統計結果のキャッシュ保存"""
