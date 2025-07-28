@@ -16,7 +16,7 @@ bash "$PROJECT_DIR/Scripts/japanese_naming_checker.sh"
 echo ""
 
 # セッション開始記録（Git管理対象）
-echo "$CURRENT_TIME - セッション開始記憶確認実行" >> "$PROJECT_DIR/docs/MEMORY_EXECUTION_HISTORY.md"
+echo "- $CURRENT_TIME - セッション開始記憶確認実行" >> "$PROJECT_DIR/文書/管理/記憶実行履歴.md"
 
 echo "📋 記憶更新方式: 統合システム読み込み"
 echo "  🎯 CLAUDE_UNIFIED_SYSTEM.md → 全情報一元化"

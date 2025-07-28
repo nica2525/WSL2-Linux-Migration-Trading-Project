@@ -6,8 +6,8 @@ PROJECT_DIR="/home/trader/Trading-Development/2.ブレイクアウト手法プ�
 
 echo "📝 日本語化ルール遵守チェック実行中..."
 
-# 1. ルートディレクトリの英語MDファイルチェック
-ENGLISH_MD_IN_ROOT=$(find "$PROJECT_DIR" -maxdepth 1 -name "*.md" -not -name "README.md" -not -name "CLAUDE.md" | grep -E "[A-Z_]")
+# 1. ルートディレクトリの英語MDファイルチェック  
+ENGLISH_MD_IN_ROOT=$(find "$PROJECT_DIR" -maxdepth 1 -name "*.md" -not -name "README.md" -not -name "CLAUDE.md" -not -name "現在の品質状況.md" | grep -E "[A-Z_]")
 
 if [ -n "$ENGLISH_MD_IN_ROOT" ]; then
     echo "🚨 ルートディレクトリに英語名のMDファイルが発見されました:"
@@ -17,7 +17,7 @@ if [ -n "$ENGLISH_MD_IN_ROOT" ]; then
 fi
 
 # 2. 文書フォルダ外の文書ファイルチェック
-DOCS_OUTSIDE=$(find "$PROJECT_DIR" -name "*.md" -not -path "*/文書/*" -not -name "README.md" -not -name "CLAUDE.md" -not -name "現在の品質状況.md")
+DOCS_OUTSIDE=$(find "$PROJECT_DIR" -name "*.md" -not -path "*/文書/*" -not -path "*/node_modules/*" -not -path "*/miniconda3/*" -not -path "*/.wine/*" -not -name "README.md" -not -name "CLAUDE.md" -not -name "現在の品質状況.md")
 
 if [ -n "$DOCS_OUTSIDE" ]; then
     echo "📁 文書フォルダ外に配置されているMDファイル:"
