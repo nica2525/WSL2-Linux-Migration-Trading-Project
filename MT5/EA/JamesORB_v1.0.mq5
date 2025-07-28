@@ -7,7 +7,7 @@
 
 #property copyright "Copyright 2012,Clifford H. James"
 #property link      ""
-#property version   "2.01-tested"
+#property version   "2.02-RR-fixed"
 
 #include <Trade\Trade.mqh>
 
@@ -155,8 +155,8 @@ void generateDailyPendingOrders(double orbval)
    double tenEETLo = rates[0].low;
 
    double buyEntry = tenEETHi + orbval;
-   double SL_buy = buyEntry - (1.65 * orbval);
-   double TP_buy = buyEntry + orbval;
+   double SL_buy = buyEntry - (1.2 * orbval);
+   double TP_buy = buyEntry + (1.5 * orbval);
    double lotSize = 0.01;  // Fixed small lot size
 
    double current_bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
@@ -168,8 +168,8 @@ void generateDailyPendingOrders(double orbval)
    PlacePendingStopOrder(ORDER_TYPE_BUY_STOP, _Symbol, buyEntry, lotSize, SL_buy, TP_buy);
 
    double sellEntry = tenEETLo - orbval;
-   double SL_sell = sellEntry + (1.65 * orbval);
-   double TP_sell = sellEntry - orbval;
+   double SL_sell = sellEntry + (1.2 * orbval);
+   double TP_sell = sellEntry - (1.5 * orbval);
 
    // Sell side
    PlacePendingStopOrder(ORDER_TYPE_SELL_STOP, _Symbol, sellEntry, lotSize, SL_sell, TP_sell);
