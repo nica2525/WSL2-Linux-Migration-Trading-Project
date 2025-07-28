@@ -788,8 +788,7 @@ class TradingDashboard:
                 self.app,
                 host=host,
                 port=port,
-                debug=debug,
-                allow_unsafe_werkzeug=True
+                debug=debug
             )
             
         except Exception as e:
