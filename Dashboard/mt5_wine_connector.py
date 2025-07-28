@@ -8,6 +8,7 @@ import json
 import os
 import time
 import logging
+import glob
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 import sqlite3
@@ -168,45 +169,134 @@ class MT5WineConnector:
     def _request_account_export(self):
         """MQL5スクリプトで口座情報エクスポート要求"""
         try:
-            # MQL5スクリプトファイルに書き込み
-            script_content = '''
-//+------------------------------------------------------------------+
-//| Account Info Export Script                                        |
+            # MQL5スクリプトファイルパス
+            experts_path = os.path.expanduser("~/.wine/drive_c/Program Files/MetaTrader 5/MQL5/Scripts")
+            if not os.path.exists(experts_path):
+                experts_path = os.path.expanduser("~/.wine/drive_c/users/trader/AppData/Roaming/MetaQuotes/Terminal/*/MQL5/Scripts")
+                # Terminalディレクトリを実際に検索
+                terminal_dirs = glob.glob(os.path.expanduser("~/.wine/drive_c/users/trader/AppData/Roaming/MetaQuotes/Terminal/*/MQL5/Scripts"))
+                if terminal_dirs:
+                    experts_path = terminal_dirs[0]
+                else:
+                    # フォールバック: tempディレクトリを使用
+                    experts_path = os.path.expanduser("~/.wine/drive_c/temp")
+                    
+            os.makedirs(experts_path, exist_ok=True)
+            
+            # より実用的なMQL5スクリプト
+            script_content = '''//+------------------------------------------------------------------+
+//| Account Info Export Script - Real Implementation                  |
 //+------------------------------------------------------------------+
 void OnStart()
 {
     string filename = "C:\\\\temp\\\\account_info.json";
-    int handle = FileOpen(filename, FILE_WRITE|FILE_TXT);
+    int handle = FileOpen(filename, FILE_WRITE|FILE_TXT|FILE_ANSI);
     
     if(handle != INVALID_HANDLE)
     {
+        // 口座情報の完全取得
+        double balance = AccountInfoDouble(ACCOUNT_BALANCE);
+        double equity = AccountInfoDouble(ACCOUNT_EQUITY);
+        double margin = AccountInfoDouble(ACCOUNT_MARGIN);
+        double free_margin = AccountInfoDouble(ACCOUNT_FREEMARGIN);
+        double margin_level = AccountInfoDouble(ACCOUNT_MARGIN_LEVEL);
+        double profit = AccountInfoDouble(ACCOUNT_PROFIT);
+        
+        // サーバー情報
+        string server = AccountInfoString(ACCOUNT_SERVER);
+        long login = AccountInfoInteger(ACCOUNT_LOGIN);
+        string currency = AccountInfoString(ACCOUNT_CURRENCY);
+        
+        // JSON形式で出力
         string json = "{";
-        json += "\\"balance\\":" + DoubleToString(AccountInfoDouble(ACCOUNT_BALANCE), 2) + ",";
-        json += "\\"equity\\":" + DoubleToString(AccountInfoDouble(ACCOUNT_EQUITY), 2) + ",";
-        json += "\\"margin\\":" + DoubleToString(AccountInfoDouble(ACCOUNT_MARGIN), 2) + ",";
-        json += "\\"free_margin\\":" + DoubleToString(AccountInfoDouble(ACCOUNT_FREEMARGIN), 2) + ",";
-        json += "\\"margin_level\\":" + DoubleToString(AccountInfoDouble(ACCOUNT_MARGIN_LEVEL), 2) + ",";
-        json += "\\"profit\\":" + DoubleToString(AccountInfoDouble(ACCOUNT_PROFIT), 2) + ",";
-        json += "\\"server_time\\":\\"" + TimeToString(TimeCurrent()) + "\\"";
+        json += "\\"login\\":" + IntegerToString(login) + ",";
+        json += "\\"server\\":\\"" + server + "\\",";
+        json += "\\"currency\\":\\"" + currency + "\\",";
+        json += "\\"balance\\":" + DoubleToString(balance, 2) + ",";
+        json += "\\"equity\\":" + DoubleToString(equity, 2) + ",";
+        json += "\\"margin\\":" + DoubleToString(margin, 2) + ",";
+        json += "\\"free_margin\\":" + DoubleToString(free_margin, 2) + ",";
+        json += "\\"margin_level\\":" + DoubleToString(margin_level, 2) + ",";
+        json += "\\"profit\\":" + DoubleToString(profit, 2) + ",";
+        json += "\\"trade_allowed\\":" + (AccountInfoInteger(ACCOUNT_TRADE_ALLOWED) ? "true" : "false") + ",";
+        json += "\\"trade_expert\\":" + (AccountInfoInteger(ACCOUNT_TRADE_EXPERT) ? "true" : "false") + ",";
+        json += "\\"server_time\\":\\"" + TimeToString(TimeCurrent(), TIME_DATE|TIME_MINUTES|TIME_SECONDS) + "\\",";
+        json += "\\"local_time\\":\\"" + TimeToString(TimeLocal(), TIME_DATE|TIME_MINUTES|TIME_SECONDS) + "\\"";
         json += "}";
         
         FileWrite(handle, json);
         FileClose(handle);
-        Print("Account info exported to ", filename);
+        
+        Print("✅ Account info exported to ", filename);
+        Print("Balance: ", balance, ", Equity: ", equity);
     }
-}
-'''
+    else
+    {
+        Print("❌ Failed to create account export file");
+    }
+}'''
             
-            script_path = os.path.expanduser("~/.wine/drive_c/temp/account_export.mq5")
-            os.makedirs(os.path.dirname(script_path), exist_ok=True)
+            script_path = os.path.join(experts_path, "AccountExport.mq5")
             
             with open(script_path, 'w', encoding='utf-8') as f:
                 f.write(script_content)
                 
-            logger.info("口座情報エクスポートスクリプトを作成しました")
+            logger.info(f"口座情報エクスポートスクリプトを作成: {script_path}")
+            
+            # スクリプトコンパイル要求（MQL5コンパイラ経由）
+            self._compile_and_run_script("AccountExport")
             
         except Exception as e:
             logger.error(f"口座情報エクスポートスクリプト作成エラー: {e}")
+    
+    def _compile_and_run_script(self, script_name: str):
+        """MQL5スクリプトのコンパイル・実行"""
+        try:
+            # MetaEditor経由でコンパイル
+            metaeditor_path = os.path.expanduser("~/.wine/drive_c/Program Files/MetaTrader 5/metaeditor64.exe")
+            
+            if os.path.exists(metaeditor_path):
+                # コンパイルコマンド
+                compile_cmd = [
+                    self.wine_path,
+                    metaeditor_path,
+                    "/compile",
+                    f"Scripts\\{script_name}.mq5"
+                ]
+                
+                logger.info(f"MQL5スクリプトコンパイル開始: {script_name}")
+                
+                result = subprocess.run(
+                    compile_cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=30
+                )
+                
+                if result.returncode == 0:
+                    logger.info(f"✅ {script_name}コンパイル成功")
+                    
+                    # 実行要求（MT5ターミナル経由）
+                    time.sleep(2)  # コンパイル完了待機
+                    self._execute_compiled_script(script_name)
+                else:
+                    logger.error(f"❌ {script_name}コンパイル失敗: {result.stderr}")
+            else:
+                logger.warning("MetaEditor not found, script compilation skipped")
+                
+        except Exception as e:
+            logger.error(f"スクリプトコンパイルエラー: {e}")
+    
+    def _execute_compiled_script(self, script_name: str):
+        """コンパイル済みスクリプトの実行"""
+        try:
+            # MT5ターミナルでスクリプト実行
+            # 注意: 実際のMT5では手動実行が必要な場合があります
+            logger.info(f"スクリプト {script_name} の実行を要求しました")
+            logger.info("MT5ターミナルでScripts/{script_name}を手動実行してください")
+            
+        except Exception as e:
+            logger.error(f"スクリプト実行エラー: {e}")
     
     def _request_positions_export(self):
         """MQL5スクリプトでポジション情報エクスポート要求"""
