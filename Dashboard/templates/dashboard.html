@@ -396,6 +396,7 @@
         // Socket.IO イベントハンドラー
         socket.on('connect', function() {
             console.log('Socket.IO接続成功');
+            showNotification('WebSocket接続が成功しました', 'success');
             isConnected = true;
             updateConnectionStatus('接続中', 'warning');
             
@@ -405,6 +406,7 @@
         
         socket.on('disconnect', function() {
             console.log('Socket.IO接続切断');
+            showNotification('WebSocket接続が切断されました', 'warning');
             isConnected = false;
             updateConnectionStatus('接続切断', 'error');
         });
@@ -425,6 +427,7 @@
         
         socket.on('error', function(error) {
             console.error('エラー受信:', error);
+            showNotification(`サーバーエラー: ${error.message}`, 'error');
             showError('データ取得エラー: ' + error.message);
             updateConnectionStatus('エラー', 'error');
         });
@@ -453,6 +456,107 @@
         function hideLoading() {
             loadingScreen.style.display = 'none';
             dashboardContent.style.display = 'block';
+        }
+        
+        // 通知システム
+        function showNotification(message, type = 'info', duration = 5000) {
+            // 通知コンテナの取得または作成
+            let notificationContainer = document.getElementById('notification-container');
+            if (!notificationContainer) {
+                notificationContainer = document.createElement('div');
+                notificationContainer.id = 'notification-container';
+                notificationContainer.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 10000;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(notificationContainer);
+            }
+            
+            // 通知要素の作成
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.style.cssText = `
+                background: ${getNotificationColor(type)};
+                color: white;
+                padding: 12px 16px;
+                margin-bottom: 10px;
+                border-radius: 6px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-left: 4px solid ${getNotificationBorderColor(type)};
+                font-size: 14px;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+                position: relative;
+                padding-right: 40px;
+            `;
+            
+            // 閉じるボタン
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '×';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 18px;
+                cursor: pointer;
+                padding: 0;
+                width: 20px;
+                height: 20px;
+                line-height: 1;
+            `;
+            closeBtn.onclick = () => removeNotification(notification);
+            
+            notification.innerHTML = message;
+            notification.appendChild(closeBtn);
+            notificationContainer.appendChild(notification);
+            
+            // アニメーション
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // 自動削除
+            if (duration > 0) {
+                setTimeout(() => removeNotification(notification), duration);
+            }
+        }
+        
+        function removeNotification(notification) {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }
+        
+        function getNotificationColor(type) {
+            const colors = {
+                success: '#10b981',
+                error: '#ef4444',
+                warning: '#f59e0b',
+                info: '#3b82f6'
+            };
+            return colors[type] || colors.info;
+        }
+        
+        function getNotificationBorderColor(type) {
+            const colors = {
+                success: '#059669',
+                error: '#dc2626',
+                warning: '#d97706',
+                info: '#2563eb'
+            };
+            return colors[type] || colors.info;
         }
         
         function formatNumber(num, decimals = 2) {
@@ -507,6 +611,7 @@
                 
             } catch (error) {
                 console.error('ダッシュボード更新エラー:', error);
+                showNotification(`ダッシュボード更新に失敗: ${error.message}`, 'error');
                 showError('データ表示エラー: ' + error.message);
             }
         }
@@ -652,6 +757,7 @@
             });
         } else {
             console.error('❌ 要素 #chartPeriod が見つかりません');
+            showNotification('チャート期間選択機能が利用できません', 'error');
         }
         
         // 定期データ更新
@@ -778,6 +884,7 @@
                 })
                 .catch(error => {
                     console.error('履歴データ取得エラー:', error);
+                    showNotification(`履歴データ取得に失敗: ${error.message}`, 'error');
                     // ユーザーへのエラー表示（将来的に実装）
                 });
         }

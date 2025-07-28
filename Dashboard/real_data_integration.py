@@ -9,22 +9,28 @@ import time
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
+
+# ロギング設定
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # MT5インポート（Wine環境対応）
 try:
     import MetaTrader5 as mt5
     MT5_AVAILABLE = True
+    logger.info("✅ MetaTrader5パッケージを使用")
 except ImportError:
-    import mt5_mock as mt5
-    MT5_AVAILABLE = False
+    try:
+        import mt5_wine_connector as mt5
+        MT5_AVAILABLE = True
+        logger.info("✅ Wine MT5コネクターを使用")
+    except ImportError:
+        import mt5_mock as mt5
+        MT5_AVAILABLE = False
+        logger.warning("⚠️ MT5モックを使用 - 実データ接続不可")
 from flask_socketio import emit
 import numpy as np
-
-# ロギング設定
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger('RealDataIntegration')
 
 
 class RealDataIntegrationManager:
