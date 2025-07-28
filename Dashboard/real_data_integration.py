@@ -29,7 +29,12 @@ except ImportError:
         import mt5_mock as mt5
         MT5_AVAILABLE = False
         logger.warning("⚠️ MT5モックを使用 - 実データ接続不可")
-from flask_socketio import emit
+try:
+    from flask_socketio import emit
+except ImportError:
+    # テスト時はemit関数をモック
+    def emit(*args, **kwargs):
+        pass
 import numpy as np
 
 
