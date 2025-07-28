@@ -1,0 +1,36 @@
+2025.07.28 16:59:59.671	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.16747/1.1675200000000001
+2025.07.28 16:59:59.917	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607383
+2025.07.28 17:00:00.116	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607385
+2025.07.28 17:04:59.540	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.16744/1.16751
+2025.07.28 17:04:59.742	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607411
+2025.07.28 17:04:59.948	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607412
+2025.07.28 17:09:59.734	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.16768/1.16775
+2025.07.28 17:09:59.937	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607446
+2025.07.28 17:10:00.149	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607447
+2025.07.28 17:14:59.533	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.1678/1.16785
+2025.07.28 17:14:59.738	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607472
+2025.07.28 17:14:59.938	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607473
+2025.07.28 17:19:59.913	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.1683/1.16835
+2025.07.28 17:20:00.120	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607484
+2025.07.28 17:20:00.327	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607485
+2025.07.28 17:24:59.652	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.1688/1.16886
+2025.07.28 17:24:59.850	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607495
+2025.07.28 17:25:00.049	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607496
+2025.07.28 17:29:59.559	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.1686/1.16865
+2025.07.28 17:29:59.758	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607525
+2025.07.28 17:29:59.956	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607526
+2025.07.28 17:35:00.012	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.1688399999999999/1.16889
+2025.07.28 17:35:00.214	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607546
+2025.07.28 17:35:00.427	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607547
+2025.07.28 17:39:59.836	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.16839/1.16844
+2025.07.28 17:40:00.035	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607553
+2025.07.28 17:40:00.234	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607554
+2025.07.28 17:44:59.727	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.1678/1.16785
+2025.07.28 17:44:59.929	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607584
+2025.07.28 17:45:00.133	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607585
+2025.07.28 17:49:59.827	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.1675/1.16755
+2025.07.28 17:50:00.028	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607597
+2025.07.28 17:50:00.229	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607598
+2025.07.28 17:54:59.652	JamesORB_Standalone (EURUSD,M5)	Alert: Current Price: 1.16742/1.16747
+2025.07.28 17:54:59.861	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607618
+2025.07.28 17:55:00.060	JamesORB_Standalone (EURUSD,M5)	Alert: Order placed successfully. Ticket: 7607620

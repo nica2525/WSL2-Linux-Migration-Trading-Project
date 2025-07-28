@@ -1,0 +1,86 @@
+2025.07.28 16:59:59.718	Trades	'400078005': buy stop 0.01 EURUSD at 1.16925 sl: 1.16823 tp: 1.16987
+2025.07.28 16:59:59.917	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16925 sl: 1.16823 tp: 1.16987
+2025.07.28 16:59:59.917	Trades	'400078005': order #7607383 buy stop 0.01 / 0.01 EURUSD at 1.16925 done in 201.133 ms
+2025.07.28 16:59:59.917	Trades	'400078005': sell stop 0.01 EURUSD at 1.16642 sl: 1.16744 tp: 1.16580
+2025.07.28 17:00:00.115	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16642 sl: 1.16744 tp: 1.16580
+2025.07.28 17:00:00.115	Trades	'400078005': order #7607385 sell stop 0.01 / 0.01 EURUSD at 1.16642 done in 198.420 ms
+2025.07.28 17:04:59.540	Trades	'400078005': buy stop 0.01 EURUSD at 1.16884 sl: 1.16780 tp: 1.16946
+2025.07.28 17:04:59.739	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16884 sl: 1.16780 tp: 1.16946
+2025.07.28 17:04:59.740	Trades	'400078005': order #7607411 buy stop 0.01 / 0.01 EURUSD at 1.16884 done in 199.651 ms
+2025.07.28 17:04:59.743	Trades	'400078005': sell stop 0.01 EURUSD at 1.16669 sl: 1.16773 tp: 1.16607
+2025.07.28 17:04:59.945	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16669 sl: 1.16773 tp: 1.16607
+2025.07.28 17:04:59.946	Trades	'400078005': order #7607412 sell stop 0.01 / 0.01 EURUSD at 1.16669 done in 203.141 ms
+2025.07.28 17:09:59.734	Trades	'400078005': buy stop 0.01 EURUSD at 1.16852 sl: 1.16748 tp: 1.16915
+2025.07.28 17:09:59.937	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16852 sl: 1.16748 tp: 1.16915
+2025.07.28 17:09:59.937	Trades	'400078005': order #7607446 buy stop 0.01 / 0.01 EURUSD at 1.16852 done in 203.517 ms
+2025.07.28 17:09:59.937	Trades	'400078005': sell stop 0.01 EURUSD at 1.16675 sl: 1.16779 tp: 1.16612
+2025.07.28 17:10:00.136	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16675 sl: 1.16779 tp: 1.16612
+2025.07.28 17:10:00.149	Trades	'400078005': order #7607447 sell stop 0.01 / 0.01 EURUSD at 1.16675 done in 211.626 ms
+2025.07.28 17:14:59.533	Trades	'400078005': buy stop 0.01 EURUSD at 1.16873 sl: 1.16769 tp: 1.16936
+2025.07.28 17:14:59.735	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16873 sl: 1.16769 tp: 1.16936
+2025.07.28 17:14:59.736	Trades	'400078005': order #7607472 buy stop 0.01 / 0.01 EURUSD at 1.16873 done in 203.855 ms
+2025.07.28 17:14:59.739	Trades	'400078005': sell stop 0.01 EURUSD at 1.16703 sl: 1.16807 tp: 1.16640
+2025.07.28 17:14:59.938	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16703 sl: 1.16807 tp: 1.16640
+2025.07.28 17:14:59.938	Trades	'400078005': order #7607473 sell stop 0.01 / 0.01 EURUSD at 1.16703 done in 199.643 ms
+2025.07.28 17:19:59.913	Trades	'400078005': buy stop 0.01 EURUSD at 1.16898 sl: 1.16793 tp: 1.16962
+2025.07.28 17:20:00.112	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16898 sl: 1.16793 tp: 1.16962
+2025.07.28 17:20:00.120	Trades	'400078005': order #7607484 buy stop 0.01 / 0.01 EURUSD at 1.16898 done in 206.655 ms
+2025.07.28 17:20:00.120	Trades	'400078005': sell stop 0.01 EURUSD at 1.16704 sl: 1.16809 tp: 1.16640
+2025.07.28 17:20:00.323	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16704 sl: 1.16809 tp: 1.16640
+2025.07.28 17:20:00.327	Trades	'400078005': order #7607485 sell stop 0.01 / 0.01 EURUSD at 1.16704 done in 206.830 ms
+2025.07.28 17:20:55.075	Trades	'400078005': deal #6050388 buy 0.01 EURUSD at 1.16852 done (based on order #7607446)
+2025.07.28 17:22:55.517	Trades	'400078005': deal #6050393 buy 0.01 EURUSD at 1.16873 done (based on order #7607472)
+2025.07.28 17:24:55.349	Trades	'400078005': deal #6050397 buy 0.01 EURUSD at 1.16884 done (based on order #7607411)
+2025.07.28 17:24:59.652	Trades	'400078005': buy stop 0.01 EURUSD at 1.16943 sl: 1.16837 tp: 1.17007
+2025.07.28 17:24:59.850	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16943 sl: 1.16837 tp: 1.17007
+2025.07.28 17:24:59.850	Trades	'400078005': order #7607495 buy stop 0.01 / 0.01 EURUSD at 1.16943 done in 198.399 ms
+2025.07.28 17:24:59.850	Trades	'400078005': sell stop 0.01 EURUSD at 1.16754 sl: 1.16860 tp: 1.16690
+2025.07.28 17:25:00.048	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16754 sl: 1.16860 tp: 1.16690
+2025.07.28 17:25:00.049	Trades	'400078005': order #7607496 sell stop 0.01 / 0.01 EURUSD at 1.16754 done in 198.772 ms
+2025.07.28 17:29:59.559	Trades	'400078005': buy stop 0.01 EURUSD at 1.16944 sl: 1.16838 tp: 1.17008
+2025.07.28 17:29:59.757	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16944 sl: 1.16838 tp: 1.17008
+2025.07.28 17:29:59.757	Trades	'400078005': order #7607525 buy stop 0.01 / 0.01 EURUSD at 1.16944 done in 198.690 ms
+2025.07.28 17:29:59.758	Trades	'400078005': sell stop 0.01 EURUSD at 1.16780 sl: 1.16886 tp: 1.16716
+2025.07.28 17:29:59.956	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16780 sl: 1.16886 tp: 1.16716
+2025.07.28 17:29:59.956	Trades	'400078005': order #7607526 sell stop 0.01 / 0.01 EURUSD at 1.16780 done in 197.963 ms
+2025.07.28 17:35:00.012	Trades	'400078005': buy stop 0.01 EURUSD at 1.16954 sl: 1.16848 tp: 1.17018
+2025.07.28 17:35:00.212	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16954 sl: 1.16848 tp: 1.17018
+2025.07.28 17:35:00.213	Trades	'400078005': order #7607546 buy stop 0.01 / 0.01 EURUSD at 1.16954 done in 201.299 ms
+2025.07.28 17:35:00.215	Trades	'400078005': sell stop 0.01 EURUSD at 1.16794 sl: 1.16900 tp: 1.16730
+2025.07.28 17:35:00.423	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16794 sl: 1.16900 tp: 1.16730
+2025.07.28 17:35:00.424	Trades	'400078005': order #7607547 sell stop 0.01 / 0.01 EURUSD at 1.16794 done in 209.342 ms
+2025.07.28 17:35:23.206	Trades	'400078005': deal #6050442 buy 0.01 EURUSD at 1.16898 done (based on order #7607484)
+2025.07.28 17:39:59.837	Trades	'400078005': buy stop 0.01 EURUSD at 1.16965 sl: 1.16858 tp: 1.17030
+2025.07.28 17:40:00.034	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16965 sl: 1.16858 tp: 1.17030
+2025.07.28 17:40:00.035	Trades	'400078005': order #7607553 buy stop 0.01 / 0.01 EURUSD at 1.16965 done in 198.017 ms
+2025.07.28 17:40:00.035	Trades	'400078005': sell stop 0.01 EURUSD at 1.16768 sl: 1.16875 tp: 1.16703
+2025.07.28 17:40:00.233	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16768 sl: 1.16875 tp: 1.16703
+2025.07.28 17:40:00.234	Trades	'400078005': order #7607554 sell stop 0.01 / 0.01 EURUSD at 1.16768 done in 198.865 ms
+2025.07.28 17:41:35.337	Trades	'400078005': deal #6050453 sell 0.01 EURUSD at 1.16794 done (based on order #7607547)
+2025.07.28 17:41:36.493	Trades	'400078005': deal #6050455 sell 0.01 EURUSD at 1.16793 done (based on order #7607565)
+2025.07.28 17:42:26.193	Trades	'400078005': deal #6050456 sell 0.01 EURUSD at 1.16780 done (based on order #7607566)
+2025.07.28 17:42:26.195	Trades	'400078005': deal #6050457 sell 0.01 EURUSD at 1.16780 done (based on order #7607526)
+2025.07.28 17:42:26.848	Trades	'400078005': deal #6050458 sell 0.01 EURUSD at 1.16769 done (based on order #7607567)
+2025.07.28 17:42:31.486	Trades	'400078005': deal #6050459 sell 0.01 EURUSD at 1.16768 done (based on order #7607554)
+2025.07.28 17:44:59.727	Trades	'400078005': buy stop 0.01 EURUSD at 1.16905 sl: 1.16796 tp: 1.16971
+2025.07.28 17:44:59.926	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16905 sl: 1.16796 tp: 1.16971
+2025.07.28 17:44:59.927	Trades	'400078005': order #7607584 buy stop 0.01 / 0.01 EURUSD at 1.16905 done in 200.023 ms
+2025.07.28 17:44:59.929	Trades	'400078005': sell stop 0.01 EURUSD at 1.16691 sl: 1.16800 tp: 1.16625
+2025.07.28 17:45:00.133	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16691 sl: 1.16800 tp: 1.16625
+2025.07.28 17:45:00.133	Trades	'400078005': order #7607585 sell stop 0.01 / 0.01 EURUSD at 1.16691 done in 204.610 ms
+2025.07.28 17:49:53.700	Trades	'400078005': deal #6050488 sell 0.01 EURUSD at 1.16754 done (based on order #7607496)
+2025.07.28 17:49:59.827	Trades	'400078005': buy stop 0.01 EURUSD at 1.16846 sl: 1.16737 tp: 1.16912
+2025.07.28 17:50:00.026	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16846 sl: 1.16737 tp: 1.16912
+2025.07.28 17:50:00.028	Trades	'400078005': order #7607597 buy stop 0.01 / 0.01 EURUSD at 1.16846 done in 200.336 ms
+2025.07.28 17:50:00.028	Trades	'400078005': sell stop 0.01 EURUSD at 1.16684 sl: 1.16793 tp: 1.16618
+2025.07.28 17:50:00.228	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16684 sl: 1.16793 tp: 1.16618
+2025.07.28 17:50:00.229	Trades	'400078005': order #7607598 sell stop 0.01 / 0.01 EURUSD at 1.16684 done in 201.190 ms
+2025.07.28 17:50:03.426	Trades	'400078005': deal #6050489 sell 0.01 EURUSD at 1.16748 done (based on order #7607599)
+2025.07.28 17:53:18.299	Trades	'400078005': deal #6050504 buy 0.01 EURUSD at 1.16730 done (based on order #7607612)
+2025.07.28 17:53:24.405	Trades	'400078005': deal #6050507 buy 0.01 EURUSD at 1.16716 done (based on order #7607615)
+2025.07.28 17:54:59.652	Trades	'400078005': buy stop 0.01 EURUSD at 1.16830 sl: 1.16721 tp: 1.16896
+2025.07.28 17:54:59.859	Trades	'400078005': accepted buy stop 0.01 EURUSD at 1.16830 sl: 1.16721 tp: 1.16896
+2025.07.28 17:54:59.861	Trades	'400078005': order #7607618 buy stop 0.01 / 0.01 EURUSD at 1.16830 done in 209.140 ms
+2025.07.28 17:54:59.861	Trades	'400078005': sell stop 0.01 EURUSD at 1.16641 sl: 1.16750 tp: 1.16575
+2025.07.28 17:55:00.060	Trades	'400078005': accepted sell stop 0.01 EURUSD at 1.16641 sl: 1.16750 tp: 1.16575
+2025.07.28 17:55:00.060	Trades	'400078005': order #7607620 sell stop 0.01 / 0.01 EURUSD at 1.16641 done in 199.257 ms
