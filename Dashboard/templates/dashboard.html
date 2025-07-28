@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JamesORB取引ダッシュボード</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Phase 1 Trading Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -15,14 +13,8 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: #fff;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            background-color: #1e1e1e;
+            color: #ffffff;
             padding: 20px;
         }
         
@@ -32,883 +24,298 @@
         }
         
         .header h1 {
-            font-size: 2.5rem;
+            color: #4CAF50;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
-        .status-indicator {
+        .status {
             display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 2s infinite;
-        }
-        
-        .status-connected { background-color: #4CAF50; }
-        .status-warning { background-color: #FF9800; }
-        .status-error { background-color: #f44336; }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            padding: 5px 15px;
             border-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .status.connected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .status.disconnected {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .account-summary {
+            background-color: #2d2d2d;
+            border-radius: 10px;
             padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        
-        .card-icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
-        }
-        
-        .card-content {
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-        
-        .metric {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .metric:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        
-        .metric-label {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .metric-value {
-            font-weight: bold;
-            color: #fff;
-        }
-        
-        .profit-positive { color: #4CAF50; }
-        .profit-negative { color: #f44336; }
-        .profit-neutral { color: #FFC107; }
-        
-        .positions-grid {
+            margin-bottom: 30px;
             display: grid;
-            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
         }
         
-        .position-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 4px solid #2196F3;
+        .account-item {
+            text-align: center;
         }
         
-        .position-item.buy {
-            border-left-color: #4CAF50;
-        }
-        
-        .position-item.sell {
-            border-left-color: #f44336;
-        }
-        
-        .position-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
+        .account-item .label {
+            color: #cccccc;
+            font-size: 14px;
             margin-bottom: 5px;
         }
         
-        .position-details {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.8);
+        .account-item .value {
+            font-size: 24px;
+            font-weight: bold;
         }
         
-        .controls {
+        .profit-positive {
+            color: #4CAF50;
+        }
+        
+        .profit-negative {
+            color: #f44336;
+        }
+        
+        .positions-section h2 {
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+        
+        .positions-table {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #404040;
+        }
+        
+        th {
+            background-color: #404040;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        tr:hover {
+            background-color: #333333;
+        }
+        
+        .position-buy {
+            color: #4CAF50;
+        }
+        
+        .position-sell {
+            color: #f44336;
+        }
+        
+        .no-positions {
             text-align: center;
-            margin-top: 30px;
+            padding: 40px;
+            color: #cccccc;
+            font-style: italic;
         }
         
-        .btn {
-            background: linear-gradient(45deg, #2196F3, #21CBF3);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin: 0 10px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(45deg, #FF5722, #FF8A65);
-        }
-        
-        .btn-secondary:hover {
-            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
-        }
-        
-        .timestamp {
+        .last-update {
             text-align: center;
             margin-top: 20px;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.9rem;
+            color: #888888;
+            font-size: 12px;
         }
         
         .error-message {
-            background: rgba(244, 67, 54, 0.2);
-            border: 1px solid #f44336;
-            color: #fff;
+            background-color: #f44336;
+            color: white;
             padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            text-align: center;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 1.1rem;
-        }
-        
-        .spinner {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* レスポンシブデザイン */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .card {
-                padding: 15px;
-            }
-            
-            .btn {
-                display: block;
-                width: 100%;
-                margin: 5px 0;
-            }
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>
-                <span id="statusIndicator" class="status-indicator status-warning"></span>
-                JamesORB取引ダッシュボード
-            </h1>
-            <p id="connectionStatus">接続中...</p>
+    <div class="header">
+        <h1>Phase 1 Trading Dashboard</h1>
+        <p>リアルタイムポジション監視</p>
+        <div id="connection-status" class="status disconnected">接続中...</div>
+    </div>
+    
+    <div id="error-message" class="error-message"></div>
+    
+    <div class="account-summary">
+        <div class="account-item">
+            <div class="label">残高</div>
+            <div id="balance" class="value">---</div>
         </div>
-        
-        <div id="loadingScreen" class="loading">
-            <div class="spinner"></div>
-            データを読み込み中...
+        <div class="account-item">
+            <div class="label">有効証拠金</div>
+            <div id="equity" class="value">---</div>
         </div>
-        
-        <div id="errorContainer"></div>
-        
-        <div id="dashboardContent" style="display: none;">
-            <div class="grid">
-                <!-- システム状態カード -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-icon">🖥️</span>
-                        システム状態
-                    </div>
-                    <div class="card-content" id="systemStatus">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            読み込み中...
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- EA状態カード -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-icon">🤖</span>
-                        EA稼働状況
-                    </div>
-                    <div class="card-content" id="eaStatus">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            読み込み中...
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 市場データカード -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-icon">📈</span>
-                        市場データ
-                    </div>
-                    <div class="card-content" id="marketData">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            読み込み中...
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- アカウント情報カード -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-icon">💰</span>
-                        アカウント情報
-                    </div>
-                    <div class="card-content" id="accountInfo">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            読み込み中...
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Phase 3: 履歴チャート表示 -->
-            <div class="card" style="min-height: 400px;">
-                <div class="card-header">
-                    <span class="card-icon">📈</span>
-                    残高履歴チャート
-                    <div style="margin-left: auto;">
-                        <select id="chartPeriod" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 4px; padding: 5px;">
-                            <option value="1h">1時間</option>
-                            <option value="6h">6時間</option>
-                            <option value="24h" selected>24時間</option>
-                            <option value="7d">7日間</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="card-content" style="position: relative; height: 300px;">
-                    <canvas id="balanceChart"></canvas>
-                </div>
-            </div>
-
-            <!-- ポジション一覧 -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-icon">📊</span>
-                    ポジション一覧
-                </div>
-                <div class="card-content">
-                    <div id="positionsList">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            ポジション情報を読み込み中...
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="controls">
-            <button id="refreshBtn" class="btn">🔄 データ更新</button>
-            <a href="/mobile" class="btn btn-secondary">📱 モバイル版</a>
-        </div>
-        
-        <div class="timestamp" id="lastUpdate">
-            最終更新: --
+        <div class="account-item">
+            <div class="label">合計損益</div>
+            <div id="total-profit" class="value">---</div>
         </div>
     </div>
+    
+    <div class="positions-section">
+        <h2>オープンポジション</h2>
+        <div class="positions-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>通貨ペア</th>
+                        <th>タイプ</th>
+                        <th>ロット</th>
+                        <th>損益</th>
+                        <th>オープン価格</th>
+                        <th>現在価格</th>
+                        <th>オープン時刻</th>
+                    </tr>
+                </thead>
+                <tbody id="positions-tbody">
+                    <tr class="no-positions">
+                        <td colspan="7">データを読み込み中...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="last-update">
+        最終更新: <span id="last-update-time">---</span>
+    </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        // Socket.IO接続
+        // WebSocket接続
         const socket = io();
         
         // DOM要素
-        const statusIndicator = document.getElementById('statusIndicator');
-        const connectionStatus = document.getElementById('connectionStatus');
-        const loadingScreen = document.getElementById('loadingScreen');
-        const dashboardContent = document.getElementById('dashboardContent');
-        const errorContainer = document.getElementById('errorContainer');
-        const refreshBtn = document.getElementById('refreshBtn');
-        const lastUpdate = document.getElementById('lastUpdate');
-        const chartPeriod = document.getElementById('chartPeriod');
+        const connectionStatus = document.getElementById('connection-status');
+        const errorMessage = document.getElementById('error-message');
+        const balanceEl = document.getElementById('balance');
+        const equityEl = document.getElementById('equity');
+        const totalProfitEl = document.getElementById('total-profit');
+        const positionsTbody = document.getElementById('positions-tbody');
+        const lastUpdateTime = document.getElementById('last-update-time');
         
         // 接続状態管理
-        let isConnected = false;
-        let lastDataTime = null;
-        
-        // Phase 3: チャート管理
-        let balanceChart = null;
-        
-        // Socket.IO イベントハンドラー
         socket.on('connect', function() {
-            console.log('Socket.IO接続成功');
-            showNotification('WebSocket接続が成功しました', 'success');
-            isConnected = true;
-            updateConnectionStatus('接続中', 'warning');
+            connectionStatus.textContent = '接続済み';
+            connectionStatus.className = 'status connected';
+            hideError();
             
-            // 初回データ要求
-            socket.emit('request_data');
+            // 最新データを要求
+            socket.emit('request_data', {});
         });
         
         socket.on('disconnect', function() {
-            console.log('Socket.IO接続切断');
-            showNotification('WebSocket接続が切断されました', 'warning');
-            isConnected = false;
-            updateConnectionStatus('接続切断', 'error');
+            connectionStatus.textContent = '切断';
+            connectionStatus.className = 'status disconnected';
         });
         
-        socket.on('connected', function(data) {
-            console.log('サーバー接続確認:', data);
-            updateConnectionStatus('接続済み', 'connected');
+        // ポジションデータ更新
+        socket.on('position_update', function(data) {
+            updateAccountSummary(data.account);
+            updatePositionsTable(data.positions);
+            updateLastUpdateTime(data.timestamp);
         });
         
-        socket.on('market_data', function(data) {
-            console.log('データ受信:', data);
-            hideError();
-            hideLoading();
-            updateDashboard(data);
-            lastDataTime = new Date();
-            updateConnectionStatus('稼働中', 'connected');
-        });
-        
+        // エラーハンドリング
         socket.on('error', function(error) {
-            console.error('エラー受信:', error);
-            showNotification(`サーバーエラー: ${error.message}`, 'error');
-            showError('データ取得エラー: ' + error.message);
-            updateConnectionStatus('エラー', 'error');
+            showError(error.message);
         });
         
-        socket.on('notification', function(notification) {
-            console.log('通知:', notification);
-            if (notification.type === 'success') {
-                updateConnectionStatus(notification.message, 'connected');
-            }
-        });
-        
-        // ユーザー向け通知システム
-        socket.on('user_notification', function(notification) {
-            console.log('ユーザー通知:', notification);
-            showNotification(
-                notification.message,
-                notification.type || 'info',
-                notification.duration || 5000
-            );
-        });
-        
-        // UI更新関数
-        function updateConnectionStatus(message, status) {
-            connectionStatus.textContent = message;
-            statusIndicator.className = `status-indicator status-${status}`;
-        }
-        
-        function showError(message) {
-            errorContainer.innerHTML = `<div class="error-message">${message}</div>`;
-        }
-        
-        function hideError() {
-            errorContainer.innerHTML = '';
-        }
-        
-        function hideLoading() {
-            loadingScreen.style.display = 'none';
-            dashboardContent.style.display = 'block';
-        }
-        
-        // 通知システム
-        function showNotification(message, type = 'info', duration = 5000) {
-            // 通知コンテナの取得または作成
-            let notificationContainer = document.getElementById('notification-container');
-            if (!notificationContainer) {
-                notificationContainer = document.createElement('div');
-                notificationContainer.id = 'notification-container';
-                notificationContainer.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 10000;
-                    max-width: 400px;
-                `;
-                document.body.appendChild(notificationContainer);
-            }
+        // 口座サマリー更新
+        function updateAccountSummary(account) {
+            balanceEl.textContent = formatCurrency(account.balance);
+            equityEl.textContent = formatCurrency(account.equity);
             
-            // 通知要素の作成
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.style.cssText = `
-                background: ${getNotificationColor(type)};
-                color: white;
-                padding: 12px 16px;
-                margin-bottom: 10px;
-                border-radius: 6px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                border-left: 4px solid ${getNotificationBorderColor(type)};
-                font-size: 14px;
-                opacity: 0;
-                transform: translateX(100%);
-                transition: all 0.3s ease;
-                position: relative;
-                padding-right: 40px;
-            `;
-            
-            // 閉じるボタン
-            const closeBtn = document.createElement('button');
-            closeBtn.innerHTML = '×';
-            closeBtn.style.cssText = `
-                position: absolute;
-                top: 8px;
-                right: 8px;
-                background: none;
-                border: none;
-                color: white;
-                font-size: 18px;
-                cursor: pointer;
-                padding: 0;
-                width: 20px;
-                height: 20px;
-                line-height: 1;
-            `;
-            closeBtn.onclick = () => removeNotification(notification);
-            
-            notification.innerHTML = message;
-            notification.appendChild(closeBtn);
-            notificationContainer.appendChild(notification);
-            
-            // アニメーション
-            setTimeout(() => {
-                notification.style.opacity = '1';
-                notification.style.transform = 'translateX(0)';
-            }, 10);
-            
-            // 自動削除
-            if (duration > 0) {
-                setTimeout(() => removeNotification(notification), duration);
-            }
+            const profit = account.profit;
+            totalProfitEl.textContent = formatCurrency(profit);
+            totalProfitEl.className = 'value ' + (profit >= 0 ? 'profit-positive' : 'profit-negative');
         }
         
-        function removeNotification(notification) {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }
-        
-        function getNotificationColor(type) {
-            const colors = {
-                success: '#10b981',
-                error: '#ef4444',
-                warning: '#f59e0b',
-                info: '#3b82f6'
-            };
-            return colors[type] || colors.info;
-        }
-        
-        function getNotificationBorderColor(type) {
-            const colors = {
-                success: '#059669',
-                error: '#dc2626',
-                warning: '#d97706',
-                info: '#2563eb'
-            };
-            return colors[type] || colors.info;
-        }
-        
-        function formatNumber(num, decimals = 2) {
-            if (num === null || num === undefined) return '--';
-            return parseFloat(num).toFixed(decimals);
-        }
-        
-        function formatCurrency(amount, currency = 'USD') {
-            if (amount === null || amount === undefined) return '--';
-            const formatted = formatNumber(amount, 2);
-            return `${formatted} ${currency}`;
-        }
-        
-        function getProfitClass(profit) {
-            if (profit > 0) return 'profit-positive';
-            if (profit < 0) return 'profit-negative';
-            return 'profit-neutral';
-        }
-        
-        function updateDashboard(data) {
-            try {
-                // システム状態更新
-                if (data.system) {
-                    updateSystemStatus(data.system);
-                }
-                
-                // EA状態更新
-                if (data.ea) {
-                    updateEAStatus(data.ea);
-                }
-                
-                // 市場データ更新
-                if (data.market) {
-                    updateMarketData(data.market);
-                }
-                
-                // アカウント情報更新
-                if (data.account) {
-                    updateAccountInfo(data.account);
-                }
-                
-                // ポジション一覧更新
-                if (data.positions) {
-                    updatePositions(data.positions);
-                }
-                
-                // 最終更新時刻
-                if (data.timestamp) {
-                    const updateTime = new Date(data.timestamp);
-                    lastUpdate.textContent = `最終更新: ${updateTime.toLocaleString('ja-JP')}`;
-                }
-                
-            } catch (error) {
-                console.error('ダッシュボード更新エラー:', error);
-                showNotification(`ダッシュボード更新に失敗: ${error.message}`, 'error');
-                showError('データ表示エラー: ' + error.message);
-            }
-        }
-        
-        function updateSystemStatus(system) {
-            const html = `
-                <div class="metric">
-                    <span class="metric-label">MT5接続</span>
-                    <span class="metric-value">${system.mt5_connected ? '✅ 接続中' : '❌ 切断'}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">システム状態</span>
-                    <span class="metric-value">${system.system_health || 'Unknown'}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">最終更新</span>
-                    <span class="metric-value">${system.last_update ? new Date(system.last_update).toLocaleTimeString('ja-JP') : '--'}</span>
-                </div>
-            `;
-            document.getElementById('systemStatus').innerHTML = html;
-        }
-        
-        function updateEAStatus(ea) {
-            const html = `
-                <div class="metric">
-                    <span class="metric-label">EA名</span>
-                    <span class="metric-value">${ea.name || '--'}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">状態</span>
-                    <span class="metric-value">${ea.status || '--'}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">通貨ペア</span>
-                    <span class="metric-value">${ea.symbol || '--'}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">アクティブポジション</span>
-                    <span class="metric-value">${ea.active_positions || 0} 件</span>
-                </div>
-            `;
-            document.getElementById('eaStatus').innerHTML = html;
-        }
-        
-        function updateMarketData(market) {
-            const html = `
-                <div class="metric">
-                    <span class="metric-label">通貨ペア</span>
-                    <span class="metric-value">${market.symbol || '--'}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">買い価格</span>
-                    <span class="metric-value">${formatNumber(market.bid, 5)}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">売り価格</span>
-                    <span class="metric-value">${formatNumber(market.ask, 5)}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">スプレッド</span>
-                    <span class="metric-value">${formatNumber(market.spread, 1)} pips</span>
-                </div>
-            `;
-            document.getElementById('marketData').innerHTML = html;
-        }
-        
-        function updateAccountInfo(account) {
-            const html = `
-                <div class="metric">
-                    <span class="metric-label">残高</span>
-                    <span class="metric-value">${formatCurrency(account.balance, account.currency)}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">証拠金</span>
-                    <span class="metric-value">${formatCurrency(account.equity, account.currency)}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">損益</span>
-                    <span class="metric-value ${getProfitClass(account.profit)}">${formatCurrency(account.profit, account.currency)}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">レバレッジ</span>
-                    <span class="metric-value">1:${account.leverage || '--'}</span>
-                </div>
-            `;
-            document.getElementById('accountInfo').innerHTML = html;
-        }
-        
-        function updatePositions(positions) {
-            const container = document.getElementById('positionsList');
-            
-            if (!positions || positions.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.6);">ポジションはありません</div>';
+        // ポジションテーブル更新
+        function updatePositionsTable(positions) {
+            if (positions.length === 0) {
+                positionsTbody.innerHTML = '<tr class="no-positions"><td colspan="7">オープンポジションはありません</td></tr>';
                 return;
             }
             
-            let html = '<div class="positions-grid">';
-            
-            positions.forEach(pos => {
-                const posType = pos.type.toLowerCase();
-                const profitClass = getProfitClass(pos.profit);
+            let html = '';
+            positions.forEach(function(position) {
+                const typeClass = position.type === 'buy' ? 'position-buy' : 'position-sell';
+                const profitClass = position.profit >= 0 ? 'profit-positive' : 'profit-negative';
                 
                 html += `
-                    <div class="position-item ${posType}">
-                        <div class="position-header">
-                            <span>${pos.symbol} ${pos.type}</span>
-                            <span class="${profitClass}">${formatCurrency(pos.profit)}</span>
-                        </div>
-                        <div class="position-details">
-                            ロット: ${pos.volume} | 
-                            開始価格: ${formatNumber(pos.open_price, 5)} | 
-                            現在価格: ${formatNumber(pos.current_price, 5)}
-                        </div>
-                        <div class="position-details">
-                            開始時刻: ${new Date(pos.open_time).toLocaleString('ja-JP')}
-                        </div>
-                    </div>
+                    <tr>
+                        <td><strong>${position.symbol}</strong></td>
+                        <td class="${typeClass}">${position.type.toUpperCase()}</td>
+                        <td>${position.volume}</td>
+                        <td class="${profitClass}">${formatCurrency(position.profit)}</td>
+                        <td>${position.open_price}</td>
+                        <td>${position.current_price}</td>
+                        <td>${formatDateTime(position.open_time)}</td>
+                    </tr>
                 `;
             });
             
-            html += '</div>';
-            container.innerHTML = html;
+            positionsTbody.innerHTML = html;
         }
         
-        // イベントリスナー
-        refreshBtn.addEventListener('click', function() {
-            refreshBtn.disabled = true;
-            refreshBtn.textContent = '🔄 更新中...';
-            
-            socket.emit('request_refresh');
-            
-            setTimeout(() => {
-                refreshBtn.disabled = false;
-                refreshBtn.textContent = '🔄 データ更新';
-            }, 2000);
-        });
+        // 最終更新時刻
+        function updateLastUpdateTime(timestamp) {
+            const date = new Date(timestamp);
+            lastUpdateTime.textContent = date.toLocaleString('ja-JP');
+        }
         
-        // Phase 3: チャート期間選択イベント（Gemini致命的エラー修正）
-        if (chartPeriod) {
-            chartPeriod.addEventListener('change', function() {
-                const selectedPeriod = this.value;
-                updateBalanceChart(selectedPeriod);
+        // 通貨フォーマット
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('ja-JP', {
+                style: 'currency',
+                currency: 'JPY',
+                minimumFractionDigits: 0
+            }).format(value);
+        }
+        
+        // 日時フォーマット
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('ja-JP', {
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
             });
-        } else {
-            console.error('❌ 要素 #chartPeriod が見つかりません');
-            showNotification('チャート期間選択機能が利用できません', 'error');
         }
         
-        // 定期データ更新
+        // エラー表示/非表示
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+        
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+        
+        // 定期的にデータを要求（接続確認も兼ねる）
         setInterval(function() {
-            if (isConnected) {
-                socket.emit('request_data');
+            if (socket.connected) {
+                socket.emit('request_data', {});
             }
         }, 5000); // 5秒間隔
-        
-        // Phase 3: 履歴チャート初期化
-        function initializeBalanceChart() {
-            const ctx = document.getElementById('balanceChart');
-            if (!ctx) return;
-            
-            balanceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [
-                        {
-                            label: '残高',
-                            data: [],
-                            borderColor: '#4CAF50',
-                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true
-                        },
-                        {
-                            label: '有効証拠金',
-                            data: [],
-                            borderColor: '#2196F3',
-                            backgroundColor: 'rgba(33, 150, 243, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: false
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: { 
-                                color: '#ffffff',
-                                font: { size: 12 }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.dataset.label || '';
-                                    const value = new Intl.NumberFormat('ja-JP').format(context.parsed.y);
-                                    return `${label}: ¥${value}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            display: true,
-                            ticks: { 
-                                color: '#ffffff',
-                                font: { size: 10 }
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        },
-                        y: {
-                            display: true,
-                            ticks: { 
-                                color: '#ffffff',
-                                font: { size: 10 },
-                                callback: function(value) {
-                                    return '¥' + new Intl.NumberFormat('ja-JP').format(value);
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Phase 3: 履歴データ更新（Gemini指摘による改良版）
-        function updateBalanceChart(period) {
-            if (!balanceChart) return;
-            
-            // API経由で履歴データ取得（HTTPエラーハンドリング強化）
-            fetch(`/api/balance_history?period=${period}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (Array.isArray(data) && data.length > 0) {
-                        // パフォーマンス改善：3回のmapを1回のforEachに統合
-                        const labels = [];
-                        const balanceData = [];
-                        const equityData = [];
-                        
-                        data.forEach(item => {
-                            const date = new Date(item.timestamp);
-                            labels.push(date.toLocaleDateString('ja-JP') + ' ' + date.toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'}));
-                            balanceData.push(item.balance);
-                            equityData.push(item.equity);
-                        });
-                        
-                        balanceChart.data.labels = labels;
-                        balanceChart.data.datasets[0].data = balanceData;
-                        balanceChart.data.datasets[1].data = equityData;
-                        balanceChart.update();
-                    } else {
-                        console.log('指定期間のデータがありません');
-                    }
-                })
-                .catch(error => {
-                    console.error('履歴データ取得エラー:', error);
-                    showNotification(`履歴データ取得に失敗: ${error.message}`, 'error');
-                    // ユーザーへのエラー表示（将来的に実装）
-                });
-        }
-        
-        // ページロード時の初期化
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('ダッシュボード初期化完了');
-            
-            // Phase 3: チャート初期化
-            setTimeout(() => {
-                initializeBalanceChart();
-                updateBalanceChart('24h');
-            }, 1000);
-        });
     </script>
 </body>
 </html>
