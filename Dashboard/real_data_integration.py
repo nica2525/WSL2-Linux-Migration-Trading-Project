@@ -9,9 +9,15 @@ import time
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
-import MetaTrader5 as mt5
+# MT5インポート（Wine環境対応）
+try:
+    import MetaTrader5 as mt5
+    MT5_AVAILABLE = True
+except ImportError:
+    import mt5_mock as mt5
+    MT5_AVAILABLE = False
 from flask_socketio import emit
-import numpy as np
+# import numpy as np  # テスト時は無効化
 
 # ロギング設定
 logging.basicConfig(
@@ -358,15 +364,16 @@ class RealDataIntegrationManager:
         if len(returns) < 2:
             return 0
         
-        returns_array = np.array(returns)
-        mean_return = np.mean(returns_array)
-        std_return = np.std(returns_array, ddof=1)
+        # 標準ライブラリで統計計算
+        mean_return = sum(returns) / len(returns)
+        variance = sum((x - mean_return) ** 2 for x in returns) / (len(returns) - 1)
+        std_return = variance ** 0.5
         
         if std_return == 0:
             return 0
         
         # 年率換算（252営業日）
-        sharpe = (mean_return / std_return) * np.sqrt(252)
+        sharpe = (mean_return / std_return) * (252 ** 0.5)
         return round(sharpe, 3)
     
     def _calculate_max_drawdown(self, profits: List[float]) -> float:
