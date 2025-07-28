@@ -326,6 +326,25 @@
                 </div>
             </div>
             
+            <!-- Phase 3: 履歴チャート表示 -->
+            <div class="card" style="min-height: 400px;">
+                <div class="card-header">
+                    <span class="card-icon">📈</span>
+                    残高履歴チャート
+                    <div style="margin-left: auto;">
+                        <select id="chartPeriod" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 4px; padding: 5px;">
+                            <option value="1h">1時間</option>
+                            <option value="6h">6時間</option>
+                            <option value="24h" selected>24時間</option>
+                            <option value="7d">7日間</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-content" style="position: relative; height: 300px;">
+                    <canvas id="balanceChart"></canvas>
+                </div>
+            </div>
+
             <!-- ポジション一覧 -->
             <div class="card">
                 <div class="card-header">
@@ -365,10 +384,14 @@
         const errorContainer = document.getElementById('errorContainer');
         const refreshBtn = document.getElementById('refreshBtn');
         const lastUpdate = document.getElementById('lastUpdate');
+        const chartPeriod = document.getElementById('chartPeriod');
         
         // 接続状態管理
         let isConnected = false;
         let lastDataTime = null;
+        
+        // Phase 3: チャート管理
+        let balanceChart = null;
         
         // Socket.IO イベントハンドラー
         socket.on('connect', function() {
@@ -621,6 +644,12 @@
             }, 2000);
         });
         
+        // Phase 3: チャート期間選択イベント
+        chartPeriod.addEventListener('change', function() {
+            const selectedPeriod = this.value;
+            updateBalanceChart(selectedPeriod);
+        });
+        
         // 定期データ更新
         setInterval(function() {
             if (isConnected) {
@@ -628,9 +657,123 @@
             }
         }, 5000); // 5秒間隔
         
+        // Phase 3: 履歴チャート初期化
+        function initializeBalanceChart() {
+            const ctx = document.getElementById('balanceChart');
+            if (!ctx) return;
+            
+            balanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: '残高',
+                            data: [],
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: '有効証拠金',
+                            data: [],
+                            borderColor: '#2196F3',
+                            backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { 
+                                color: '#ffffff',
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = new Intl.NumberFormat('ja-JP').format(context.parsed.y);
+                                    return `${label}: ¥${value}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            ticks: { 
+                                color: '#ffffff',
+                                font: { size: 10 }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            ticks: { 
+                                color: '#ffffff',
+                                font: { size: 10 },
+                                callback: function(value) {
+                                    return '¥' + new Intl.NumberFormat('ja-JP').format(value);
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Phase 3: 履歴データ更新
+        function updateBalanceChart(period) {
+            if (!balanceChart) return;
+            
+            // API経由で履歴データ取得
+            fetch(`/api/balance_history?period=${period}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const labels = data.map(item => {
+                            const date = new Date(item.timestamp);
+                            return date.toLocaleDateString('ja-JP') + ' ' + date.toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
+                        });
+                        const balanceData = data.map(item => item.balance);
+                        const equityData = data.map(item => item.equity);
+                        
+                        balanceChart.data.labels = labels;
+                        balanceChart.data.datasets[0].data = balanceData;
+                        balanceChart.data.datasets[1].data = equityData;
+                        balanceChart.update();
+                    }
+                })
+                .catch(error => {
+                    console.error('履歴データ取得エラー:', error);
+                });
+        }
+        
         // ページロード時の初期化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('ダッシュボード初期化完了');
+            
+            // Phase 3: チャート初期化
+            setTimeout(() => {
+                initializeBalanceChart();
+                updateBalanceChart('24h');
+            }, 1000);
         });
     </script>
 </body>
