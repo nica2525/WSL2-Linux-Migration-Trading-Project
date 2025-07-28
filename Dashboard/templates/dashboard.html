@@ -439,6 +439,16 @@
             }
         });
         
+        // ユーザー向け通知システム
+        socket.on('user_notification', function(notification) {
+            console.log('ユーザー通知:', notification);
+            showNotification(
+                notification.message,
+                notification.type || 'info',
+                notification.duration || 5000
+            );
+        });
+        
         // UI更新関数
         function updateConnectionStatus(message, status) {
             connectionStatus.textContent = message;

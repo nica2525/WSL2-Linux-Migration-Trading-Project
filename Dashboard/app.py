@@ -359,9 +359,23 @@ class TradingDashboard:
                 emit('positions', self.get_positions())
                 emit('ea_status', self.get_ea_status())
                 emit('system_status', self.get_system_status())
+                # ユーザー向け通知
+                emit('user_notification', {
+                    'message': 'JamesORB監視システムに正常に接続しました',
+                    'type': 'success',
+                    'timestamp': datetime.now().isoformat(),
+                    'duration': 3000
+                })
             except Exception as e:
                 self.logger.error(f"初期データ送信エラー: {e}")
                 emit('error', {'message': str(e)})
+                # エラー通知
+                emit('user_notification', {
+                    'message': f'システム接続エラー: {str(e)}',
+                    'type': 'error',
+                    'timestamp': datetime.now().isoformat(),
+                    'duration': 5000
+                })
         
         @self.socketio.on('disconnect')
         def handle_disconnect():
@@ -377,6 +391,13 @@ class TradingDashboard:
             except Exception as e:
                 self.logger.error(f"Data request error: {e}")
                 emit('error', {'message': str(e)})
+                # ユーザー通知
+                emit('user_notification', {
+                    'message': f'データ取得に失敗しました: {str(e)[:50]}',
+                    'type': 'error',
+                    'timestamp': datetime.now().isoformat(),
+                    'duration': 4000
+                })
         
         @self.socketio.on('request_history')
         def handle_history_request(data):
@@ -446,6 +467,14 @@ class TradingDashboard:
                 
             except Exception as e:
                 self.logger.error(f"バックグラウンド更新エラー: {e}")
+                # 重要なエラーのみユーザーに通知
+                if "connection" in str(e).lower() or "timeout" in str(e).lower():
+                    self.socketio.emit('user_notification', {
+                        'message': f'MT5接続に問題があります: {str(e)[:40]}',
+                        'type': 'warning',
+                        'timestamp': datetime.now().isoformat(),
+                        'duration': 6000
+                    })
                 time.sleep(10)  # エラー時は10秒待機
     
     def save_to_database(self, data):
