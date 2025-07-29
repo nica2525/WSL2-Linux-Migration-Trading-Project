@@ -7,6 +7,7 @@ Phase 2統計機能追加 - SQLiteデータベース統合
 import sqlite3
 import json
 import logging
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
@@ -95,20 +96,39 @@ class DatabaseManager:
     
     @contextmanager
     def get_connection(self):
-        """データベース接続コンテキストマネージャー"""
+        """データベース接続コンテキストマネージャー（実運用対応）"""
         conn = None
-        try:
-            conn = sqlite3.connect(self.db_path)
-            conn.row_factory = sqlite3.Row  # 辞書形式でアクセス可能
-            yield conn
-        except Exception as e:
-            if conn:
-                conn.rollback()
-            self.logger.error(f"データベースエラー: {e}")
-            raise
-        finally:
-            if conn:
-                conn.close()
+        max_retries = 3
+        retry_delay = 0.1
+        
+        for attempt in range(max_retries):
+            try:
+                conn = sqlite3.connect(self.db_path, timeout=30.0)
+                conn.row_factory = sqlite3.Row
+                conn.execute("PRAGMA journal_mode=WAL")  # 同時アクセス対応
+                conn.execute("PRAGMA synchronous=NORMAL")  # パフォーマンス最適化
+                yield conn
+                return
+            except sqlite3.OperationalError as e:
+                if "database is locked" in str(e) and attempt < max_retries - 1:
+                    self.logger.warning(f"DB locked, retry {attempt+1}/{max_retries}")
+                    time.sleep(retry_delay * (2 ** attempt))  # 指数バックオフ
+                    continue
+                self.logger.error(f"データベースエラー (試行{attempt+1}): {e}")
+                if conn:
+                    conn.rollback()
+                raise
+            except Exception as e:
+                self.logger.error(f"予期しないDBエラー: {e}")
+                if conn:
+                    conn.rollback()
+                raise
+            finally:
+                if conn:
+                    try:
+                        conn.close()
+                    except:
+                        pass
     
     def store_mt5_data(self, data: Dict[str, Any]) -> bool:
         """MT5データを永続化"""

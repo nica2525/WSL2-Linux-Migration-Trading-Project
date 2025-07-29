@@ -21,10 +21,18 @@ class StatisticsCalculator:
     def calculate_win_rate_stats(self, days: int = 7) -> Dict[str, Any]:
         """勝率統計計算"""
         try:
+            # メモリ効率を考慮した制限付きデータ取得
+            max_positions = 10000  # 実運用制限
             position_history = self.db.get_position_history(hours=days*24)
             
             if not position_history:
                 return self._empty_win_rate_stats()
+                
+            # 大量データの場合は最新のものに制限
+            if len(position_history) > max_positions:
+                position_history = sorted(position_history, 
+                                        key=lambda x: x['timestamp'], reverse=True)[:max_positions]
+                self.logger.warning(f"ポジション履歴を{max_positions}件に制限")
             
             # 利益別分類
             profits = [pos['profit'] for pos in position_history]
