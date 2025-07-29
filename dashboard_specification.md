@@ -1,4 +1,5 @@
 # リアルタイムダッシュボード仕様書
+**🚫 開発凍結中**: Phase3ダッシュボード開発は凍結済み（詳細: Dashboard/DEVELOPMENT_FREEZE_NOTICE.md）
 
 ## 📱 UI/UX設計
 
