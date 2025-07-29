@@ -1,6 +1,6 @@
 ---
 name: mql5-technical-validator
-description: MQL5技術仕様検証・コード品質チェック専門エージェント。MQL5コードの技術的妥当性、パフォーマンス最適化、MetaTrader5 API準拠性を検証します。
+description: MUST BE USED for MQL5 code technical validation before implementation. PROACTIVELY validate MQL5 technical specifications, API compliance, performance optimization, and MetaTrader5 compatibility. Expert in MQL5 reference documentation and trading algorithm validation.
 tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 
