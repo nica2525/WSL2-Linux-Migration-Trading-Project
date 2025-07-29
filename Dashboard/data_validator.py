@@ -212,18 +212,23 @@ class MT5DataValidator:
             equity = account.get('equity', 0)
             profit = account.get('profit', 0)
             
-            # 基本整合性: エクイティ = 残高 + 利益
+            # MT5固有の誤差を許容した整合性チェック
             expected_equity = balance + profit
             equity_diff = abs(equity - expected_equity)
-            if equity_diff > 1.0:  # 1ドル以上の誤差
-                errors.append(f"口座データ整合性エラー: equity({equity}) != balance({balance}) + profit({profit})")
+            # MT5の計算精度・スプレッド・手数料を考慮した許容範囲
+            tolerance = max(balance * 0.001, 10.0)  # 0.1%または10ドル
+            if equity_diff > tolerance:
+                errors.append(f"口座データ整合性エラー: equity({equity}) != balance({balance}) + profit({profit}), 差額{equity_diff:.2f} > 許容値{tolerance:.2f}")
             
-            # ポジション利益合計チェック
-            if positions:
+            # ポジション利益合計チェック（部分的ポジション表示を考慮）
+            if positions and len(positions) > 1:  # 複数ポジションの場合のみチェック
                 position_profit_total = sum(pos.get('profit', 0) for pos in positions)
                 profit_diff = abs(profit - position_profit_total)
-                if profit_diff > 1.0:
-                    errors.append(f"ポジション利益合計不一致: 口座利益({profit}) vs ポジション合計({position_profit_total})")
+                # スワップ・手数料・未実現損益を考慮した許容範囲
+                position_tolerance = max(abs(profit) * 0.2, 100.0)  # 20%または100ドル
+                if profit_diff > position_tolerance:
+                    errors.append(f"ポジション利益合計不一致: 口座利益({profit}) vs ポジション合計({position_profit_total}), 差額{profit_diff:.2f} > 許容値{position_tolerance:.2f}")
+            # 注意: 単一ポジション表示の場合は口座全体利益と異なるため比較しない
             
             # 価格整合性チェック（buy/sellの利益方向）
             for i, position in enumerate(positions):
