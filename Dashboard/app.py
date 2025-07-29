@@ -58,11 +58,12 @@ class Phase1Dashboard:
         # Flask アプリケーション
         self.app = Flask(__name__)
         
-        # SocketIO設定（軽量化）
+        # SocketIO設定（プロトコル互換性修正）
         self.sio = socketio.Server(
             cors_allowed_origins="*",
             logger=False,
-            engineio_logger=False
+            engineio_logger=False,
+            async_mode='eventlet'
         )
         self.app.wsgi_app = socketio.WSGIApp(self.sio, self.app.wsgi_app)
         
