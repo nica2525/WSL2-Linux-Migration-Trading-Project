@@ -1,0 +1,21 @@
+test_id: "T004"
+test_name: "大規模ファイル読取"
+timestamp: "2025-07-31 06:33:00"
+parameters:
+  file_path: "test_files/large/large_simple.py"
+  file_size_kb: 98.5
+  file_lines: 5999
+  file_count: 1
+  complexity: "simple"
+  task_type: "read"
+result:
+  status: "success"
+  execution_time: "約20秒"
+  response_quality: "正確"
+  cpu_impact: "中"
+observations: |
+  - 5000行のファイルも処理成功
+  - フリーズなし（予想外）
+  - 行数・変数数を正確にカウント
+  - 処理時間は増加（20秒）
+  - 単純な構造なら大規模でも処理可能

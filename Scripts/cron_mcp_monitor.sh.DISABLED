@@ -1,0 +1,18 @@
+#!/bin/bash
+# MCP詳細監視用cronスクリプト
+
+# プロジェクトディレクトリに移動
+cd /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト
+
+# MCP健全性監視実行（5分間隔）
+/usr/bin/python3 Scripts/mcp_health_monitor.py
+
+# ゾンビプロセスが多い場合は警告
+zombie_count=$(ps aux | grep -c '<defunct>')
+if [ $zombie_count -gt 10 ]; then
+    echo "[WARNING] High zombie process count: $zombie_count" >> .mcp_health.log
+fi
+
+# MCPプロセス状況確認
+mcp_processes=$(ps aux | grep -E 'mcp|context7|fetch' | grep -v grep | wc -l)
+echo "[INFO] Active MCP processes: $mcp_processes" >> .mcp_health.log

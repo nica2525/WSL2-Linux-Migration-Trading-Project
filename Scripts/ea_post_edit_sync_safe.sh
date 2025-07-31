@@ -38,7 +38,7 @@ fi
 echo "1. EAファイル存在確認..."
 if [ -f "$CANONICAL_EA_PATH" ]; then
     log_info "正規EAファイル存在: $(basename "$CANONICAL_EA_PATH")"
-    
+
     # ファイル情報表示
     size=$(stat -f%z "$CANONICAL_EA_PATH" 2>/dev/null || stat -c%s "$CANONICAL_EA_PATH" 2>/dev/null || echo "不明")
     modified=$(stat -f%Sm "$CANONICAL_EA_PATH" 2>/dev/null || stat -c%y "$CANONICAL_EA_PATH" 2>/dev/null || echo "不明")
@@ -75,7 +75,7 @@ fi
 # 同期実行
 if cp -p "$CANONICAL_EA_PATH" "$MT5_EA_PATH" 2>/dev/null; then
     log_info "同期完了: $MT5_EA_PATH"
-    
+
     # 同期確認
     if [ -f "$MT5_EA_PATH" ]; then
         mt5_size=$(stat -f%z "$MT5_EA_PATH" 2>/dev/null || stat -c%s "$MT5_EA_PATH" 2>/dev/null || echo "0")
@@ -101,7 +101,7 @@ if command -v git >/dev/null 2>&1 && git rev-parse --git-dir >/dev/null 2>&1; th
     else
         log_info "EA関連の変更なし"
     fi
-    
+
     # 全体の変更チェック
     if git status --porcelain 2>/dev/null | grep -q "."; then
         uncommitted=$(git status --porcelain 2>/dev/null | wc -l || echo "0")

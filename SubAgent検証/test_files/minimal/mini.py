@@ -1,0 +1,11 @@
+# Section 0
+variable_0 = 80
+variable_1 = 15
+variable_2 = 73
+variable_3 = 80
+variable_4 = 56
+variable_5 = 79
+variable_6 = 22
+variable_7 = 61
+variable_8 = 1
+variable_9 = 60

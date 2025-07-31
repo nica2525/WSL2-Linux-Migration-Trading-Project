@@ -1,0 +1,21 @@
+test_id: "T001"
+test_name: "極小単一ファイル読取"
+timestamp: "2025-07-31 06:29:00"
+parameters:
+  file_path: "test_files/minimal/tiny.py"
+  file_size_kb: 0.1
+  file_lines: 7
+  file_count: 1
+  complexity: "simple"
+  task_type: "read"
+result:
+  status: "success"
+  execution_time: "約5秒"
+  response_quality: "正確"
+  cpu_impact: "低"
+observations: |
+  - 即座に応答開始
+  - 正確にファイル内容を把握
+  - 変数数を正しくカウント（5個）
+  - プロセスは正常終了
+  - システムへの影響最小

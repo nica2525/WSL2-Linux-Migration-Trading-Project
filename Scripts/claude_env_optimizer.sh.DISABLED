@@ -1,0 +1,116 @@
+#!/bin/bash
+# Claude実行環境最適化スクリプト（Gemini査読結果対応版）
+# 危険設定除外 + 安全な最適化 + エラーハンドリング強化
+
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+LOG_FILE="$PROJECT_DIR/.claude_env_optimizer.log"
+
+log_message() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+log_message "=== Claude Environment Optimizer Started (Safe Mode) ==="
+
+# 1. 危険な環境変数の除外確認
+log_message "🚨 Checking for dangerous environment variables..."
+
+# MALLOCチューニング設定があれば除外
+if [[ -n "${MALLOC_TRIM_THRESHOLD_:-}" ]]; then
+    log_message "WARNING: Removing dangerous MALLOC_TRIM_THRESHOLD_ setting"
+    unset MALLOC_TRIM_THRESHOLD_
+fi
+
+if [[ -n "${MALLOC_MMAP_THRESHOLD_:-}" ]]; then
+    log_message "WARNING: Removing potentially dangerous MALLOC_MMAP_THRESHOLD_ setting"
+    unset MALLOC_MMAP_THRESHOLD_
+fi
+
+if [[ -n "${MALLOC_ARENA_MAX:-}" ]]; then
+    log_message "WARNING: Removing MALLOC_ARENA_MAX setting"
+    unset MALLOC_ARENA_MAX
+fi
+
+# 2. Node.js環境変数の安全な設定
+log_message "⚙️ Setting safe Node.js environment variables..."
+
+# メモリ上限を適度に設定（2GB、Gemini推奨）
+export NODE_OPTIONS="--max-old-space-size=2048 --enable-source-maps"
+
+# エラーハンドラの自動ロード
+NODE_ERROR_HANDLER="$PROJECT_DIR/Scripts/nodejs_error_handler.js"
+if [[ -f "$NODE_ERROR_HANDLER" ]]; then
+    export NODE_OPTIONS="$NODE_OPTIONS -r $NODE_ERROR_HANDLER"
+    log_message "✅ Node.js error handler enabled: $NODE_ERROR_HANDLER"
+else
+    log_message "⚠️ Node.js error handler not found: $NODE_ERROR_HANDLER"
+fi
+
+# MCP タイムアウト設定（120秒）
+export MCP_TIMEOUT=120000
+log_message "✅ MCP_TIMEOUT=120000 (120秒) 設定完了"
+
+# 3. プロセス制限の設定
+log_message "🔒 Setting process resource limits..."
+
+# ファイルディスクリプタ上限
+ulimit -n 4096
+
+# メモリコアダンプ無効化（セキュリティ）
+ulimit -c 0
+
+# プロセス数制限
+ulimit -u 2048
+
+# 4. システムヘルスチェック
+log_message "🏥 Performing system health check..."
+
+# メモリ使用量確認
+MEMORY_USAGE=$(free | awk 'FNR==2{printf "%.1f", $3/($3+$4)*100}')
+log_message "Memory usage: ${MEMORY_USAGE}%"
+
+# ゾンビプロセス確認
+ZOMBIE_COUNT=$(ps aux | grep -c '<defunct>')
+if [[ $ZOMBIE_COUNT -gt 5 ]]; then
+    log_message "⚠️ High zombie process count: $ZOMBIE_COUNT"
+else
+    log_message "✅ Zombie process count normal: $ZOMBIE_COUNT"
+fi
+
+# 5. Claude実行前の最終確認
+log_message "🔍 Final pre-execution checks..."
+
+# Node.js実行可能確認
+if command -v node > /dev/null 2>&1; then
+    NODE_VERSION=$(node --version)
+    log_message "✅ Node.js available: $NODE_VERSION"
+else
+    log_message "❌ Node.js not available"
+    exit 1
+fi
+
+# Claude実行可能確認
+if command -v claude > /dev/null 2>&1; then
+    CLAUDE_VERSION=$(claude --version 2>/dev/null || echo "version unknown")
+    log_message "✅ Claude CLI available: $CLAUDE_VERSION"
+else
+    log_message "❌ Claude CLI not available"
+    exit 1
+fi
+
+log_message "=== Environment optimization completed successfully ==="
+log_message "Current NODE_OPTIONS: $NODE_OPTIONS"
+log_message "Current MCP_TIMEOUT: $MCP_TIMEOUT"
+
+echo ""
+echo "✅ Claude environment optimized successfully (Safe Mode)"
+echo "📝 Detailed log: $LOG_FILE"
+echo ""
+echo "🔧 Current settings:"
+echo "   NODE_OPTIONS: $NODE_OPTIONS"
+echo "   MCP_TIMEOUT: $MCP_TIMEOUT"
+echo "   Error Handler: Enabled"
+echo "   Dangerous Settings: Removed"
+
+# 環境変数をエクスポート（現在のセッション用）
+export NODE_OPTIONS
+export MCP_TIMEOUT

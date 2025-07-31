@@ -17,12 +17,11 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
-from scipy import stats
-from scipy.optimize import differential_evolution
-
 from cost_resistant_strategy import CostResistantStrategy
 from data_cache_system import DataCacheManager
 from market_regime_detector import MarketRegimeDetector
+from scipy import stats
+from scipy.optimize import differential_evolution
 
 
 class WFACompliantOptimizer:
@@ -107,7 +106,11 @@ class WFACompliantOptimizer:
                         next_open = self.learning_data.iloc[i + 1]["open"]
                     else:
                         # 最後のバーでは決済しないまたは代替価格を使用
-                        next_open = current_bar["high"] if position["direction"] == "BUY" else current_bar["low"]
+                        next_open = (
+                            current_bar["high"]
+                            if position["direction"] == "BUY"
+                            else current_bar["low"]
+                        )
                     pnl = self._calculate_pnl(position, next_open)
                     balance += pnl
                     trades.append({"pnl": pnl, "exit_reason": "REGIME_STOP"})
@@ -160,7 +163,11 @@ class WFACompliantOptimizer:
                         next_open = self.learning_data.iloc[i + 1]["open"]
                     else:
                         # 最後のバーでは決済しないまたは代替価格を使用
-                        next_open = current_bar["high"] if position["direction"] == "BUY" else current_bar["low"]
+                        next_open = (
+                            current_bar["high"]
+                            if position["direction"] == "BUY"
+                            else current_bar["low"]
+                        )
                     pnl = self._calculate_pnl(position, next_open)
                     adjusted_pnl = pnl * position["position_size"]
                     balance += adjusted_pnl

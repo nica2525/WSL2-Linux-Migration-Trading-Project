@@ -24,7 +24,7 @@ do
         new_timestamp=$(jq -r '.timestamp' /tmp/mt5_data/positions.json 2>/dev/null)
         if [ "$new_timestamp" != "$old_timestamp" ] && [ "$new_timestamp" != "null" ]; then
             echo "   ✅ データ更新検知: $new_timestamp"
-            
+
             # 実データかチェック（チケット番号パターン）
             ticket=$(jq -r '.positions[0].ticket' /tmp/mt5_data/positions.json 2>/dev/null)
             if [ "$ticket" != "null" ] && [ ${#ticket} -gt 5 ]; then

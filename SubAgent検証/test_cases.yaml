@@ -1,0 +1,94 @@
+# Sub-Agent検証テストケース定義
+
+test_cases:
+  # フェーズ1: 基礎境界確認
+  - id: "T001"
+    name: "極小単一ファイル読取"
+    phase: 1
+    parameters:
+      target_files: ["test_files/minimal/tiny.py"]
+      task_type: "read"
+      prompt: "tiny.pyファイルの内容を確認して、変数の数を教えてください"
+    expected: "5秒以内に完了"
+
+  - id: "T002"
+    name: "小規模単一ファイル分析"
+    phase: 1
+    parameters:
+      target_files: ["test_files/small/small_simple.py"]
+      task_type: "analyze"
+      prompt: "small_simple.pyのコード構造を分析し、変数の命名パターンを説明してください"
+    expected: "10秒以内に完了"
+
+  - id: "T003"
+    name: "中規模複雑ファイル分析"
+    phase: 1
+    parameters:
+      target_files: ["test_files/medium/medium_complex.py"]
+      task_type: "analyze"
+      prompt: "medium_complex.pyのクラス構造とメソッドの概要を説明してください"
+    expected: "30秒以内に完了、遅延の可能性"
+
+  - id: "T004"
+    name: "大規模ファイル読取"
+    phase: 1
+    parameters:
+      target_files: ["test_files/large/large_simple.py"]
+      task_type: "read"
+      prompt: "large_simple.pyの行数と変数の総数を確認してください"
+    expected: "フリーズリスク高"
+
+  # フェーズ2: 複数ファイル境界
+  - id: "T005"
+    name: "少数ファイル並列読取"
+    phase: 2
+    parameters:
+      target_files: ["test_files/small/module_0.py", "test_files/small/module_1.py", "test_files/small/module_2.py"]
+      task_type: "read"
+      prompt: "3つのmoduleファイルをすべて確認し、共通パターンを見つけてください"
+    expected: "15秒以内"
+
+  - id: "T006"
+    name: "中規模プロジェクト分析"
+    phase: 2
+    parameters:
+      target_files: ["test_files/medium/component_*.py"]
+      task_type: "analyze"
+      prompt: "すべてのcomponentファイルを分析し、プロジェクト構造を理解してください"
+    expected: "フリーズ高確率"
+
+  # フェーズ3: 編集タスク境界
+  - id: "T007"
+    name: "小規模ファイル編集"
+    phase: 3
+    parameters:
+      target_files: ["test_files/small/small_simple.py"]
+      task_type: "edit"
+      prompt: "small_simple.pyにコメントヘッダーを追加してください"
+    expected: "20秒以内"
+
+  - id: "T008"
+    name: "複数ファイル連携編集"
+    phase: 3
+    parameters:
+      target_files: ["test_files/small/module_*.py"]
+      task_type: "edit"
+      prompt: "すべてのmoduleファイルにimport文を追加してください"
+    expected: "フリーズ可能性中"
+
+# 検証プロトコル
+protocol:
+  safety_measures:
+    - timeout_warning: 30
+    - timeout_interrupt: 60
+    - force_kill: 120
+
+  monitoring:
+    - cpu_usage: "top -b -n 1 | grep node"
+    - memory_usage: "ps aux | grep claude"
+    - process_check: "pgrep -f 'claude.*agent'"
+
+  recovery:
+    - step1: "Ctrl+C"
+    - step2: "pkill -f 'node.*claude'"
+    - step3: "wsl --shutdown && wsl"

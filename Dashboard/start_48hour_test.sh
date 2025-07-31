@@ -31,7 +31,7 @@ if [ ! -f "$TEST_DIR/test_continuous_operation.py" ]; then
 fi
 
 if [ ! -f "$TEST_DIR/app.py" ]; then
-    echo "❌ エラー: ダッシュボードアプリが見つかりません" | tee -a $LOG_FILE  
+    echo "❌ エラー: ダッシュボードアプリが見つかりません" | tee -a $LOG_FILE
     exit 1
 fi
 

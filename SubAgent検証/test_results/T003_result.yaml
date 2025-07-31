@@ -1,0 +1,21 @@
+test_id: "T003"
+test_name: "中規模複雑ファイル分析"
+timestamp: "2025-07-31 06:31:00"
+parameters:
+  file_path: "test_files/medium/medium_complex.py"
+  file_size_kb: 45.8
+  file_lines: 1150
+  file_count: 1
+  complexity: "complex"
+  task_type: "analyze"
+result:
+  status: "success"
+  execution_time: "約15秒"
+  response_quality: "詳細かつ構造的"
+  cpu_impact: "中"
+observations: |
+  - 1000行超のファイルも処理可能
+  - クラス構造を正確に解析
+  - メソッド数（50個）も正確にカウント
+  - 若干の処理時間増加（15秒）
+  - 応答は安定して取得

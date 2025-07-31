@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 # scipy.statsを安全にインポート（フォールバック処理付き）
 try:
     from scipy.stats import t as t_dist
+
     SCIPY_AVAILABLE = True
 except ImportError:
     SCIPY_AVAILABLE = False
@@ -194,7 +195,11 @@ class WFAStrategy:
             resistance = max(high_prices)
             support = min(low_prices)
             # 修正: 現在バーの終値ではなく、前のバーの終値を使用
-            previous_price = recent_data[-2]["close"] if len(recent_data) >= 2 else current_bar["open"]
+            previous_price = (
+                recent_data[-2]["close"]
+                if len(recent_data) >= 2
+                else current_bar["open"]
+            )
 
             # ブレイクアウト判定
             if previous_price > resistance * 1.001:  # 0.1%上抜け
@@ -209,7 +214,7 @@ class WFAStrategy:
                 entry_price = data[current_idx + 1]["open"]
             else:
                 return None  # 最後のバーではエントリーしない
-            
+
             exit_idx = min(current_idx + 20, len(data) - 1)
             exit_price = data[exit_idx]["close"]
 
@@ -485,7 +490,7 @@ class UnifiedWFAFramework:
         if len(oos_pfs) > 1 and std_pf > 0:
             t_stat = (mean_pf - 1.0) / (std_pf / np.sqrt(len(oos_pfs)))
             df = len(oos_pfs) - 1
-            
+
             # 正確なp値計算（scipy使用、フォールバック付き）
             if SCIPY_AVAILABLE:
                 # 片側検定のp値（scipy.stats使用）

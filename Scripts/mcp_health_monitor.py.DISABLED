@@ -1,0 +1,246 @@
+#!/usr/bin/env python3
+"""
+MCP健全性監視スクリプト
+- 各MCPサーバーの動作状況を定期的に確認
+- 異常検知時のアラート機能
+- 自動復旧試行機能
+"""
+
+import json
+import os
+import subprocess
+import tempfile
+from datetime import datetime
+from pathlib import Path
+
+# 設定
+PROJECT_DIR = Path(__file__).parent.parent
+LOG_FILE = PROJECT_DIR / ".mcp_health.log"
+MAX_LOG_SIZE = 1024 * 1024  # 1MB
+TIMEOUT_SECONDS = 30
+
+
+def log_message(level, message):
+    """ログメッセージ記録"""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_entry = f"[{timestamp}] [{level}] {message}\n"
+
+    # ログファイルサイズチェック
+    if LOG_FILE.exists() and LOG_FILE.stat().st_size > MAX_LOG_SIZE:
+        # 古いログをバックアップ
+        backup_file = LOG_FILE.with_suffix(".log.old")
+        LOG_FILE.rename(backup_file)
+
+    with open(LOG_FILE, "a") as f:
+        f.write(log_entry)
+
+    # 重要なメッセージは標準出力にも
+    if level in ["ERROR", "WARNING"]:
+        print(log_entry.strip())
+
+
+def check_mcp_connection():
+    """MCP接続状況確認"""
+    try:
+        result = subprocess.run(
+            ["claude", "mcp", "list"],
+            capture_output=True,
+            text=True,
+            timeout=TIMEOUT_SECONDS,
+        )
+
+        if result.returncode == 0:
+            connected_servers = []
+            for line in result.stdout.split("\n"):
+                if "✓ Connected" in line:
+                    server_name = line.split(":")[0].strip()
+                    connected_servers.append(server_name)
+
+            return {
+                "status": "success",
+                "connected_servers": connected_servers,
+                "raw_output": result.stdout,
+            }
+        else:
+            return {"status": "error", "message": f"MCP list failed: {result.stderr}"}
+    except subprocess.TimeoutExpired:
+        return {"status": "error", "message": "MCP list command timed out"}
+    except Exception as e:
+        return {"status": "error", "message": f"Exception: {str(e)}"}
+
+
+def test_filesystem_mcp():
+    """Filesystem MCP動作テスト"""
+    try:
+        # 一時ファイルでテスト
+        test_file = tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".test")
+        test_content = f"MCP test at {datetime.now()}"
+        test_file.write(test_content)
+        test_file.close()
+
+        # ファイル読み取りテスト（MCPツール使用を想定）
+        # 実際のMCPツール呼び出しはClaude内部で行われるため、
+        # ここではファイルシステムアクセスの基本動作確認
+        if os.path.exists(test_file.name):
+            with open(test_file.name) as f:
+                read_content = f.read()
+            os.unlink(test_file.name)
+
+            if read_content == test_content:
+                return {"status": "success", "test": "filesystem"}
+            else:
+                return {
+                    "status": "error",
+                    "test": "filesystem",
+                    "message": "Content mismatch",
+                }
+        else:
+            return {
+                "status": "error",
+                "test": "filesystem",
+                "message": "Test file not found",
+            }
+
+    except Exception as e:
+        return {"status": "error", "test": "filesystem", "message": str(e)}
+
+
+def test_mcp_servers():
+    """各MCPサーバーの簡易動作確認"""
+    tests = {
+        "filesystem": test_filesystem_mcp,
+        # fetch, context7は実際のAPI呼び出しが必要なため、接続確認のみ
+    }
+
+    results = {}
+    for server, test_func in tests.items():
+        results[server] = test_func()
+
+    return results
+
+
+def check_zombie_processes():
+    """ゾンビプロセスの確認"""
+    try:
+        result = subprocess.run(
+            ["ps", "aux"], capture_output=True, text=True, timeout=10
+        )
+
+        zombie_count = 0
+        zombie_processes = []
+
+        for line in result.stdout.split("\n"):
+            if "<defunct>" in line or " Z " in line:
+                zombie_count += 1
+                zombie_processes.append(line.strip())
+
+        return {
+            "zombie_count": zombie_count,
+            "processes": zombie_processes[:5],  # 最初の5つまで
+        }
+    except Exception as e:
+        return {"zombie_count": -1, "error": str(e)}
+
+
+def attempt_recovery(issue_type):
+    """問題に応じた復旧試行"""
+    recovery_actions = []
+
+    if issue_type == "zombie_processes":
+        # ゾンビプロセスの親プロセスに通知
+        recovery_actions.append(
+            "Zombie processes detected - manual intervention may be required"
+        )
+        log_message("WARNING", "Zombie processes found. Check system status.")
+
+    elif issue_type == "mcp_disconnected":
+        # MCP再接続は通常Claude再起動が必要
+        recovery_actions.append(
+            "MCP disconnection detected - Claude restart recommended"
+        )
+        log_message("WARNING", "MCP servers disconnected. Consider restarting Claude.")
+
+    return recovery_actions
+
+
+def main():
+    """メイン監視処理"""
+    log_message("INFO", "MCP health monitor started")
+
+    # 1. MCP接続確認
+    mcp_status = check_mcp_connection()
+    if mcp_status["status"] == "success":
+        log_message(
+            "INFO",
+            f"MCP servers connected: {', '.join(mcp_status['connected_servers'])}",
+        )
+
+        # 期待されるサーバーの確認
+        expected_servers = ["filesystem", "fetch", "context7", "gemini-cli", "jupyter"]
+        missing_servers = [
+            s for s in expected_servers if s not in mcp_status["connected_servers"]
+        ]
+
+        if missing_servers:
+            log_message("WARNING", f"Missing MCP servers: {', '.join(missing_servers)}")
+            attempt_recovery("mcp_disconnected")
+    else:
+        log_message(
+            "ERROR",
+            f"MCP connection check failed: {mcp_status.get('message', 'Unknown error')}",
+        )
+        attempt_recovery("mcp_disconnected")
+
+    # 2. 個別MCPテスト
+    test_results = test_mcp_servers()
+    for server, result in test_results.items():
+        if result["status"] == "success":
+            log_message("INFO", f"{server} MCP test passed")
+        else:
+            log_message(
+                "ERROR",
+                f"{server} MCP test failed: {result.get('message', 'Unknown error')}",
+            )
+
+    # 3. システム状態確認
+    zombie_info = check_zombie_processes()
+    if zombie_info["zombie_count"] > 0:
+        log_message("WARNING", f"Found {zombie_info['zombie_count']} zombie processes")
+        attempt_recovery("zombie_processes")
+
+    # 4. 総合ステータス
+    overall_health = {
+        "timestamp": datetime.now().isoformat(),
+        "mcp_connection": mcp_status["status"] == "success",
+        "connected_servers": mcp_status.get("connected_servers", []),
+        "test_results": test_results,
+        "zombie_count": zombie_info["zombie_count"],
+        "health_status": "HEALTHY"
+        if (
+            mcp_status["status"] == "success"
+            and zombie_info["zombie_count"] == 0
+            and all(r["status"] == "success" for r in test_results.values())
+        )
+        else "UNHEALTHY",
+    }
+
+    # ステータスファイル更新
+    status_file = PROJECT_DIR / ".mcp_health_status.json"
+    with open(status_file, "w") as f:
+        json.dump(overall_health, f, indent=2)
+
+    log_message(
+        "INFO", f"Health check completed - Status: {overall_health['health_status']}"
+    )
+
+    return overall_health
+
+
+if __name__ == "__main__":
+    try:
+        status = main()
+        # 異常時は終了コード1
+        exit(0 if status["health_status"] == "HEALTHY" else 1)
+    except Exception as e:
+        log_message("ERROR", f"Monitor script error: {str(e)}")
+        exit(1)

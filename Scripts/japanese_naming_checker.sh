@@ -6,7 +6,7 @@ PROJECT_DIR="/home/trader/Trading-Development/2.ブレイクアウト手法プ�
 
 echo "📝 日本語化ルール遵守チェック実行中..."
 
-# 1. ルートディレクトリの英語MDファイルチェック  
+# 1. ルートディレクトリの英語MDファイルチェック
 ENGLISH_MD_IN_ROOT=$(find "$PROJECT_DIR" -maxdepth 1 -name "*.md" -not -name "README.md" -not -name "CLAUDE.md" -not -name "現在の品質状況.md" | grep -E "[A-Z_]")
 
 if [ -n "$ENGLISH_MD_IN_ROOT" ]; then

@@ -1,40 +1,88 @@
 # MCP設定ファイル（APIキー含む）
 .env.mcp
 .env
+*.key
+*config.json
 
-# Claude設定
+# Claude設定・認証情報
 .claude/settings.local.json
 .clauderc.local
+.claude/auth/
+.claude/token*
 
-# バックテスト結果
+# SSH・認証キー
+*.pem
+*.ppk
+id_rsa*
+id_ed25519*
+known_hosts*
+
+# バックテスト結果・取引データ
 *.csv
 *.json
 *.htm
 *.gif
+MT5/Results/*/
+demo_results/
+live_results/
+*.mq5.bak
 
-# ログファイル
+# ログファイル・監視データ
 *.log
 logs/
 MT5/Logs/
+.cron_*.log
+monitoring/
+*.prof
 
-# 一時ファイル
+# 一時ファイル・キャッシュ
 temp/
 tmp/
 *.tmp
+*.cache
+.cache/
+node_modules/
 
 # OS固有
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # IDE設定
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Python
+# Python関連
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
+pip-log.txt
+venv/
+env/
 
-# Windows
+# Windows固有
 *.exe
 *.dll
+*.msi
+
+# Linux固有
+*.so
+core
+.bash_history
+.sudo_as_admin_successful
+
+# Git関連
+*.orig
+*.rej
+
+# 機密・個人情報
+personal/
+private/
+secrets/
+*.secret
+*.private

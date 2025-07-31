@@ -30,25 +30,25 @@ case "$1" in
         cd "$PROJECT_DIR"
         python3 "$AUTOMATION_SCRIPT" --check-only
         ;;
-    
+
     "template")
         if [ -z "$2" ]; then
             echo "❌ テンプレートタイプを指定してください"
             echo "使用可能: refactoring, analysis, implementation, general"
             exit 1
         fi
-        
+
         echo "📝 $2 テンプレート生成中..."
         cd "$PROJECT_DIR"
         python3 "$AUTOMATION_SCRIPT" --template "$2"
         ;;
-    
+
     "setup")
         echo "⚙️ pre-commitフック設定中..."
         cd "$PROJECT_DIR"
         python3 "$AUTOMATION_SCRIPT" --create-hook
         ;;
-    
+
     "status")
         echo "📊 現在の状況:"
         cd "$PROJECT_DIR"
@@ -57,11 +57,11 @@ case "$1" in
         echo -e "\n最近のGPT依頼文:"
         ls -la 3AI_collaboration/to_chatgpt/*.md 2>/dev/null | tail -3 || echo "なし"
         ;;
-    
+
     "help"|"-h"|"--help"|"")
         show_help
         ;;
-    
+
     *)
         echo "❌ 不明なコマンド: $1"
         show_help

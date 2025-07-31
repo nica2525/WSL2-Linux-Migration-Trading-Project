@@ -1,0 +1,404 @@
+#!/usr/bin/env node
+/**
+ * プロセス監査スクリプト
+ * child_process使用パターンとゾンビプロセス発生原因の調査
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { spawn, exec } = require('child_process');
+const { promisify } = require('util');
+
+// エラーハンドラをロード
+require('./nodejs_error_handler.js');
+
+const execAsync = promisify(exec);
+
+// 設定
+const CONFIG = {
+    PROJECT_DIR: path.join(__dirname, '..'),
+    LOG_FILE: path.join(__dirname, '..', 'Logs', 'process_audit.log'),
+    ANALYSIS_FILE: path.join(__dirname, '..', 'Logs', 'process_analysis.json')
+};
+
+// ログ出力関数
+function log(level, message, data = {}) {
+    const timestamp = new Date().toISOString();
+    const logEntry = {
+        timestamp,
+        level,
+        message,
+        pid: process.pid,
+        ...data
+    };
+
+    const logLine = `[${timestamp}] [${level}] ${message} ${JSON.stringify(data)}\n`;
+
+    // ファイルログ
+    fs.appendFileSync(CONFIG.LOG_FILE, logLine);
+
+    // コンソール出力
+    console.log(logLine.trim());
+}
+
+// 現在のプロセス状況分析
+async function analyzeCurrentProcesses() {
+    log('INFO', 'Starting process analysis');
+
+    const analysis = {
+        timestamp: new Date().toISOString(),
+        totalProcesses: 0,
+        zombieProcesses: [],
+        claudeProcesses: [],
+        mcpProcesses: [],
+        nodeProcesses: [],
+        systemInfo: {}
+    };
+
+    try {
+        // システム情報取得
+        const meminfo = await execAsync('free -m');
+        const cpuinfo = await execAsync('nproc');
+        const uptime = await execAsync('uptime');
+
+        analysis.systemInfo = {
+            memory: meminfo.stdout.trim(),
+            cpuCores: parseInt(cpuinfo.stdout.trim()),
+            uptime: uptime.stdout.trim()
+        };
+
+        // プロセス一覧取得
+        const psResult = await execAsync('ps aux --no-headers');
+        const processes = psResult.stdout.trim().split('\n');
+
+        analysis.totalProcesses = processes.length;
+
+        // プロセス分類
+        for (const processLine of processes) {
+            const fields = processLine.trim().split(/\s+/);
+            if (fields.length < 11) continue;
+
+            const processInfo = {
+                user: fields[0],
+                pid: parseInt(fields[1]),
+                cpu: parseFloat(fields[2]),
+                mem: parseFloat(fields[3]),
+                stat: fields[7],
+                command: fields.slice(10).join(' ')
+            };
+
+            // ゾンビプロセス検出
+            if (processInfo.stat.includes('Z') || processInfo.command.includes('<defunct>')) {
+                analysis.zombieProcesses.push(processInfo);
+            }
+
+            // Claude関連プロセス
+            if (processInfo.command.includes('claude')) {
+                analysis.claudeProcesses.push(processInfo);
+            }
+
+            // MCP関連プロセス
+            if (processInfo.command.includes('mcp') ||
+                processInfo.command.includes('context7') ||
+                processInfo.command.includes('fetch') ||
+                processInfo.command.includes('gemini-cli') ||
+                processInfo.command.includes('jupyter')) {
+                analysis.mcpProcesses.push(processInfo);
+            }
+
+            // Node.js関連プロセス
+            if (processInfo.command.includes('node') && !processInfo.command.includes('claude')) {
+                analysis.nodeProcesses.push(processInfo);
+            }
+        }
+
+        log('INFO', 'Process analysis completed', {
+            totalProcesses: analysis.totalProcesses,
+            zombieCount: analysis.zombieProcesses.length,
+            claudeCount: analysis.claudeProcesses.length,
+            mcpCount: analysis.mcpProcesses.length
+        });
+
+        return analysis;
+
+    } catch (error) {
+        log('ERROR', 'Process analysis failed', { error: error.message });
+        throw error;
+    }
+}
+
+// ゾンビプロセス詳細調査
+async function analyzeZombieProcesses(analysis) {
+    log('INFO', 'Analyzing zombie processes');
+
+    const zombieAnalysis = {
+        patterns: {},
+        parentProcesses: {},
+        recommendations: []
+    };
+
+    for (const zombie of analysis.zombieProcesses) {
+        try {
+            // 親プロセス情報取得
+            const parentInfo = await execAsync(`ps -o pid,ppid,command --no-headers -p ${zombie.pid} 2>/dev/null || echo "Process not found"`);
+
+            if (!parentInfo.stdout.includes('Process not found')) {
+                const parentFields = parentInfo.stdout.trim().split(/\s+/);
+                const ppid = parseInt(parentFields[1]);
+
+                // 親プロセスの詳細取得
+                const parentDetail = await execAsync(`ps -o pid,command --no-headers -p ${ppid} 2>/dev/null || echo "Parent not found"`);
+
+                if (!parentDetail.stdout.includes('Parent not found')) {
+                    const parentCommand = parentDetail.stdout.trim().split(/\s+/).slice(1).join(' ');
+
+                    zombieAnalysis.parentProcesses[ppid] = {
+                        pid: ppid,
+                        command: parentCommand,
+                        zombieChildren: (zombieAnalysis.parentProcesses[ppid]?.zombieChildren || 0) + 1
+                    };
+
+                    // パターン分析
+                    if (parentCommand.includes('claude')) {
+                        zombieAnalysis.patterns['claude'] = (zombieAnalysis.patterns['claude'] || 0) + 1;
+                    }
+                    if (parentCommand.includes('npm')) {
+                        zombieAnalysis.patterns['npm'] = (zombieAnalysis.patterns['npm'] || 0) + 1;
+                    }
+                    if (parentCommand.includes('node')) {
+                        zombieAnalysis.patterns['node'] = (zombieAnalysis.patterns['node'] || 0) + 1;
+                    }
+                }
+            }
+        } catch (error) {
+            log('WARNING', 'Failed to analyze zombie process', {
+                pid: zombie.pid,
+                error: error.message
+            });
+        }
+    }
+
+    // 推奨事項生成
+    if (zombieAnalysis.patterns['claude'] > 0) {
+        zombieAnalysis.recommendations.push({
+            issue: 'Claude processes creating zombie children',
+            recommendation: 'Claude sub-agent Task tool may not be properly cleaning up child processes',
+            priority: 'HIGH'
+        });
+    }
+
+    if (zombieAnalysis.patterns['npm'] > 0) {
+        zombieAnalysis.recommendations.push({
+            issue: 'npm processes creating zombie children',
+            recommendation: 'MCP server startup scripts may have improper process handling',
+            priority: 'MEDIUM'
+        });
+    }
+
+    Object.keys(zombieAnalysis.parentProcesses).forEach(ppid => {
+        const parent = zombieAnalysis.parentProcesses[ppid];
+        if (parent.zombieChildren > 2) {
+            zombieAnalysis.recommendations.push({
+                issue: `Process ${ppid} has ${parent.zombieChildren} zombie children`,
+                recommendation: `Review process management in: ${parent.command}`,
+                priority: 'HIGH'
+            });
+        }
+    });
+
+    log('INFO', 'Zombie process analysis completed', {
+        patterns: zombieAnalysis.patterns,
+        parentProcessCount: Object.keys(zombieAnalysis.parentProcesses).length,
+        recommendationCount: zombieAnalysis.recommendations.length
+    });
+
+    return zombieAnalysis;
+}
+
+// child_process使用パターン調査
+async function auditChildProcessUsage() {
+    log('INFO', 'Auditing child_process usage patterns');
+
+    const auditResults = {
+        bestPractices: [],
+        violations: [],
+        recommendations: []
+    };
+
+    // 一般的なchild_process使用パターンの確認
+    const commonPatterns = [
+        {
+            name: 'Event handler cleanup',
+            check: 'Proper exit/close event handling',
+            recommendation: 'Always add exit and close event listeners to child processes'
+        },
+        {
+            name: 'Error handling',
+            check: 'Error event handling',
+            recommendation: 'Add error event listeners to prevent uncaught exceptions'
+        },
+        {
+            name: 'Process timeout',
+            check: 'Timeout management',
+            recommendation: 'Implement timeouts to prevent hanging processes'
+        },
+        {
+            name: 'Signal handling',
+            check: 'Proper signal handling on parent exit',
+            recommendation: 'Handle SIGTERM/SIGINT to gracefully shutdown child processes'
+        }
+    ];
+
+    auditResults.bestPractices = commonPatterns;
+
+    // 実際のNode.jsプロセスでのchild_process監視テスト
+    try {
+        const testProcess = spawn('echo', ['test'], { stdio: 'pipe' });
+        let exitHandled = false;
+        let closeHandled = false;
+
+        testProcess.on('exit', (code) => {
+            exitHandled = true;
+            log('INFO', 'Test process exit event', { code });
+        });
+
+        testProcess.on('close', (code) => {
+            closeHandled = true;
+            log('INFO', 'Test process close event', { code });
+        });
+
+        testProcess.on('error', (error) => {
+            log('ERROR', 'Test process error', { error: error.message });
+        });
+
+        // プロセス終了を待つ
+        await new Promise((resolve) => {
+            testProcess.on('close', resolve);
+        });
+
+        // ベストプラクティスチェック
+        if (exitHandled && closeHandled) {
+            auditResults.recommendations.push({
+                issue: 'Good practice demonstrated',
+                recommendation: 'Both exit and close events were properly handled',
+                priority: 'INFO'
+            });
+        } else {
+            auditResults.violations.push({
+                issue: 'Missing event handlers',
+                recommendation: 'Ensure both exit and close events are handled',
+                priority: 'HIGH'
+            });
+        }
+
+    } catch (error) {
+        log('ERROR', 'Child process audit test failed', { error: error.message });
+        auditResults.violations.push({
+            issue: 'Child process test failed',
+            recommendation: 'Unable to verify child process handling patterns',
+            priority: 'MEDIUM'
+        });
+    }
+
+    return auditResults;
+}
+
+// レポート生成
+function generateReport(analysis, zombieAnalysis, auditResults) {
+    const report = {
+        timestamp: new Date().toISOString(),
+        summary: {
+            totalProcesses: analysis.totalProcesses,
+            zombieProcesses: analysis.zombieProcesses.length,
+            claudeProcesses: analysis.claudeProcesses.length,
+            mcpProcesses: analysis.mcpProcesses.length,
+            systemHealth: analysis.zombieProcesses.length < 5 ? 'GOOD' : 'POOR'
+        },
+        detailedAnalysis: {
+            processAnalysis: analysis,
+            zombieAnalysis,
+            auditResults
+        },
+        recommendations: [
+            ...zombieAnalysis.recommendations,
+            ...auditResults.recommendations
+        ].sort((a, b) => {
+            const priority = { HIGH: 3, MEDIUM: 2, LOW: 1, INFO: 0 };
+            return priority[b.priority] - priority[a.priority];
+        })
+    };
+
+    // JSONファイルに保存
+    fs.writeFileSync(CONFIG.ANALYSIS_FILE, JSON.stringify(report, null, 2));
+
+    log('INFO', 'Process audit report generated', {
+        file: CONFIG.ANALYSIS_FILE,
+        recommendationCount: report.recommendations.length
+    });
+
+    return report;
+}
+
+// メイン実行関数
+async function main() {
+    log('INFO', 'Process audit started', {
+        nodeVersion: process.version,
+        platform: process.platform,
+        pid: process.pid
+    });
+
+    try {
+        // 1. 現在のプロセス状況分析
+        const analysis = await analyzeCurrentProcesses();
+
+        // 2. ゾンビプロセス詳細調査
+        const zombieAnalysis = await analyzeZombieProcesses(analysis);
+
+        // 3. child_process使用パターン監査
+        const auditResults = await auditChildProcessUsage();
+
+        // 4. レポート生成
+        const report = generateReport(analysis, zombieAnalysis, auditResults);
+
+        // 結果表示
+        console.log('\n🔍 Process Audit Report');
+        console.log('======================');
+        console.log(`📊 Total Processes: ${report.summary.totalProcesses}`);
+        console.log(`🧟 Zombie Processes: ${report.summary.zombieProcesses}`);
+        console.log(`🤖 Claude Processes: ${report.summary.claudeProcesses}`);
+        console.log(`🔗 MCP Processes: ${report.summary.mcpProcesses}`);
+        console.log(`💚 System Health: ${report.summary.systemHealth}`);
+        console.log(`📝 Recommendations: ${report.recommendations.length}`);
+
+        if (report.recommendations.length > 0) {
+            console.log('\n🚨 Top Recommendations:');
+            report.recommendations.slice(0, 3).forEach((rec, index) => {
+                console.log(`${index + 1}. [${rec.priority}] ${rec.issue}`);
+                console.log(`   → ${rec.recommendation}`);
+            });
+        }
+
+        console.log(`\n📄 Full report: ${CONFIG.ANALYSIS_FILE}`);
+        console.log(`📝 Detailed log: ${CONFIG.LOG_FILE}`);
+
+    } catch (error) {
+        log('ERROR', 'Process audit failed', { error: error.message });
+        console.error(`❌ Process audit failed: ${error.message}`);
+        process.exit(1);
+    }
+}
+
+// 実行
+if (require.main === module) {
+    main().catch(error => {
+        log('ERROR', 'Main execution failed', { error: error.message });
+        process.exit(1);
+    });
+}
+
+module.exports = {
+    analyzeCurrentProcesses,
+    analyzeZombieProcesses,
+    auditChildProcessUsage,
+    generateReport
+};

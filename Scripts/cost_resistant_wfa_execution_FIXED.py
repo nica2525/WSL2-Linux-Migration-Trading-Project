@@ -9,33 +9,34 @@ Cost-Resistant WFA Execution ― 根本修正版
 """
 
 import json
-import numpy as np
 import multiprocessing as mp
-import time
 import sys
+import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 from cost_resistant_strategy import CostResistantStrategy
 from data_cache_system import DataCacheManager
+
 
 class Position:
     # （既存 Position クラスをそのまま利用）
     ...
 
+
 class CostResistantWFAExecutionFixed:
     def __init__(self):
         self.cache_manager = DataCacheManager()
         self.base_params = {
-            'h4_period': 24,
-            'h1_period': 24,
-            'atr_period': 14,
-            'profit_atr': 2.5,
-            'stop_atr': 1.3,
-            'min_break_pips': 5,
-            'spread_pips': 1.5,
-            'commission_pips': 0.3
+            "h4_period": 24,
+            "h1_period": 24,
+            "atr_period": 14,
+            "profit_atr": 2.5,
+            "stop_atr": 1.3,
+            "min_break_pips": 5,
+            "spread_pips": 1.5,
+            "commission_pips": 0.3,
         }
 
     def _backtest_fold(self, test_data: List, fold_id: int) -> Dict:
@@ -72,8 +73,10 @@ class CostResistantWFAExecutionFixed:
                     results.append(res)
                 completed += 1
                 elapsed = time.time() - start_time
-                eta = (elapsed / completed) * (len(tasks) - completed) if completed else 0
-                bar = '█' * completed + '-' * (len(tasks) - completed)
+                eta = (
+                    (elapsed / completed) * (len(tasks) - completed) if completed else 0
+                )
+                bar = "█" * completed + "-" * (len(tasks) - completed)
                 sys.stdout.write(f"\r[{bar}] {completed}/{len(tasks)} ETA:{eta:.1f}s")
                 sys.stdout.flush()
         total_time = time.time() - start_time
@@ -82,26 +85,25 @@ class CostResistantWFAExecutionFixed:
         # レポート生成
         sensitivity_report = self._generate_sensitivity_report(results)
         return {
-            'sensitivity_analysis': results,
-            'sensitivity_report': sensitivity_report,
-            'execution_time': datetime.now().isoformat(),
-            'performance_info': {
-                'cpu_cores': cpu,
-                'total_time': total_time
-            }
+            "sensitivity_analysis": results,
+            "sensitivity_report": sensitivity_report,
+            "execution_time": datetime.now().isoformat(),
+            "performance_info": {"cpu_cores": cpu, "total_time": total_time},
         }
 
     # 以下、_execute_realistic_backtest, _generate_sensitivity_report を
     # cost_resistant_wfa_execution_FINAL.py から DRY にコピーしてください。
 
+
 def main():
     executor = CostResistantWFAExecutionFixed()
-    if len(sys.argv) > 1 and sys.argv[1] == '--sensitivity-parallel':
+    if len(sys.argv) > 1 and sys.argv[1] == "--sensitivity-parallel":
         res = executor.execute_sensitivity_analysis_parallel()
-        with open('sensitivity_analysis_results.json', 'w') as f:
+        with open("sensitivity_analysis_results.json", "w") as f:
             json.dump(res, f, indent=2)
     else:
         print("Usage: --sensitivity-parallel")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

@@ -47,7 +47,7 @@ while IFS= read -r -d '' file; do
         # タイムスタンプ付きで安全に移動
         timestamp=$(date +%Y%m%d_%H%M%S)
         safe_name="$(basename "$file").${timestamp}"
-        
+
         if mv "$file" "${TRASH_DIR}/${safe_name}" 2>/dev/null; then
             log_info "移動: $file -> ${TRASH_DIR}/${safe_name}"
             ((duplicate_count++))
@@ -63,7 +63,7 @@ if [ -d "$MT5_EA_DIR" ]; then
         if [ "$(basename "$file")" != "$CANONICAL_EA_NAME" ]; then
             timestamp=$(date +%Y%m%d_%H%M%S)
             safe_name="MT5_$(basename "$file").${timestamp}"
-            
+
             if mv "$file" "${TRASH_DIR}/${safe_name}" 2>/dev/null; then
                 log_info "MT5から移動: $file -> ${TRASH_DIR}/${safe_name}"
                 ((duplicate_count++))
@@ -116,7 +116,7 @@ if [ -d "$MT5_EA_DIR" ] || mkdir -p "$MT5_EA_DIR" 2>/dev/null; then
         cp "${MT5_EA_DIR}${CANONICAL_EA_NAME}" "${TRASH_DIR}/${backup_name}" 2>/dev/null || true
         log_info "既存ファイルバックアップ: ${backup_name}"
     fi
-    
+
     # 安全なコピー
     if cp -p "$CANONICAL_EA_PATH" "${MT5_EA_DIR}${CANONICAL_EA_NAME}"; then
         log_info "コピー完了: ${MT5_EA_DIR}${CANONICAL_EA_NAME}"

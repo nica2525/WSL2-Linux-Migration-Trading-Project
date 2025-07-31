@@ -33,10 +33,10 @@ check_existing_files() {
     echo "🔍 既存セッション記録ファイル検索中..."
     echo "対象日: $TODAY"
     echo ""
-    
+
     # プロジェクト全体から当日ファイル検索
     EXISTING_FILES=$(find "$PROJECT_ROOT" -name "セッション記録_${TODAY}_*.md" -type f 2>/dev/null)
-    
+
     if [ -n "$EXISTING_FILES" ]; then
         echo "📋 既存の当日セッション記録発見:"
         echo "$EXISTING_FILES"

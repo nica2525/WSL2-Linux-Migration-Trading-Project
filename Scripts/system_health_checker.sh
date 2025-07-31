@@ -51,7 +51,7 @@ if [[ -f "$SETTINGS_FILE" ]]; then
     else
         echo "❌ セッション記録hooks: 未設定"
     fi
-    
+
     if grep -q "memory_tracker_hook.sh" "$SETTINGS_FILE"; then
         echo "✅ メモリトラッカーhooks: 設定済み"
     else

@@ -18,7 +18,7 @@ if [ -f $PID_FILE ] && ps -p $(cat $PID_FILE) > /dev/null 2>&1; then
     MEMORY=$(ps -p $PID -o rss= | tr -d ' ')
     CPU=$(ps -p $PID -o pcpu= | tr -d ' ')
     UPTIME=$(ps -p $PID -o etime= | tr -d ' ')
-    
+
     echo "  ✅ Running (PID: $PID)"
     echo "  📊 Memory: ${MEMORY}KB, CPU: ${CPU}%, Uptime: $UPTIME"
 else
@@ -58,13 +58,13 @@ echo "📁 Data File Status:"
 if [ -f "$DATA_FILE" ]; then
     AGE=$(expr $(date +%s) - $(stat -c %Y "$DATA_FILE" 2>/dev/null || echo 0))
     SIZE=$(stat -c %s "$DATA_FILE" 2>/dev/null || echo 0)
-    
+
     if [ $AGE -lt 300 ]; then  # 5分以内の更新
         echo "  ✅ Fresh (${AGE}s ago, ${SIZE} bytes)"
     else
         echo "  ⚠️  Stale (${AGE}s ago, ${SIZE} bytes)"
     fi
-    
+
     # JSON妥当性確認
     if python3 -c "import json; json.load(open('$DATA_FILE'))" 2>/dev/null; then
         echo "  ✅ Valid JSON format"
@@ -105,10 +105,10 @@ if [ -f "dashboard.log" ]; then
     LOG_SIZE=$(stat -c %s dashboard.log)
     ERROR_COUNT=$(grep -c -i error dashboard.log 2>/dev/null || echo 0)
     WARNING_COUNT=$(grep -c -i warning dashboard.log 2>/dev/null || echo 0)
-    
+
     echo "  📊 Log Size: ${LOG_SIZE} bytes"
     echo "  📊 Errors: $ERROR_COUNT, Warnings: $WARNING_COUNT"
-    
+
     if [ $ERROR_COUNT -gt 0 ]; then
         echo "  ⚠️  Recent errors found in log"
         echo "  📝 Latest error:"

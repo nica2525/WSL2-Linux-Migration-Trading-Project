@@ -9,7 +9,7 @@ echo "🔧 WSL移行完了スクリプト開始 - $(date)"
 # 現在の環境確認
 echo "📍 現在の環境確認:"
 echo "ホスト名: $(hostname)"
-echo "ユーザー: $(whoami)" 
+echo "ユーザー: $(whoami)"
 echo "ホーム: $HOME"
 echo "現在地: $(pwd)"
 

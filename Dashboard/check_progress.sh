@@ -12,4 +12,3 @@ echo "開始時刻: $START_TIME"
 echo "経過時間: ${HOURS}時間${MINUTES}分"
 echo "進捗: ${PROGRESS}% (48時間中)"
 echo "データ更新数: $(grep -c data_updates /home/trader/Trading-Development/2.ブレイクアウト手法プロジェクト/Dashboard/continuous_test.log 2>/dev/null || echo 'N/A')"
-

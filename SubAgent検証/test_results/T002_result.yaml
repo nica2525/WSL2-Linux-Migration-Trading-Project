@@ -1,0 +1,21 @@
+test_id: "T002"
+test_name: "小規模単一ファイル分析"
+timestamp: "2025-07-31 06:30:00"
+parameters:
+  file_path: "test_files/small/small_simple.py"
+  file_size_kb: 0.9
+  file_lines: 60
+  file_count: 1
+  complexity: "simple"
+  task_type: "analyze"
+result:
+  status: "success"
+  execution_time: "約10秒"
+  response_quality: "詳細かつ正確"
+  cpu_impact: "低"
+observations: |
+  - スムーズな分析実行
+  - コード構造を正確に把握
+  - 命名パターンを適切に説明
+  - セクション分割も認識
+  - メモリ使用量は安定

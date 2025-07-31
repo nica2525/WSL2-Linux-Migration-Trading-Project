@@ -15,7 +15,7 @@ if grep -q "mt5_auto_start.py" "$CRON_FILE"; then
     echo "⚠️ MT5自動起動設定は既に存在します"
 else
     echo "新規設定を追加します..."
-    
+
     # cron設定追加
     cat >> "$CRON_FILE" << EOF
 
