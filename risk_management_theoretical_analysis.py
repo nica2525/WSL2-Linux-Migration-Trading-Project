@@ -590,8 +590,6 @@ class RiskManagementTheoreticalAnalyzer:
         print("\\n💾 理論分析結果保存: risk_management_theoretical_analysis.json")
 
 
-
-
 def main():
     """メイン実行"""
     print("🧮 リスク管理理論分析システム開始")
